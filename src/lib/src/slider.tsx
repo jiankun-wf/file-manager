@@ -1,60 +1,13 @@
-import { defineComponent, h, unref } from "vue";
+import { defineComponent, h, onMounted, ref, unref } from "vue";
 
 import { NIcon, NTree } from "naive-ui";
 import { DirIcon } from "../components/dirIcon";
 
-const pathMock = [
-  {
-    path: "BeiJing-Oss",
-    type: "node",
-    name: "北京节点",
-    children: [
-      {
-        name: "images",
-        type: "dir",
-        path: "/images",
-      },
-      {
-        name: "videos",
-        type: "dir",
-        path: "/videos",
-      },
-
-      {
-        name: "files",
-        type: "dir",
-        path: "/files",
-      },
-    ],
-  },
-  {
-    path: "GuangZhou-Oss",
-    type: "node",
-    name: "广州节点",
-    children: [
-      {
-        name: "images",
-        type: "dir",
-        path: "/images",
-      },
-      {
-        name: "videos",
-        type: "dir",
-        path: "/videos",
-      },
-
-      {
-        name: "files",
-        type: "dir",
-        path: "/files",
-      },
-    ],
-  },
-];
-
 import "../style/slider.less";
 import { useContext } from "../utils/context";
 import { Key } from "naive-ui/es/tree/src/interface";
+import { getDirsList } from "../api";
+import { FileDirItem } from "../types";
 export const Slider = defineComponent({
   name: "Slider",
 
@@ -65,17 +18,35 @@ export const Slider = defineComponent({
       });
     };
 
+    const dirList = ref<FileDirItem[]>([]);
+
     const { currentPath } = useContext();
 
     const handleSelectedKeysChange = (key: Key[]) => {
       currentPath.value = key[0] as string;
     };
 
+    const getDirs = async () => {
+      try {
+        const res: FileDirItem[] = await getDirsList();
+        if (res.length) {
+          currentPath.value = res[0].path;
+        }
+        dirList.value = res;
+      } finally {
+      }
+      // TODO: get dirs from server
+    };
+
+    onMounted(() => {
+      getDirs();
+    });
+
     return () => (
       <div class="file-manager__slider">
         <NTree
           keyField="path"
-          data={pathMock}
+          data={unref(dirList)}
           labelField="name"
           renderPrefix={renderSwitcherIcon}
           themeOverrides={{ nodeHeight: "44px" }}

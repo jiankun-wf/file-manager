@@ -1,30 +1,49 @@
 .file-manager__content {
     height: var(--height);
-    padding: 10px 16px;
+
+    .file-list__wrapper {
+      min-height: var(--height);
+      padding: 10px 16px;
+      position: relative;
+
+      &.is-selecting {
+        * {
+          cursor: default;
+          user-select: none;
+        }
+      }
+    }
 
     .file-manager__file-list--grid {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 20px;
 
         .file-manager__file-item--grid {
             background-color: var(--bg);
+            border-radius: var(--radius);
+            overflow: hidden;
             width: 150px;
+            position: relative;
             .file-manager__file-item__thumb {
                 display: flex;
                 height: 100px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                img {
+                    object-fit: cover;
+                }
             }
             .file-manager__file-item__info {
+                padding: 4px 6px;
                 .file-manager__file-item__name {
                     font-size: 14px;
                     color: var(--black);
                     font-weight: 500;
                     white-space: no-wrap;
-
+ 
                 }
                 .file-manager__file-item__size {
                     font-size: 12px;
@@ -33,8 +52,27 @@
                 .file-manager__file-item__time {
                     font-size: 12px;
                     color: var(--placeholder);
+                    margin-top: 6px;
                 }
             }
+
+            .darg-area {
+                inset: 0;
+                position: absolute;  
+            }
+
+            .is-selected { 
+              inset: 0;
+              position: absolute;
+              border: 2px solid var(--primary);
+              border-radius: var(--radius);
+            }
         }
+    }
+
+    .filer-manager-area-select {
+       position: absolute;
+       border: 1px solid var(--primary);
+       background-color: rgba(0,37,255, 0.15);
     }
 }

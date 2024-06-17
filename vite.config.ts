@@ -14,4 +14,16 @@ export default defineConfig({
       "@": resolve(process.cwd(), ".", "src"),
     },
   },
+  server: {
+    host: true,
+    proxy: {
+      "/basic-api": {
+        target: "http://localhost:5715",
+
+        changeOrigin: true,
+
+        rewrite: (path) => path.replace(/^\/basic-api/, ""),
+      },
+    },
+  },
 });

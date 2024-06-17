@@ -1,10 +1,17 @@
 import { Ref } from "vue";
 
+export interface FileDirItem {
+  name: string;
+  path: string;
+  children?: FileDirItem[];
+}
+
 export interface FileManagerOptions {
   currentPath: string;
   selectMode: FileSelectMode;
   viewType: "list" | "grid";
   selectedFiles: FileItem[];
+  draggable: boolean;
 }
 
 export interface FileManagerContext {
@@ -12,6 +19,8 @@ export interface FileManagerContext {
   selectMode: Ref<FileSelectMode>;
   viewType: Ref<"list" | "grid">;
   selectedFiles: Ref<FileItem[]>;
+  draggable: Ref<boolean>;
+  addSelectFile: (file: FileItem) => void;
   emit: Emit;
 }
 
@@ -22,8 +31,10 @@ export interface FileItem {
   type: string;
   id: string;
   uploadTime: number;
-  __FILE: File;
+  // __FILE: File;
   url: string;
+  nameing: boolean;
+  mockname: string;
 }
 
 export type FileSelectMode = "single" | "multiple";

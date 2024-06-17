@@ -5,6 +5,9 @@ import { FileItem } from "../types";
 import { FileList } from "../components/FileList";
 
 import "../style/content.less";
+import { useFileSelectAll } from "../hooks/useFileSelect";
+import { getDirFiles } from "../api";
+
 export const Content = defineComponent({
   name: "Content",
   setup() {
@@ -12,29 +15,24 @@ export const Content = defineComponent({
     const dirFiles = ref<FileItem[]>([]);
     const isEmpty = ref(true);
 
-    const { currentPath } = useContext();
+    const { currentPath, selectedFiles } = useContext();
+
+    useFileSelectAll({ selectedFiles, dirFiles });
 
     const getCurrentDirFiles = async () => {
+      if (!unref(currentPath)) return;
       queryLoading.value = true;
-
-      const e = Math.random() > 0.5 ? true : false;
-      if (e) {
+      const files = await getDirFiles(unref(currentPath));
+      if (!files.length) {
         isEmpty.value = true;
         dirFiles.value = [];
       } else {
-        dirFiles.value = [
-          {
-            name: "image.png",
-            type: "image/png",
-            size: 1024 * 1024,
-            path: "/image.png",
-            id: "1",
-            url: "https://via.placeholder.com/150",
-            uploadTime: new Date().getTime(),
-            __FILE: new File(["(⌐□_□)"], "image.png"),
-          },
-        ];
         isEmpty.value = false;
+        dirFiles.value = files.map((i: any) => ({
+          ...i,
+          mockname: i.name,
+          nameing: false,
+        }));
       }
 
       queryLoading.value = false;
@@ -44,6 +42,7 @@ export const Content = defineComponent({
       currentPath,
       () => {
         getCurrentDirFiles();
+        selectedFiles.value = [];
       },
       { immediate: true }
     );

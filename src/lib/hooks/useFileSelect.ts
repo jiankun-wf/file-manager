@@ -1,6 +1,13 @@
-import hotkeys from "hotkeys-js";
 import { FileItem, FileSelectMode } from "../types";
-import { unref, type Ref } from "vue";
+import {
+  getCurrentInstance,
+  onMounted,
+  onUnmounted,
+  unref,
+  type Ref,
+} from "vue";
+import hotkeys from "hotkeys-js";
+import { eventStop } from "../utils/event";
 
 export const useFileSelect = ({
   selectedFiles,
@@ -9,12 +16,25 @@ export const useFileSelect = ({
   selectedFiles: Ref<FileItem[]>;
   selectMode: Ref<FileSelectMode>;
 }) => {
-  hotkeys("alt", { keydown: true, keyup: true }, function (event) {
-    if (event.type === "keydown") {
+  const keydown_handler = (e: KeyboardEvent) => {
+    if (e.ctrlKey || e.key === "Control") {
       selectMode.value = "multiple";
-    } else {
+    }
+  };
+  const keyup_handler = (e: KeyboardEvent) => {
+    if (e.ctrlKey || e.key === "Control") {
       selectMode.value = "single";
     }
+  };
+
+  onMounted(() => {
+    window.addEventListener("keydown", keydown_handler);
+    window.addEventListener("keyup", keyup_handler);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("keydown", keydown_handler);
+    window.removeEventListener("keyup", keyup_handler);
   });
 
   const addFile = (file: FileItem) => {
@@ -26,4 +46,21 @@ export const useFileSelect = ({
   };
 
   return { addSelectFile: addFile };
+};
+
+export const useFileSelectAll = ({
+  selectedFiles,
+  dirFiles,
+}: {
+  selectedFiles: Ref<FileItem[]>;
+  dirFiles: Ref<FileItem[]>;
+}) => {
+  if (!getCurrentInstance()) return;
+
+  onMounted(() => {
+    hotkeys("ctrl+a", (event: KeyboardEvent) => {
+      eventStop(event);
+      selectedFiles.value = [...dirFiles.value];
+    });
+  });
 };

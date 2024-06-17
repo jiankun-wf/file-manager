@@ -7,12 +7,14 @@ import { Toolbar } from "./toolbar";
 import { NSplit } from "naive-ui";
 
 import "../style/index.less";
+import { useFileSelect } from "../hooks/useFileSelect";
+import { uid } from "../utils/uid";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
     currentPath: {
       type: String as PropType<string>,
-      default: "/",
+      default: "",
     },
     viewType: {
       type: String as PropType<"list" | "grid">,
@@ -21,27 +23,39 @@ export const FileManager = defineComponent({
   },
   emits: ["fileMove", "fileSelect"],
   setup(props, { emit }) {
-    const { currentPath, selectMode, selectedFiles, viewType } = toRefs(
-      reactive<FileManagerOptions>({
-        currentPath: props.currentPath,
+    const id = uid("file-manager");
 
-        selectMode: "single",
-        selectedFiles: [],
+    const { currentPath, selectMode, selectedFiles, viewType, draggable } =
+      toRefs(
+        reactive<FileManagerOptions>({
+          currentPath: props.currentPath,
 
-        viewType: props.viewType,
-      })
-    );
+          selectMode: "single",
+          selectedFiles: [],
+
+          draggable: true,
+
+          viewType: props.viewType,
+        })
+      );
+
+    const { addSelectFile } = useFileSelect({
+      selectedFiles,
+      selectMode,
+    });
 
     createContext({
       currentPath,
       selectMode,
       selectedFiles,
       viewType,
+      draggable,
+      addSelectFile,
       emit,
     });
 
     return () => (
-      <div class="file-manager">
+      <div class="file-manager" id={id}>
         <Toolbar />
         <div class="file-manager-content">
           <NSplit default-size={0.18} min={0.15} max={0.8}>

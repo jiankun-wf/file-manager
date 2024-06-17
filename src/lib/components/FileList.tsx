@@ -1,8 +1,11 @@
-import { defineComponent, PropType, unref } from "vue";
+import { defineComponent, PropType, toRef, unref } from "vue";
 import { FileItem } from "../types";
 import { useContext } from "../utils/context";
 import { FileGridCard } from "./FileGridCard";
 import { FileGridList } from "./FileGridList";
+import { uid } from "../utils/uid";
+import { useAreaSelect } from "../hooks/useFileSelectArea";
+import { AreaSelectParams } from "../types/drag";
 
 export const FileList = defineComponent({
   props: {
@@ -12,39 +15,28 @@ export const FileList = defineComponent({
     },
   },
   setup(props) {
-    const { viewType } = useContext();
+    const { viewType, draggable, selectedFiles } = useContext();
+
+    const id = uid("list");
+
+    const fileList = toRef(props, "fileList");
+    const { renderAreaEl } = useAreaSelect({
+      scope: id,
+      draggable,
+      fileList: fileList,
+      selectedFiles,
+    });
 
     return () => (
-      <div class="file-list__wrapper">
+      <div class="file-list__wrapper" id={id} draggable="false">
         {unref(viewType) === "grid" ? (
           <FileGridCard fileList={props.fileList} />
         ) : (
           <FileGridList fileList={props.fileList} />
         )}
+
+        {renderAreaEl()}
       </div>
     );
-  },
-});
-
-export const FileListGrid = defineComponent({
-  props: {
-    fileList: {
-      type: Array as PropType<FileItem[]>,
-      default: () => [],
-    },
-  },
-  setup() {
-    return () => (
-      <div class="file-manager__file-list file-manager__file-list--grid"></div>
-    );
-  },
-});
-
-export const FileListList = defineComponent({
-  props: {
-    fileList: {
-      type: Array as PropType<FileItem[]>,
-      default: () => [],
-    },
   },
 });
