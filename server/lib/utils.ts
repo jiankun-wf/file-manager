@@ -1,6 +1,13 @@
 import { readdirSync, statSync } from "fs";
-import { basename, join, relative } from "path";
+import { basename, dirname, join, relative, resolve } from "path";
 import mime from "mime";
+import { fileURLToPath } from "url";
+
+export const assetsBasePath = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "assets"
+);
 
 type DirObj = {
   name: string;
@@ -53,4 +60,8 @@ export const getDirFile = (path: string, root: string) => {
     }
   });
   return output;
+};
+
+export const getFullPath = (path: string = "") => {
+  return join(assetsBasePath, path);
 };

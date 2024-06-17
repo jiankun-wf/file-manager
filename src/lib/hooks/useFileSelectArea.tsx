@@ -145,7 +145,7 @@ export const useAreaSelect = ({
     scopeEl.value = el;
     el.addEventListener("mousedown", handleMoseDown);
     el.addEventListener("mousemove", handleMoseMove);
-    el.addEventListener("mouseup", handleMoseUp);
+    window.addEventListener("mouseup", handleMoseUp);
   });
 
   onUnmounted(() => {
@@ -153,7 +153,7 @@ export const useAreaSelect = ({
     if (!el) return;
     el.removeEventListener("mousedown", handleMoseDown);
     el.removeEventListener("mousemove", handleMoseMove);
-    el.removeEventListener("mouseup", handleMoseUp);
+    window.removeEventListener("mouseup", handleMoseUp);
   });
 
   const renderAreaEl = () => {
