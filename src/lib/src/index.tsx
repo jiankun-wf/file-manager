@@ -9,6 +9,7 @@ import { NSplit } from "naive-ui";
 import "../style/index.less";
 import { useFileSelect } from "../hooks/useFileSelect";
 import { uid } from "../utils/uid";
+import { Provider } from "../components/Provider";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -55,20 +56,22 @@ export const FileManager = defineComponent({
     });
 
     return () => (
-      <div class="file-manager" id={id}>
-        <Toolbar />
-        <div class="file-manager-content">
-          <NSplit default-size={0.18} min={0.15} max={0.8}>
-            {{
-              1: () => <Slider />,
-              2: () => <Content />,
-              "resize-trigger": () => (
-                <div class="file-manager-resize-triiger"></div>
-              ),
-            }}
-          </NSplit>
+      <Provider>
+        <div class="file-manager" id={id}>
+          <Toolbar />
+          <div class="file-manager-content">
+            <NSplit default-size={0.18} min={0.15} max={0.8}>
+              {{
+                1: () => <Slider />,
+                2: () => <Content />,
+                "resize-trigger": () => (
+                  <div class="file-manager-resize-triiger"></div>
+                ),
+              }}
+            </NSplit>
+          </div>
         </div>
-      </div>
+      </Provider>
     );
   },
 });

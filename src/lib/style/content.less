@@ -1,6 +1,8 @@
 .file-manager__content {
     height: var(--height);
-
+    position: relative;
+    border: 1px solid var(--border);
+    z-index: 1;
     .file-list__wrapper {
       min-height: var(--height);
       padding: 10px 16px;
@@ -42,8 +44,9 @@
                     font-size: 14px;
                     color: var(--black);
                     font-weight: 500;
-                    white-space: no-wrap;
- 
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
                 .file-manager__file-item__size {
                     font-size: 12px;
@@ -74,5 +77,16 @@
        position: absolute;
        border: 1px solid var(--primary);
        background-color: rgba(0,37,255, 0.15);
+    }
+
+    &.is-dragging {
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--primary);
+            z-index: -1;
+            background-color: red;
+        }
     }
 }

@@ -24,14 +24,19 @@
 
   border-radius: var(--radius);
   background-color: var(--white);
-  border: 1px solid var(--border);
   color: var(--title);
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
 
 
-  .file-manager-resize-triiger {
-    height: var(--height);
+  .n-split__resize-trigger-wrapper {
     width: 1px;
-    position: relative;
-    background-color: var(--border);
+    .file-manager-resize-triiger {
+      height: var(--height);
+      width: 1px;
+      position: relative;
+      background-color: transparent;
+    }
   }
+
 }

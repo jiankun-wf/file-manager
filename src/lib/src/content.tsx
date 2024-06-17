@@ -7,15 +7,24 @@ import { FileList } from "../components/FileList";
 import "../style/content.less";
 import { useFileSelectAll } from "../hooks/useFileSelect";
 import { getDirFiles } from "../api";
+import { useFileDragIn } from "../hooks/useFileDragIn";
+import { uid } from "../utils/uid";
 
 export const Content = defineComponent({
   name: "Content",
   setup() {
+
+    const id = uid('file-content')
+
     const queryLoading = ref(false);
     const dirFiles = ref<FileItem[]>([]);
     const isEmpty = ref(true);
 
     const { currentPath, selectedFiles } = useContext();
+
+    useFileDragIn({ scope: `#${id}`, onFileDragIn(files: FileList) {
+         
+    },})
 
     useFileSelectAll({ selectedFiles, dirFiles });
 
@@ -48,7 +57,7 @@ export const Content = defineComponent({
     );
 
     return () => (
-      <div class="file-manager__content">
+      <div class="file-manager__content" data-allow-drop={true} id={id}>
         <NSpin size="large" show={unref(queryLoading)}>
           {unref(isEmpty) ? (
             <NEmpty description="当前目录暂时为空" />

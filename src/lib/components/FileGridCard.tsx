@@ -162,7 +162,7 @@ const FileGridCardItem = defineComponent({
             />
           </div>
           <div class="file-manager__file-item__info">
-            <div class="file-manager__file-item__name">
+            <div class="file-manager__file-item__name" title={unref(currentFile).name}>
               {unref(currentFile).name}
             </div>
             <div class="file-manager__file-item__time">
