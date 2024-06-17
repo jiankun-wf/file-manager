@@ -101,11 +101,6 @@ export const useAreaSelect = ({
   const handleMoseUp = () => {
     if (!unref(show)) return;
     unref(scopeEl)!.classList.remove("is-selecting");
-    if (unref(width) === 0 && unref(height) === 0) {
-      show.value = false;
-      draggable.value = true;
-      return;
-    }
 
     // 抛出选择区域的面积
     const el = unref(areaRef)!;
