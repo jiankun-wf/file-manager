@@ -19,6 +19,7 @@ export const FileList = defineComponent({
 
     const id = uid("list");
 
+    // windows文件管理器的 拖拽选择文件，采用文件与选择区域相交的计算方式。
     const fileList = toRef(props, "fileList");
     const { renderAreaEl } = useAreaSelect({
       scope: id,

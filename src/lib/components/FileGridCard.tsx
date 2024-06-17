@@ -22,6 +22,7 @@ import {
 } from "@vicons/antd";
 import { renderIcon } from "../utils/icon";
 import { eventStop, eventStopPropagation } from "../utils/event";
+import { uid } from "../utils/uid";
 
 const contextMenuOptions = [
   {
@@ -100,12 +101,12 @@ const FileGridCardItem = defineComponent({
   },
   emits: ["mouseContextMenu"],
   setup(props, { emit }) {
-    const imageId = `file-manager-file-grid-thumb-image_${Math.random()
-      .toString(24)
-      .slice(2)}`;
+    const imageId = uid("file-manager-file-grid-thumb-image");
 
+    // 得到变量
     const { selectedFiles, addSelectFile, draggable } = useContext();
 
+    // 点击选取文件
     const handleSelectFile = (e: MouseEvent) => {
       e.stopPropagation();
       addSelectFile(props.currentFile);

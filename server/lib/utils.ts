@@ -62,6 +62,6 @@ export const getDirFile = (path: string, root: string) => {
   return output;
 };
 
-export const getFullPath = (path: string = "") => {
-  return join(assetsBasePath, path);
+export const getFullPath = (...args: string[]) => {
+  return join(assetsBasePath, ...args);
 };

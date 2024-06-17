@@ -37,15 +37,17 @@ app.put("/dirs", (req, res) => {
 
   const fullPath = getFullPath(dir as string);
 
+  console.log(fullPath.replace(oldname, newname));
   renameSync(fullPath, fullPath.replace(oldname, newname));
 
   res.json({ message: "Success", code: 200 });
 });
 
+// 创建文件夹
 app.post("/dirs", (req, res) => {
   const { dir, name } = req.body;
 
-  const fullPath = getFullPath(dir as string);
+  const fullPath = getFullPath(dir as string, name as string);
 
   mkdirSync(fullPath, { recursive: true });
 
@@ -84,7 +86,7 @@ app.delete("/dir-file", (req, res) => {
 });
 
 // 上传文件
-app.post("/dir-file", (req, res) => {});
+// app.post("/dir-file", (req, res) => {});
 
 // 重命名文件
 app.put("/dir-file", (req, res) => {
