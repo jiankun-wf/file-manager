@@ -10,8 +10,8 @@ export const DirIcon = defineComponent({
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
         p-id="10594"
-        width="48"
-        height="48"
+        width="18"
+        height="18"
       >
         <path
           d="M918.673 883H104.327C82.578 883 65 867.368 65 848.027V276.973C65 257.632 82.578 242 104.327 242h814.346C940.422 242 958 257.632 958 276.973v571.054C958 867.28 940.323 883 918.673 883z"

@@ -13,7 +13,7 @@ import { commandDelete } from "../command/file/delete";
 export const Toolbar = defineComponent({
   name: "Toolbar",
   setup() {
-    const { selectedFiles, fileList, chooseFile, currentPath, filePutIn } =
+    const { selectedFiles, fileList, chooseFile, currentPath, filePutIn, fileChange } =
       useContext();
 
     const dialog = useDialog();
@@ -35,6 +35,22 @@ export const Toolbar = defineComponent({
       if (!files) return;
       filePutIn(files, unref(currentPath));
     };
+
+    const handleCopy = () => {
+      fileChange({
+        file: unref(selectedFiles),
+        action: 'copy',
+        currentDirPath: unref(currentPath)
+      })
+    }
+
+    const handleMove = () => {
+      fileChange({
+        file: unref(selectedFiles),
+        action: 'copy',
+        currentDirPath: unref(currentPath)
+      })
+    }
 
     return () => (
       <div class="file-manager__toolbar">
@@ -62,7 +78,7 @@ export const Toolbar = defineComponent({
               }}
             </NButton>
 
-            <NButton>
+            <NButton onClick={handleMove}>
               {{
                 icon: (
                   <NIcon>
@@ -73,7 +89,7 @@ export const Toolbar = defineComponent({
               }}
             </NButton>
 
-            <NButton>
+            <NButton onClick={handleCopy}>
               {{
                 icon: (
                   <NIcon>

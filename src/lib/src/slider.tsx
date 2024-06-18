@@ -1,28 +1,20 @@
 import { defineComponent, h, onMounted, ref, unref } from "vue";
 
-import { NIcon, NTree } from "naive-ui";
-import { DirIcon } from "../components/dirIcon";
-
 import { useContext } from "../utils/context";
-import { Key } from "naive-ui/es/tree/src/interface";
 import { getDirsList } from "../api";
 import { FileDirItem } from "../types";
+import { DirTree } from "../components/DirTree";
 export const Slider = defineComponent({
   name: "Slider",
 
-  setup(props) {
-    const renderSwitcherIcon = () => {
-      return h(NIcon, null, {
-        default: () => h(DirIcon),
-      });
-    };
+  setup() {
 
     const dirList = ref<FileDirItem[]>([]);
 
     const { currentPath } = useContext();
 
-    const handleSelectedKeysChange = (key: Key[]) => {
-      currentPath.value = key[0] as string;
+    const handleSelectedKeysChange = (key: string) => {
+      currentPath.value = key;
     };
 
     const getDirs = async () => {
@@ -43,17 +35,7 @@ export const Slider = defineComponent({
 
     return () => (
       <div class="file-manager__slider">
-        <NTree
-          keyField="path"
-          data={unref(dirList)}
-          labelField="name"
-          renderPrefix={renderSwitcherIcon}
-          themeOverrides={{ nodeHeight: "44px" }}
-          blockLine
-          block-node
-          selectedKeys={!unref(currentPath) ? void 0 : [unref(currentPath)]}
-          onUpdate:selectedKeys={handleSelectedKeysChange}
-        ></NTree>
+        <DirTree data={unref(dirList)} value={unref(currentPath)} onUpdate:value={handleSelectedKeysChange} />
       </div>
     );
   },

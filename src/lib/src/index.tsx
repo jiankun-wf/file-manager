@@ -49,18 +49,21 @@ export const FileManager = defineComponent({
       })
     );
 
+    // 文件选择 点击、或者ctrl多选
     const { addSelectFile } = useFileSelect({
       selectedFiles,
       selectMode,
     });
-
+    // 文件加入，用于上传或者文件拖拽进入的文件列表数据改动
     const { handlePutIn } = useFilePutIn({
       fileList,
       currentPath,
     });
-
+    // 公共的文件上传选择器
     const { chooseFile, renderInputUpload } = useChooseFile();
+    // 文件重命名插件
     const { renderRenameContext, fileRename } = useFileRename();
+    // 文件移动、复制插件
     const { fileChange, renderChangeContext } = useFileChange({
       currentPath,
     });
