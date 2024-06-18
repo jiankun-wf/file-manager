@@ -1,17 +1,24 @@
 import express from "express";
-import { basename, join } from "path";
+import { basename, join, relative } from "path";
 import {
   getFullDir,
   getDirFile,
   assetsBasePath,
   getFullPath,
+  ReponseSuccess,
+  ReponseError,
+  getUrlPath,
+  getRealPath,
 } from "./utils.ts";
-import { rmSync, renameSync, readFileSync, mkdirSync } from "fs";
+import { rmSync, renameSync, readFileSync, mkdirSync, writeFileSync } from "fs";
 import mintype from "mime";
+import multer from "multer";
 
+const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
 
 app.use("/", express.static(assetsBasePath));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -27,7 +34,7 @@ app.use((req, res, next) => {
 // 获取文件夹目录
 app.get("/dirs", (req, res) => {
   const dirs = getFullDir(assetsBasePath);
-  res.json(dirs);
+  res.json(ReponseSuccess(dirs));
   return req;
 });
 
@@ -40,7 +47,7 @@ app.put("/dirs", (req, res) => {
   console.log(fullPath.replace(oldname, newname));
   renameSync(fullPath, fullPath.replace(oldname, newname));
 
-  res.json({ message: "Success", code: 200 });
+  res.json(ReponseSuccess());
 });
 
 // 创建文件夹
@@ -51,7 +58,7 @@ app.post("/dirs", (req, res) => {
 
   mkdirSync(fullPath, { recursive: true });
 
-  res.json({ message: "Success", code: 200 });
+  res.json(ReponseSuccess());
 });
 
 // 删除文件夹
@@ -62,7 +69,7 @@ app.delete("/dirs", (req, res) => {
 
   rmSync(fullPath, { recursive: true });
 
-  res.json({ message: "Success", code: 200 });
+  res.json(ReponseSuccess());
 });
 
 // 获取文件夹下文件
@@ -71,32 +78,111 @@ app.get("/dir-file", (req, res) => {
   const fullDir = join(assetsBasePath, dir as string);
 
   const files = getDirFile(fullDir, assetsBasePath);
-  console.log(files);
-  res.json(files);
+  res.json(ReponseSuccess(files));
 });
 
 // 删除文件
 app.delete("/dir-file", (req, res) => {
-  const { dir } = req.query;
-  const fullDir = join(assetsBasePath, dir as string);
+  const { dir } = req.body;
 
-  rmSync(fullDir, { recursive: true });
+  if (!dir) {
+    return res.json(ReponseError("500", "缺少参数"));
+  }
 
-  res.json({ message: "Success", code: 200 });
+  const dirs = (dir as string).split(",");
+
+  for (const d of dirs) {
+    const fullDir = join(assetsBasePath, d);
+    rmSync(fullDir, { recursive: true });
+  }
+
+  res.json(ReponseSuccess(dirs));
 });
 
 // 上传文件
-// app.post("/dir-file", (req, res) => {});
+app.post("/dir-file", upload.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.json(ReponseError("400", "上传失败"));
+  }
+  const { dir } = req.query;
+
+  const fullDir = getFullPath(dir as string, req.file.originalname);
+
+  console.log(fullDir);
+
+  writeFileSync(fullDir, req.file.buffer);
+
+  console.log(relative(assetsBasePath, fullDir));
+  res.json(
+    ReponseSuccess({
+      path: getRealPath(relative(assetsBasePath, fullDir)),
+      url: getUrlPath(relative(assetsBasePath, fullDir)),
+      uploadTime: new Date().getTime(),
+    })
+  );
+});
+
+// 批量移动文件
+app.put("/dir-file/move", (req, res) => {
+  const pts: { dir: string; newdir: string }[] = req.body;
+  const output = [];
+  for (const pt of pts) {
+    const fullDir = getFullPath(pt.dir);
+    const newpath = getFullPath(pt.newdir, basename(fullDir));
+    renameSync(fullDir, newpath);
+    output.push({
+      path: getRealPath(relative(assetsBasePath, newpath)),
+      url: getUrlPath(relative(assetsBasePath, newpath)),
+      uploadTime: new Date().getTime(),
+    });
+  }
+
+  res.json(ReponseSuccess(output));
+});
+
+//  复制文件
+app.post("/dir-file/copy", (req, res) => {
+  const pts: { dir: string; newdir: string }[] = req.body;
+
+  const output = [];
+  for (const pt of pts) {
+    const fullDir = getFullPath(pt.dir);
+
+    const newpath = getFullPath(pt.newdir, basename(fullDir));
+
+    const content = readFileSync(fullDir, { flag: "r", encoding: null });
+
+    writeFileSync(newpath, content);
+
+    output.push({
+      path: getRealPath(relative(assetsBasePath, newpath)),
+      url: getUrlPath(relative(assetsBasePath, newpath)),
+      uploadTime: new Date().getTime(),
+    });
+  }
+
+  res.json(ReponseSuccess(output));
+});
 
 // 重命名文件
 app.put("/dir-file", (req, res) => {
-  const { dir, oldname, newname } = req.body;
+  const { dir, newname } = req.body;
 
   const fullDir = getFullPath(dir);
 
-  renameSync(fullDir, dir.replace(oldname, newname));
+  const filename = basename(fullDir);
 
-  res.json({ message: "Success", code: 200 });
+  const newpath = fullDir.replace(filename, newname);
+
+  renameSync(fullDir, newpath);
+
+  res.json(
+    ReponseSuccess({
+      path: getRealPath(relative(assetsBasePath, newpath)),
+      url: getUrlPath(relative(assetsBasePath, newpath)),
+      uploadTime: new Date().getTime(),
+    })
+  );
 });
 
 // 下载文件

@@ -17,6 +17,7 @@
     "@vicons/antd": "^0.12.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vitejs/plugin-vue-jsx": "^4.0.0",
+    "axios": "^1.7.2",
     "dayjs": "^1.11.11",
     "hotkeys-js": "^3.13.7",
     "less": "^4.2.0",

@@ -50,17 +50,17 @@ export const useFileSelect = ({
 
 export const useFileSelectAll = ({
   selectedFiles,
-  dirFiles,
+  fileList,
 }: {
   selectedFiles: Ref<FileItem[]>;
-  dirFiles: Ref<FileItem[]>;
+  fileList: Ref<FileItem[]>;
 }) => {
   if (!getCurrentInstance()) return;
 
   onMounted(() => {
     hotkeys("ctrl+a", (event: KeyboardEvent) => {
       eventStop(event);
-      selectedFiles.value = [...dirFiles.value];
+      selectedFiles.value = [...fileList.value];
     });
   });
 };

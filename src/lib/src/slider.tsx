@@ -3,7 +3,6 @@ import { defineComponent, h, onMounted, ref, unref } from "vue";
 import { NIcon, NTree } from "naive-ui";
 import { DirIcon } from "../components/dirIcon";
 
-import "../style/slider.less";
 import { useContext } from "../utils/context";
 import { Key } from "naive-ui/es/tree/src/interface";
 import { getDirsList } from "../api";
@@ -28,7 +27,7 @@ export const Slider = defineComponent({
 
     const getDirs = async () => {
       try {
-        const res: FileDirItem[] = await getDirsList();
+        const res = (await getDirsList()) as unknown as FileDirItem[];
         if (res.length) {
           currentPath.value = res[0].path;
         }

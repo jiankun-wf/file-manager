@@ -4,7 +4,6 @@ import {
   onMounted,
   PropType,
   toRef,
-  toRefs,
   unref,
 } from "vue";
 import { FileItem } from "../types";
@@ -23,21 +22,26 @@ import {
 import { renderIcon } from "../utils/icon";
 import { eventStop, eventStopPropagation } from "../utils/event";
 import { uid } from "../utils/uid";
+import { isImage } from "../utils/minetype";
+import { useUploadProgress } from "../hooks/useUploadProgress";
+import { FileAction } from "../enum/file-action";
+import { commandDelete } from "../command/file/delete";
+import { useDialog, useMessage } from "naive-ui";
 
 const contextMenuOptions = [
   {
     label: "复制",
-    key: "copy",
+    key: FileAction.COPY,
     icon: renderIcon(CopyOutlined),
   },
   {
     label: "移动",
-    key: "move",
+    key: FileAction.MOVE,
     icon: renderIcon(DragOutlined),
   },
   {
     label: "重命名",
-    key: "rename",
+    key: FileAction.RENAME,
     icon: renderIcon(EditOutlined),
   },
   {
@@ -46,12 +50,12 @@ const contextMenuOptions = [
   },
   {
     label: "下载",
-    key: "download",
+    key: FileAction.DOWNLOAD,
     icon: renderIcon(DownloadOutlined),
   },
   {
     label: "删除",
-    key: "delete",
+    key: FileAction.DELETE,
     props: {
       style: { color: "#d03050" },
     },
@@ -61,17 +65,46 @@ const contextMenuOptions = [
 
 export const FileGridCard = defineComponent({
   name: "FileGridCard",
-  props: {
-    fileList: {
-      type: Array as PropType<FileItem[]>,
-      default: () => [],
-    },
-  },
-  setup(props) {
-    const { fileList } = toRefs(props);
 
-    const contextMenuOnSelect = (...args: any[]) => {
-      console.log(args, "contextMenuOnSelect");
+  setup() {
+    const { fileList, selectedFiles, fileRename, fileChange, currentPath } =
+      useContext();
+
+    const message = useMessage();
+    const dialog = useDialog();
+
+    const contextMenuOnSelect = async (...args: any[]) => {
+      const [action, _, file] = args;
+
+      switch (action) {
+        case FileAction.COPY:
+          fileChange({
+            file: [file],
+            action: FileAction.COPY,
+            currentDirPath: unref(currentPath),
+          });
+          return;
+        case FileAction.MOVE:
+          fileChange({
+            file: [file],
+            action: FileAction.MOVE,
+            currentDirPath: unref(currentPath),
+          });
+          return;
+        case FileAction.RENAME:
+          fileRename(file);
+          return;
+        case FileAction.DELETE:
+          const flag = await commandDelete({
+            files: [file],
+            fileList,
+            selectedFiles,
+            dialog,
+          });
+          flag && message.success("删除成功");
+          return;
+        case FileAction.DOWNLOAD:
+      }
     };
 
     const { renderContextMenu, handleContextMenu } = useContextMenu({
@@ -115,8 +148,8 @@ const FileGridCardItem = defineComponent({
     const currentFile = toRef(props, "currentFile");
 
     const getCurrentFileThumbnail = computed(() => {
-      if (/image/.test(unref(currentFile).type)) {
-        return unref(currentFile).url;
+      if (isImage(unref(currentFile).type) && unref(currentFile).url) {
+        return unref(currentFile).url as string;
       }
       return new URL("@/assets/otherfile.png", import.meta.url).href;
     });
@@ -162,18 +195,31 @@ const FileGridCardItem = defineComponent({
             />
           </div>
           <div class="file-manager__file-item__info">
-            <div class="file-manager__file-item__name" title={unref(currentFile).name}>
+            <div
+              class="file-manager__file-item__name"
+              title={unref(currentFile).name}
+            >
               {unref(currentFile).name}
             </div>
-            <div class="file-manager__file-item__time">
-              {formatDate(unref(currentFile).uploadTime, "YYYY-MM-DD HH:mm:ss")}
-            </div>
+            {unref(currentFile).status === "completed" ? (
+              <div class="file-manager__file-item__time">
+                {formatDate(
+                  unref(currentFile).uploadTime,
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
+              </div>
+            ) : (
+              <div class="file-manager__file-item__status">
+                {unref(currentFile).status}
+              </div>
+            )}
             <div class="file-manager__file-item__size">
               {formatSize(unref(currentFile).size)}
             </div>
           </div>
           <div class="darg-area"></div>
           {unref(isSliceFile) && <div class="is-selected"></div>}
+          {useUploadProgress(currentFile)}
         </div>
       </>
     );

@@ -6,10 +6,15 @@ import { Slider } from "./slider";
 import { Toolbar } from "./toolbar";
 import { NSplit } from "naive-ui";
 
-import "../style/index.less";
 import { useFileSelect } from "../hooks/useFileSelect";
 import { uid } from "../utils/uid";
 import { Provider } from "../components/Provider";
+import { useFilePutIn } from "../hooks/useFilePuIn";
+
+import "../style/index.less";
+import { useChooseFile } from "../hooks/useChooseFile";
+import { useFileRename } from "../hooks/useFileRename";
+import { useFileChange } from "../hooks/useFileChange";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -26,23 +31,38 @@ export const FileManager = defineComponent({
   setup(props, { emit }) {
     const id = uid("file-manager");
 
-    const { currentPath, selectMode, selectedFiles, viewType, draggable } =
-      toRefs(
-        reactive<FileManagerOptions>({
-          currentPath: props.currentPath,
-
-          selectMode: "single",
-          selectedFiles: [],
-
-          draggable: true,
-
-          viewType: props.viewType,
-        })
-      );
+    const {
+      currentPath,
+      selectMode,
+      selectedFiles,
+      viewType,
+      draggable,
+      fileList,
+    } = toRefs(
+      reactive<FileManagerOptions>({
+        currentPath: props.currentPath,
+        selectMode: "single",
+        selectedFiles: [],
+        fileList: [],
+        draggable: true,
+        viewType: props.viewType,
+      })
+    );
 
     const { addSelectFile } = useFileSelect({
       selectedFiles,
       selectMode,
+    });
+
+    const { handlePutIn } = useFilePutIn({
+      fileList,
+      currentPath,
+    });
+
+    const { chooseFile, renderInputUpload } = useChooseFile();
+    const { renderRenameContext, fileRename } = useFileRename();
+    const { fileChange, renderChangeContext } = useFileChange({
+      currentPath,
     });
 
     createContext({
@@ -51,12 +71,17 @@ export const FileManager = defineComponent({
       selectedFiles,
       viewType,
       draggable,
+      fileList,
       addSelectFile,
+      filePutIn: handlePutIn,
+      chooseFile,
+      fileChange,
+      fileRename,
       emit,
     });
 
     return () => (
-      <Provider>
+      <Provider mount-id={`#${id}`}>
         <div class="file-manager" id={id}>
           <Toolbar />
           <div class="file-manager-content">
@@ -70,6 +95,12 @@ export const FileManager = defineComponent({
               }}
             </NSplit>
           </div>
+          {/* 选择文件 */}
+          {renderInputUpload()}
+          {/* 重命名弹窗 */}
+          {renderRenameContext(id)}
+          {/* 移动 || 复制 */}
+          {renderChangeContext(id)}
         </div>
       </Provider>
     );

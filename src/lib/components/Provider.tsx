@@ -1,23 +1,40 @@
-import { NConfigProvider, NDialogProvider, NMessageProvider } from "naive-ui";
-import { defineComponent, renderSlot } from "vue";
+import {
+  NConfigProvider,
+  NDialogProvider,
+  NMessageProvider,
+  NModalProvider,
+} from "naive-ui";
+import { defineComponent, PropType, renderSlot } from "vue";
 
 export const Provider = defineComponent({
   name: "Provider",
-
-  setup(_, { slots }) {
+  props: {
+    mountId: {
+      type: String as PropType<string>,
+      default: "body",
+    },
+  },
+  setup(props, { slots }) {
     return () => (
       <NConfigProvider
         themeOverrides={{
           common: {
             primaryColor: "#0025ff",
-            primaryColorHover: "#002544",
-            primaryColorPressed: "#002500",
-            primaryColorSuppl: "#002544",
+            primaryColorHover: "#6279ff",
+            primaryColorPressed: "#1436ff",
+            primaryColorSuppl: "#6279ff",
           },
         }}
       >
-        <NDialogProvider>
-          <NMessageProvider>{renderSlot(slots, "default")}</NMessageProvider>
+        <NDialogProvider to={props.mountId}>
+          <NModalProvider to={props.mountId}>
+            <NMessageProvider
+              to={props.mountId}
+              container-style={{ position: "absolute" }}
+            >
+              {renderSlot(slots, "default")}
+            </NMessageProvider>
+          </NModalProvider>
         </NDialogProvider>
       </NConfigProvider>
     );

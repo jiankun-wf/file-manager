@@ -7,17 +7,38 @@ import {
   DragOutlined,
 } from "@vicons/antd";
 
-import "../style/toobar.less";
-import { NButton, NIcon } from "naive-ui";
+import { NButton, NIcon, useDialog, useMessage } from "naive-ui";
 import { useContext } from "../utils/context";
+import { commandDelete } from "../command/file/delete";
 export const Toolbar = defineComponent({
   name: "Toolbar",
   setup() {
-    const { selectedFiles } = useContext();
+    const { selectedFiles, fileList, chooseFile, currentPath, filePutIn } =
+      useContext();
+
+    const dialog = useDialog();
+    const message = useMessage();
+
+    const handleDeleteFiles = async () => {
+      const flag = await commandDelete({
+        files: unref(selectedFiles),
+        fileList,
+        selectedFiles,
+        dialog,
+      });
+
+      flag && message.success("删除成功");
+    };
+
+    const handleUploadFiles = async () => {
+      const files = await chooseFile();
+      if (!files) return;
+      filePutIn(files, unref(currentPath));
+    };
 
     return () => (
       <div class="file-manager__toolbar">
-        <NButton>
+        <NButton onClick={handleUploadFiles}>
           {{
             icon: (
               <NIcon>
@@ -63,7 +84,7 @@ export const Toolbar = defineComponent({
               }}
             </NButton>
 
-            <NButton type="error">
+            <NButton type="error" onClick={handleDeleteFiles}>
               {{
                 icon: (
                   <NIcon color="#fff">

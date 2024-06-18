@@ -51,11 +51,11 @@ export const getDirFile = (path: string, root: string) => {
     if (!fileStat.isDirectory()) {
       output.push({
         name: basename(fp),
-        path: "/" + relative(root, fp).replace(/\\/g, "/"),
+        path: "/" + getRealPath(relative(root, fp)),
         size: fileStat.size,
         type: mime.getType(fp) || "application/octet-stream",
         uploadTime: Date.prototype.getTime.call(fileStat.birthtime),
-        url: `http://localhost:5715/${relative(root, fp).replace(/\\/g, "/")}`,
+        url: getUrlPath(relative(root, fp)),
       });
     }
   });
@@ -64,4 +64,27 @@ export const getDirFile = (path: string, root: string) => {
 
 export const getFullPath = (...args: string[]) => {
   return join(assetsBasePath, ...args);
+};
+
+export const ReponseSuccess = (data?: any) => {
+  return {
+    code: "200",
+    message: "Success",
+    data: data,
+  };
+};
+
+export const ReponseError = (code = "500", message = "ServerError") => {
+  return {
+    code,
+    message,
+  };
+};
+
+export const getRealPath = (path: string) => {
+  return path.replace(/\\/g, "/");
+};
+
+export const getUrlPath = (url: string) => {
+  return `http://localhost:5715/${getRealPath(url)}`;
 };
