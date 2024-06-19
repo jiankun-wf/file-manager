@@ -1,11 +1,10 @@
-import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
-import { MessageApiInjection } from "naive-ui/es/message/src/MessageProvider";
 import { Ref } from "vue";
 
 export interface FileDirItem {
   name: string;
   path: string;
   children?: FileDirItem[];
+  __new?: boolean;
 }
 
 export interface FileManagerOptions {
@@ -13,6 +12,7 @@ export interface FileManagerOptions {
   selectMode: FileSelectMode;
   viewType: "list" | "grid";
   selectedFiles: FileItem[];
+  dirList: FileDirItem[];
   draggable: boolean;
   fileList: FileItem[];
 }
@@ -25,6 +25,7 @@ export interface FileManagerContext {
   draggable: Ref<boolean>;
   addSelectFile: (file: FileItem) => void;
   fileList: Ref<FileItem[]>;
+  dirList: Ref<FileDirItem[]>;
   filePutIn: (files: FileList | File[], path: string) => void;
   chooseFile: () => Promise<File[] | null>;
   fileRename: (file: FileItem) => void;
@@ -34,6 +35,13 @@ export interface FileManagerContext {
     currentDirPath: string;
   }) => void;
   emit: Emit;
+}
+
+export interface FileDirTreeContext {
+  expandKeys: Ref<string[]>;
+  configKey: { value: string; label: string; children: string };
+  emit: Function;
+  currentValue: Ref<string>;
 }
 
 export interface FileItem {

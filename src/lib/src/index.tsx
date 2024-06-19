@@ -37,6 +37,7 @@ export const FileManager = defineComponent({
       selectedFiles,
       viewType,
       draggable,
+      dirList,
       fileList,
     } = toRefs(
       reactive<FileManagerOptions>({
@@ -44,6 +45,7 @@ export const FileManager = defineComponent({
         selectMode: "single",
         selectedFiles: [],
         fileList: [],
+        dirList: [],
         draggable: true,
         viewType: props.viewType,
       })
@@ -75,6 +77,7 @@ export const FileManager = defineComponent({
       viewType,
       draggable,
       fileList,
+      dirList,
       addSelectFile,
       filePutIn: handlePutIn,
       chooseFile,

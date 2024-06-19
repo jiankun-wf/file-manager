@@ -1,20 +1,20 @@
-import { computed, onMounted, onUnmounted, Ref, ref, unref } from "vue";
+import { computed, onMounted, Ref, ref, unref } from "vue";
 import { AreaSelectParams } from "../types/drag";
 import { FileItem } from "../types";
 import { isAreaIntersect } from "../utils/area";
+import { addMouseLeftEventListener } from "../utils/event";
 
 export const useAreaSelect = ({
   scope,
   draggable,
   fileList,
   selectedFiles,
-  onEnd,
 }: {
   scope: string;
   draggable: Ref<boolean>;
-  onEnd?: (area: AreaSelectParams, files: FileItem[]) => void;
   fileList: Ref<FileItem[]>;
   selectedFiles: Ref<FileItem[]>;
+  onEnd?: (files: FileItem[]) => void;
 }) => {
   const scopeEl = ref<HTMLElement>();
   const x = ref(0);
@@ -96,12 +96,25 @@ export const useAreaSelect = ({
 
     width.value = Math.abs(clientX - ox);
     height.value = Math.abs(clientY - oy);
+    const selectFiles = getSelectFiles();
+    if (!selectFiles) {
+      return;
+    }
+    selectedFiles.value = selectFiles;
   };
 
   const handleMoseUp = () => {
-    if (!unref(show)) return;
     unref(scopeEl)!.classList.remove("is-selecting");
+    const selectFiles = getSelectFiles();
+    if (!selectFiles) return;
 
+    selectedFiles.value = selectFiles;
+    show.value = false;
+    draggable.value = true;
+  };
+
+  const getSelectFiles = () => {
+    if (!unref(show)) return false;
     // 抛出选择区域的面积
     const el = unref(areaRef)!;
 
@@ -125,35 +138,20 @@ export const useAreaSelect = ({
         file,
       };
     });
-
     const selectFiles = files.filter((file) => {
       const { rect } = file;
       return isAreaIntersect(position, rect);
     });
-
-    selectedFiles.value = selectFiles.map((item) => item.file);
-
-    onEnd?.(position, unref(selectedFiles));
-
-    show.value = false;
-    draggable.value = true;
+    return selectFiles.map((item) => item.file);
   };
 
   onMounted(() => {
     const el = document.getElementById(scope);
     if (!el) return;
     scopeEl.value = el;
-    el.addEventListener("mousedown", handleMoseDown);
-    el.addEventListener("mousemove", handleMoseMove);
-    window.addEventListener("mouseup", handleMoseUp);
-  });
-
-  onUnmounted(() => {
-    const el = unref(scopeEl);
-    if (!el) return;
-    el.removeEventListener("mousedown", handleMoseDown);
-    el.removeEventListener("mousemove", handleMoseMove);
-    window.removeEventListener("mouseup", handleMoseUp);
+    addMouseLeftEventListener(el, "mousedown", handleMoseDown);
+    addMouseLeftEventListener(el, "mousemove", handleMoseMove);
+    addMouseLeftEventListener(window, "mouseup", handleMoseUp);
   });
 
   const renderAreaEl = () => {

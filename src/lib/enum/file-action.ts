@@ -5,4 +5,5 @@ export enum FileAction {
   MOVE = "move",
   UPLOAD = "upload",
   DOWNLOAD = "download",
+  NEW_FOLDER = "new_folder",
 }

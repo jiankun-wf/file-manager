@@ -1,6 +1,6 @@
 import { defineComponent, ref, unref, watch } from "vue";
 import { useContext } from "../utils/context";
-import { NSpin } from "naive-ui";
+import { NScrollbar, NSpin } from "naive-ui";
 import { FileList } from "../components/FileList";
 import { useFileSelectAll } from "../hooks/useFileSelect";
 import { getDirFiles } from "../api";
@@ -61,7 +61,7 @@ export const Content = defineComponent({
     );
 
     return () => (
-      <div
+      <NScrollbar
         class="file-manager__content"
         data-allow-drop={true}
         id={id}
@@ -77,7 +77,7 @@ export const Content = defineComponent({
             <FileList />
           )}
         </NSpin>
-      </div>
+      </NScrollbar>
     );
   },
 });

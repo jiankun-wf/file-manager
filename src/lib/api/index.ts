@@ -18,6 +18,35 @@ export const getDirFiles = (dir: string) => {
   });
 };
 
+export const renameDir = (dir: string, newdir: string) => {
+  return $http.request({
+    method: "put",
+    url: `/dirs`,
+    data: {
+      dir,
+      newdir,
+    },
+  });
+};
+
+export const createDir = (dir: string) => {
+  return $http.request({
+    method: "post",
+    url: `/dirs`,
+    data: {
+      dir,
+    },
+  });
+};
+
+export const deleteDir = (pts: { dir: string }[]) => {
+  return $http.request({
+    method: "delete",
+    url: `/dirs`,
+    data: pts,
+  });
+};
+
 export const uploadFile = (
   data: { file: File; dir: string },
   onUploadProgress: (progressEvent: AxiosProgressEvent) => void

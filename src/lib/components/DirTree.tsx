@@ -1,10 +1,28 @@
-import { NEmpty, NCollapseTransition, NIcon } from "naive-ui";
-import { computed, defineComponent, inject, PropType, provide, ref, toRef, unref, watch } from "vue";
+import { NEmpty, NIcon } from "naive-ui";
+import {
+  computed,
+  defineComponent,
+  inject,
+  onMounted,
+  onUnmounted,
+  PropType,
+  provide,
+  ref,
+  unref,
+  watch,
+} from "vue";
 import { CaretRightOutlined } from "@vicons/antd";
 
 import "../style/dir-tree.less";
 import { DirIcon } from "./dirIcon";
 import { eventStop } from "../utils/event";
+import { FileDirItem, FileDirTreeContext } from "../types";
+import { useDirRename } from "../hooks/useDirRename";
+import { eventBus } from "../utils/pub-sub";
+import { NK } from "../enum";
+import { useContext } from "../utils/context";
+import { useDragIn, useDragInToggle } from "../hooks/useDragToggle";
+
 export const DirTree = defineComponent({
   name: "DirTree",
   props: {
@@ -14,6 +32,10 @@ export const DirTree = defineComponent({
     },
     value: {
       type: String as PropType<string>,
+      default: () => [],
+    },
+    expandKeys: {
+      type: Array as PropType<string[]>,
       default: "",
     },
     childrenKey: {
@@ -29,27 +51,36 @@ export const DirTree = defineComponent({
       default: "path",
     },
   },
-  emits: ["update:value"],
+  emits: ["update:value", "contextmenu", "update:expandKeys"],
   setup(props, { emit }) {
-    const expandKeys = ref<string[]>([]);
+    const expandKeys = ref<string[]>(props.expandKeys);
 
     const currentValue = ref(props.value);
 
-    provide("treeContext", {
+    provide<FileDirTreeContext>("treeContext", {
       expandKeys,
-      childrenKey: props.childrenKey,
       configKey: {
-         value: props.valueKey,
-         label: props.labelKey,
-         children: props.childrenKey,
+        value: props.valueKey,
+        label: props.labelKey,
+        children: props.childrenKey,
       },
       emit,
       currentValue,
     });
 
-    watch(() => props.value, (val) => {
-      currentValue.value = val;
-    });
+    watch(
+      () => props.value,
+      (val) => {
+        currentValue.value = val;
+      }
+    );
+
+    watch(
+      () => props.expandKeys,
+      (val) => {
+        expandKeys.value = val;
+      }
+    );
 
     return () => (
       <div class="file-manager-dir__tree">
@@ -74,62 +105,154 @@ export const DirTreeItem = defineComponent({
       type: Object as PropType<Record<string, any>>,
       required: true,
     },
+    parent: {
+      type: Object as PropType<Record<string, any>>,
+    },
+    parentList: {
+      type: Array as PropType<Record<string, any>[]>,
+      default: undefined,
+    },
     indent: {
-        type: Boolean as PropType<boolean>,
-        default: false,
-    }
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
   },
   setup(props) {
+    const { currentValue, configKey, expandKeys, emit } =
+      inject<FileDirTreeContext>("treeContext")!;
 
-    const { currentValue, configKey, expandKeys, emit } = inject("treeContext") as any;
+    const elementRef = ref<HTMLDivElement>();
+
+    const { dirList } = useContext();
+
     const { value, label, children } = configKey;
 
+    const dirPath = computed(() => {
+      return props.data[value];
+    });
+
+    const { renderDirRenameInput, handleRename, naming } = useDirRename(
+      props.data as FileDirItem,
+      props.parentList ?? dirList,
+      props.parent
+    );
+
+    const { isDragIn } = useDragInToggle({
+      elementRef,
+    });
+
     const getIsActive = computed(() => {
-        return props.data[value] === unref(currentValue);
-    })
-    
+      return props.data[value] === unref(currentValue);
+    });
+
     const getIsExpand = computed(() => {
-        return expandKeys.value.includes(props.data[value]);
-    })
+      return expandKeys.value.includes(props.data[value]);
+    });
 
     const handleExpandToggle = (e: MouseEvent) => {
-        eventStop(e)
-        const k = props.data[value];
-        if (unref(getIsExpand)) {
-            expandKeys.value = expandKeys.value.filter((v: string) => v !== k);
-        } else {
-            expandKeys.value.push(k);
-        }
-    }
+      eventStop(e);
+      const k = props.data[value];
+      if (unref(getIsExpand)) {
+        expandKeys.value = expandKeys.value.filter((v: string) => v !== k);
+      } else {
+        expandKeys.value.push(k);
+      }
+      emit("update:expandKeys", unref(expandKeys));
+    };
 
     const handleTreeItemClick = (e: MouseEvent) => {
-        eventStop(e);
-        if(unref(getIsActive)) {
-            return;
-        }
-        currentValue.value = props.data[value];
-        emit("update:value", props.data[value]);
-    }
+      eventStop(e);
+      if (unref(naming) || props.data.__new) {
+        return;
+      }
+      if (unref(getIsActive)) {
+        return;
+      }
+      currentValue.value = props.data[value];
+      emit("update:value", props.data[value]);
+    };
+
+    const onContextMenu = (event: MouseEvent) => {
+      eventStop(event);
+      emit(
+        "contextmenu",
+        event,
+        props.data,
+        props.parentList ?? dirList,
+        props.parent
+      );
+    };
+
+    const handleFileDrop = (e: DragEvent) => {
+      eventStop(e);
+    };
+
+    onMounted(() => {
+      eventBus.$listen(NK.DIR_RENAME_EVENT, {
+        id: `dir_path_${unref(dirPath)}`,
+        handler: handleRename,
+      });
+    });
+
+    onUnmounted(() => {
+      eventBus.$unListen(NK.DIR_RENAME_EVENT, `dir_path_${unref(dirPath)}`);
+    });
+
+    watch(dirPath, (old, val) => {
+      if (old !== val) {
+        eventBus.$unListen(NK.DIR_RENAME_EVENT, `dir_path_${old}`);
+        eventBus.$listen(NK.DIR_RENAME_EVENT, {
+          id: `dir_path_${val}`,
+          handler: handleRename,
+        });
+      }
+    });
 
     return () => (
-      <div onClick={handleTreeItemClick} class={["file-manager-dir__tree-item", unref(getIsActive) && 'is-selected', props.indent && 'is-indent']}>
-        <div class="file-manager-dir__tree-row">
+      <div
+        onClick={handleTreeItemClick}
+        class={[
+          "file-manager-dir__tree-item",
+          unref(getIsActive) && "is-selected",
+          props.indent && "is-indent",
+        ]}
+        onDrop={handleFileDrop}
+      >
+        <div
+          class={["file-manager-dir__tree-row", unref(isDragIn) && "dragging-in"]}
+          onContextmenu={onContextMenu}
+          onDragover={eventStop}
+          ref={(ref) => (elementRef.value = ref as any)}
+        >
           <DirIcon class="file-manager-dir__tree-item-icon" />
-          <div class="file-manager-dir__tree-item-name">{props.data[label]}</div>
+          <div class="file-manager-dir__tree-item-name">
+            {renderDirRenameInput(props.data[label])}
+          </div>
           {props.data[children]?.length && (
-            <span onClick={handleExpandToggle} class={['file-manager-dir__tree-item-expand', unref(getIsExpand) && 'is-expand']}>
-             <NIcon size={14} >
-              <CaretRightOutlined />
+            <span
+              onClick={handleExpandToggle}
+              class={[
+                "file-manager-dir__tree-item-expand",
+                unref(getIsExpand) && "is-expand",
+              ]}
+            >
+              <NIcon size={14}>
+                <CaretRightOutlined />
               </NIcon>
             </span>
           )}
         </div>
-        {props.data[children]?.length && (
-          <NCollapseTransition show={unref(getIsExpand)}>
+        {unref(getIsExpand) && (
+          <>
             {unref(props.data[children]).map((d: Record<string, any>) => (
-              <DirTreeItem indent data={d} />
+              <DirTreeItem
+                indent
+                data={d}
+                parentList={props.data[children]}
+                parent={props.data}
+              />
             ))}
-          </NCollapseTransition>
+          </>
         )}
       </div>
     );

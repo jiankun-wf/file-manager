@@ -1,6 +1,6 @@
 .file-manager-dir__tree {
   .file-manager-dir__tree-item {
-    margin: 6px 0;
+    padding: 4px 0;
     cursor: pointer;
     user-select: none;
     .file-manager-dir__tree-row {
@@ -15,6 +15,13 @@
         border-radius: 4px;
         &:hover {
             background-color: var(--bg);
+        }
+
+        &.dragging-in {
+          * {
+            pointer-events: none;
+          }
+          background-color: var(--border);
         }
 
         .file-manager-dir__tree-item-icon {
@@ -43,6 +50,8 @@
             background-color: var(--primary-lighter);
         }
     }
+
+
 
     &.is-indent {
        padding-left: 16px; 

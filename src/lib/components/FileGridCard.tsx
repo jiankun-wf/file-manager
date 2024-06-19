@@ -3,6 +3,7 @@ import {
   defineComponent,
   onMounted,
   PropType,
+  ref,
   toRef,
   unref,
 } from "vue";
@@ -21,7 +22,6 @@ import {
 } from "@vicons/antd";
 import { renderIcon } from "../utils/icon";
 import { eventStop, eventStopPropagation } from "../utils/event";
-import { uid } from "../utils/uid";
 import { isImage } from "../utils/minetype";
 import { useUploadProgress } from "../hooks/useUploadProgress";
 import { FileAction } from "../enum/file-action";
@@ -74,19 +74,19 @@ export const FileGridCard = defineComponent({
     const dialog = useDialog();
 
     const contextMenuOnSelect = async (...args: any[]) => {
-      const [action, _, file] = args;
+      const [action, _, file, fileList] = args;
 
       switch (action) {
         case FileAction.COPY:
           fileChange({
-            file: [file],
+            file: fileList,
             action: FileAction.COPY,
             currentDirPath: unref(currentPath),
           });
           return;
         case FileAction.MOVE:
           fileChange({
-            file: [file],
+            file: fileList,
             action: FileAction.MOVE,
             currentDirPath: unref(currentPath),
           });
@@ -96,7 +96,7 @@ export const FileGridCard = defineComponent({
           return;
         case FileAction.DELETE:
           const flag = await commandDelete({
-            files: [file],
+            files: fileList,
             fileList,
             selectedFiles,
             dialog,
@@ -107,14 +107,16 @@ export const FileGridCard = defineComponent({
       }
     };
 
+    const contextMenu = ref(contextMenuOptions);
     const { renderContextMenu, handleContextMenu } = useContextMenu({
-      options: contextMenuOptions,
+      options: contextMenu,
       onSelect: contextMenuOnSelect,
     });
     return () => (
       <div class="file-manager__file-list--grid">
         {unref(fileList).map((f) => (
           <FileGridCardItem
+            key={f.path}
             currentFile={f}
             onMouseContextMenu={handleContextMenu}
           />
@@ -134,7 +136,7 @@ const FileGridCardItem = defineComponent({
   },
   emits: ["mouseContextMenu"],
   setup(props, { emit }) {
-    const imageId = uid("file-manager-file-grid-thumb-image");
+    const imageRef = ref<HTMLImageElement>();
 
     // 得到变量
     const { selectedFiles, addSelectFile, draggable } = useContext();
@@ -164,11 +166,14 @@ const FileGridCardItem = defineComponent({
 
     const handleContextMenu = (e: MouseEvent) => {
       eventStop(e);
-      emit("mouseContextMenu", e, unref(currentFile));
+      if (unref(selectedFiles).length <= 1) {
+        addSelectFile(props.currentFile);
+      }
+      emit("mouseContextMenu", e, unref(currentFile), unref(selectedFiles));
     };
 
     onMounted(() => {
-      const imgEl = document.getElementById(imageId) as HTMLImageElement;
+      const imgEl = unref(imageRef)!;
       if (/image/.test(unref(currentFile).type)) {
         resizeImage(unref(getCurrentFileThumbnail), imgEl, 150, 100);
       } else {
@@ -191,7 +196,9 @@ const FileGridCardItem = defineComponent({
             <img
               src={unref(getCurrentFileThumbnail)}
               alt={unref(currentFile).name}
-              id={imageId}
+              ref={(ref) => {
+                imageRef.value = ref as HTMLImageElement;
+              }}
             />
           </div>
           <div class="file-manager__file-item__info">

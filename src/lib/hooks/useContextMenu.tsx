@@ -1,11 +1,11 @@
 import { NDropdown, type DropdownOption } from "naive-ui";
-import { nextTick, ref, unref } from "vue";
+import { nextTick, Ref, ref, unref } from "vue";
 
 export const useContextMenu = ({
-  options = [],
+  options,
   onSelect,
 }: {
-  options: DropdownOption[];
+  options: Ref<DropdownOption[]>;
   onSelect: (
     key: string | number,
     option: DropdownOption,
@@ -49,7 +49,7 @@ export const useContextMenu = ({
         trigger="manual"
         show={unref(showRef)}
         onClickoutside={handleClickOutside}
-        options={options}
+        options={unref(options)}
         onSelect={handleSelect}
         size="small"
       ></NDropdown>

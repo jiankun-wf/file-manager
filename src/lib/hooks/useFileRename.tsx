@@ -1,4 +1,4 @@
-import { NInput, NModal } from "naive-ui";
+import { InputInst, NInput, NModal } from "naive-ui";
 import { nextTick, ref, unref } from "vue";
 import { FileItem } from "../types";
 import { commandRename } from "../command/file/rename";
@@ -8,14 +8,16 @@ export const useFileRename = () => {
   const name = ref<string | undefined>(void 0);
   const currentFile = ref<FileItem | undefined>(void 0);
   const submitLoading = ref(false);
-  const inputRef = ref<HTMLInputElement>();
+  const inputRef = ref<InputInst>();
 
   const fileRename = (file: FileItem) => {
     name.value = file.name;
     currentFile.value = file;
     show.value = true;
     nextTick(() => {
+      const end = unref(name)?.lastIndexOf(".") as number;
       unref(inputRef)?.focus();
+      unref(inputRef)?.inputElRef?.setSelectionRange(0, end);
     });
   };
 

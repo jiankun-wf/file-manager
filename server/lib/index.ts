@@ -14,7 +14,16 @@ import { rmSync, renameSync, readFileSync, mkdirSync, writeFileSync } from "fs";
 import mintype from "mime";
 import multer from "multer";
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter(_, file, cb) {
+    // 解决中文名乱码的问题 latin1 是一种编码格式
+    file.originalname = Buffer.from(file.originalname, "latin1").toString(
+      "utf8"
+    );
+    cb(null, true);
+  },
+});
 const app = express();
 
 app.use("/", express.static(assetsBasePath));
@@ -40,34 +49,52 @@ app.get("/dirs", (req, res) => {
 
 // 重命名文件夹
 app.put("/dirs", (req, res) => {
-  const { dir, oldname, newname } = req.body;
+  const { dir, newdir } = req.body;
 
   const fullPath = getFullPath(dir as string);
 
-  console.log(fullPath.replace(oldname, newname));
-  renameSync(fullPath, fullPath.replace(oldname, newname));
+  const dirname = basename(fullPath);
+  const p = fullPath.replace(dirname, newdir);
+  console.log(fullPath, p);
+  renameSync(fullPath, p);
 
-  res.json(ReponseSuccess());
+  res.json(
+    ReponseSuccess({
+      path: getRealPath(relative(assetsBasePath, p)),
+    })
+  );
 });
 
 // 创建文件夹
 app.post("/dirs", (req, res) => {
-  const { dir, name } = req.body;
+  const { dir } = req.body;
 
-  const fullPath = getFullPath(dir as string, name as string);
+  const fullPath = getFullPath(dir as string);
 
   mkdirSync(fullPath, { recursive: true });
 
-  res.json(ReponseSuccess());
+  res.json(
+    ReponseSuccess({
+      path: getRealPath(relative(assetsBasePath, fullPath)),
+      name: basename(fullPath),
+    })
+  );
 });
 
 // 删除文件夹
 app.delete("/dirs", (req, res) => {
-  const { dir } = req.query;
+  const { dir } = req.body;
 
-  const fullPath = getFullPath(dir as string);
+  if (!dir || !dir.length) {
+    return res.json(ReponseError("500", "缺少参数"));
+  }
 
-  rmSync(fullPath, { recursive: true });
+  const pts = (dir as string).split(",");
+
+  for (const pt of pts) {
+    const fullPath = getFullPath(pt);
+    rmSync(fullPath, { recursive: true });
+  }
 
   res.json(ReponseSuccess());
 });
@@ -85,7 +112,7 @@ app.get("/dir-file", (req, res) => {
 app.delete("/dir-file", (req, res) => {
   const { dir } = req.body;
 
-  if (!dir) {
+  if (!dir || !dir.length) {
     return res.json(ReponseError("500", "缺少参数"));
   }
 
@@ -108,11 +135,8 @@ app.post("/dir-file", upload.single("file"), (req, res) => {
 
   const fullDir = getFullPath(dir as string, req.file.originalname);
 
-  console.log(fullDir);
-
   writeFileSync(fullDir, req.file.buffer);
 
-  console.log(relative(assetsBasePath, fullDir));
   res.json(
     ReponseSuccess({
       path: getRealPath(relative(assetsBasePath, fullDir)),

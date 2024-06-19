@@ -2,6 +2,7 @@ import { readdirSync, statSync } from "fs";
 import { basename, dirname, join, relative, resolve } from "path";
 import mime from "mime";
 import { fileURLToPath } from "url";
+import ip from "ip";
 
 export const assetsBasePath = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -15,7 +16,7 @@ type DirObj = {
   children?: DirObj[];
 };
 
-export const getFullDir = (path: string, root = path) => {
+export const getFullDir = (path: string) => {
   const dirs: DirObj[] = [];
   const files = readdirSync(path);
   files.forEach((file) => {
@@ -25,11 +26,11 @@ export const getFullDir = (path: string, root = path) => {
     if (isDir) {
       const dirObj: DirObj = {
         name: file,
-        path: relative(root, fp).replace(/\\/g, "/"),
+        path: "/" + relative(assetsBasePath, fp).replace(/\\/g, "/"),
       };
 
       if (isDir) {
-        const ds = getFullDir(fp, path);
+        const ds = getFullDir(fp);
 
         if (ds.length) {
           dirObj.children = ds;
@@ -86,5 +87,5 @@ export const getRealPath = (path: string) => {
 };
 
 export const getUrlPath = (url: string) => {
-  return `http://localhost:5715/${getRealPath(url)}`;
+  return `http://${ip.address()}:5715/${getRealPath(url)}`;
 };
