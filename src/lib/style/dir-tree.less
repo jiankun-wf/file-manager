@@ -1,60 +1,53 @@
 .file-manager-dir__tree {
   .file-manager-dir__tree-item {
-    padding: 4px 0;
     cursor: pointer;
     user-select: none;
-    .file-manager-dir__tree-row {
-        padding: 0 10px 0 10px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        height: 38px;
-        line-height: 38px;
-        transition: background-color 0.3s ease-in-out;
-        border-radius: 4px;
-        &:hover {
-            background-color: var(--bg);
-        }
+    padding: 0 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    height: 38px;
+    line-height: 38px;
+    transition: background-color 0.3s ease-in-out;
+    border-radius: var(--radius);
+    
+    * {
+      pointer-events: none;
+    }
+    &:hover {
+      background-color: var(--bg);
+    }
 
-        &.dragging-in {
-          * {
-            pointer-events: none;
-          }
-          background-color: var(--border);
-        }
+    .file-manager-dir__tree-item-icon {
+      font-size: 18px;
+    }
 
-        .file-manager-dir__tree-item-icon {
-          font-size: 18px;  
-        }
-
-        .file-manager-dir__tree-item-name {
-          font-size: 14px;
-          margin: 0 10px;
-          flex: 1;
-
-        }
-        .file-manager-dir__tree-item-expand {
-            font-size: 14px;
-            cursor: pointer;
-            transition: transform .3s ease-in-out;
-            &.is-expand {
-                transform: rotate(90deg);
-            }
-        }
+    .file-manager-dir__tree-item-name {
+      font-size: 14px;
+      margin: 0 10px;
+      flex: 1;
+    }
+    .file-manager-dir__tree-item-expand {
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out;
+      &.is-expand {
+        transform: rotate(90deg);
+      }
     }
 
     &.is-selected {
-        cursor: default;
-        & > .file-manager-dir__tree-row {
-            background-color: var(--primary-lighter);
-        }
+      cursor: default;
+      background-color: var(--primary-lighter);
     }
 
-
+    &.dragging-in {
+      background-color: var(--border);
+    }
 
     &.is-indent {
-       padding-left: 16px; 
+      margin-left: 10px;
     }
-  }  
+  }
 }

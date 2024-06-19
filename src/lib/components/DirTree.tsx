@@ -15,13 +15,17 @@ import { CaretRightOutlined } from "@vicons/antd";
 
 import "../style/dir-tree.less";
 import { DirIcon } from "./dirIcon";
-import { eventStop } from "../utils/event";
+import {
+  eventPreventDefault,
+  eventStop,
+  eventStopPropagation,
+} from "../utils/event";
 import { FileDirItem, FileDirTreeContext } from "../types";
 import { useDirRename } from "../hooks/useDirRename";
 import { eventBus } from "../utils/pub-sub";
 import { NK } from "../enum";
 import { useContext } from "../utils/context";
-import { useDragIn, useDragInToggle } from "../hooks/useDragToggle";
+import { useDragInToggle } from "../hooks/useDragToggle";
 
 export const DirTree = defineComponent({
   name: "DirTree",
@@ -209,20 +213,18 @@ export const DirTreeItem = defineComponent({
     });
 
     return () => (
-      <div
-        onClick={handleTreeItemClick}
-        class={[
-          "file-manager-dir__tree-item",
-          unref(getIsActive) && "is-selected",
-          props.indent && "is-indent",
-        ]}
-        onDrop={handleFileDrop}
-      >
+      <>
         <div
-          class={["file-manager-dir__tree-row", unref(isDragIn) && "dragging-in"]}
-          onContextmenu={onContextMenu}
-          onDragover={eventStop}
+          onClick={handleTreeItemClick}
+          class={[
+            "file-manager-dir__tree-item",
+            unref(getIsActive) && "is-selected",
+            props.indent && "is-indent",
+            unref(isDragIn) && "dragging-in",
+          ]}
+          onDrop={handleFileDrop}
           ref={(ref) => (elementRef.value = ref as any)}
+          onContextmenu={onContextMenu}
         >
           <DirIcon class="file-manager-dir__tree-item-icon" />
           <div class="file-manager-dir__tree-item-name">
@@ -242,19 +244,21 @@ export const DirTreeItem = defineComponent({
             </span>
           )}
         </div>
-        {unref(getIsExpand) && (
-          <>
-            {unref(props.data[children]).map((d: Record<string, any>) => (
-              <DirTreeItem
-                indent
-                data={d}
-                parentList={props.data[children]}
-                parent={props.data}
-              />
-            ))}
-          </>
-        )}
-      </div>
+        <>
+          {unref(getIsExpand) && (
+            <>
+              {unref(props.data[children]).map((d: Record<string, any>) => (
+                <DirTreeItem
+                  indent
+                  data={d}
+                  parentList={props.data[children]}
+                  parent={props.data}
+                />
+              ))}
+            </>
+          )}
+        </>
+      </>
     );
   },
 });
