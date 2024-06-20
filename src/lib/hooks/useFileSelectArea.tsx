@@ -1,4 +1,4 @@
-import { computed, onMounted, Ref, ref, unref } from "vue";
+import { computed, onBeforeMount, onMounted, Ref, ref, unref } from "vue";
 import { AreaSelectParams } from "../types/drag";
 import { FileItem } from "../types";
 import { isAreaIntersect } from "../utils/area";
@@ -104,13 +104,13 @@ export const useAreaSelect = ({
   };
 
   const handleMoseUp = () => {
+    draggable.value = true;
     unref(scopeEl)!.classList.remove("is-selecting");
     const selectFiles = getSelectFiles();
     if (!selectFiles) return;
 
     selectedFiles.value = selectFiles;
     show.value = false;
-    draggable.value = true;
   };
 
   const getSelectFiles = () => {

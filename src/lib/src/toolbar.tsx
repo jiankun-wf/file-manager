@@ -13,8 +13,14 @@ import { commandDelete } from "../command/file/delete";
 export const Toolbar = defineComponent({
   name: "Toolbar",
   setup() {
-    const { selectedFiles, fileList, chooseFile, currentPath, filePutIn, fileChange } =
-      useContext();
+    const {
+      selectedFiles,
+      fileList,
+      chooseFile,
+      currentPath,
+      filePutIn,
+      fileChange,
+    } = useContext();
 
     const dialog = useDialog();
     const message = useMessage();
@@ -39,24 +45,24 @@ export const Toolbar = defineComponent({
     const handleCopy = () => {
       fileChange({
         file: unref(selectedFiles),
-        action: 'copy',
-        currentDirPath: unref(currentPath)
-      })
-    }
+        action: "copy",
+        currentDirPath: unref(currentPath),
+      });
+    };
 
     const handleMove = () => {
       fileChange({
         file: unref(selectedFiles),
-        action: 'copy',
-        currentDirPath: unref(currentPath)
-      })
-    }
+        action: "copy",
+        currentDirPath: unref(currentPath),
+      });
+    };
 
     return () => (
       <div class="file-manager__toolbar">
         <NButton onClick={handleUploadFiles}>
           {{
-            icon: (
+            icon: () => (
               <NIcon>
                 <CloudUploadOutlined />
               </NIcon>
@@ -69,7 +75,7 @@ export const Toolbar = defineComponent({
           <>
             <NButton>
               {{
-                icon: (
+                icon: () => (
                   <NIcon>
                     <DownloadOutlined />
                   </NIcon>
@@ -80,7 +86,7 @@ export const Toolbar = defineComponent({
 
             <NButton onClick={handleMove}>
               {{
-                icon: (
+                icon: () => (
                   <NIcon>
                     <DragOutlined />
                   </NIcon>
@@ -91,7 +97,7 @@ export const Toolbar = defineComponent({
 
             <NButton onClick={handleCopy}>
               {{
-                icon: (
+                icon: () => (
                   <NIcon>
                     <CopyOutlined />
                   </NIcon>
@@ -102,7 +108,7 @@ export const Toolbar = defineComponent({
 
             <NButton type="error" onClick={handleDeleteFiles}>
               {{
-                icon: (
+                icon: () => (
                   <NIcon color="#fff">
                     <DeleteFilled />
                   </NIcon>

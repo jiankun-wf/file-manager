@@ -4,4 +4,6 @@ export const enum FileStatus {
 
   Completed = "completed",
   Error = "error",
+
+  Cut = 'cut',
 }

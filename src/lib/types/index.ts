@@ -1,4 +1,6 @@
 import { Ref } from "vue";
+import { FileStatus } from "../enum/file-status";
+import { FileAction } from "../enum/file-action";
 
 export interface FileDirItem {
   name: string;
@@ -29,6 +31,8 @@ export interface FileManagerContext {
   filePutIn: (files: FileList | File[], path: string) => void;
   chooseFile: () => Promise<File[] | null>;
   fileRename: (file: FileItem) => void;
+  copyMode: Ref<"copy" | "cut">;
+  latestCopySelectedFiles: Ref<FileItem[]>;
   fileChange: (data: {
     file: FileItem[];
     action: "move" | "copy";
@@ -56,7 +60,7 @@ export interface FileItem {
   nameing?: boolean;
   mockname?: string;
   __isnew?: boolean;
-  status?: "ready" | "uploading" | "completed" | "error";
+  status?: `${FileStatus}`;
   progress?: number;
 }
 

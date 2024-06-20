@@ -157,6 +157,7 @@ app.put("/dir-file/move", (req, res) => {
     output.push({
       path: getRealPath(relative(assetsBasePath, newpath)),
       url: getUrlPath(relative(assetsBasePath, newpath)),
+      oldpath: pt.dir,
       uploadTime: new Date().getTime(),
     });
   }
@@ -181,6 +182,7 @@ app.post("/dir-file/copy", (req, res) => {
     output.push({
       path: getRealPath(relative(assetsBasePath, newpath)),
       url: getUrlPath(relative(assetsBasePath, newpath)),
+      oldpath: pt.dir,
       uploadTime: new Date().getTime(),
     });
   }

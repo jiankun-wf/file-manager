@@ -52,7 +52,7 @@ export const getDirFile = (path: string, root: string) => {
     if (!fileStat.isDirectory()) {
       output.push({
         name: basename(fp),
-        path: "/" + getRealPath(relative(root, fp)),
+        path: getRealPath(relative(root, fp)),
         size: fileStat.size,
         type: mime.getType(fp) || "application/octet-stream",
         uploadTime: Date.prototype.getTime.call(fileStat.birthtime),
@@ -83,7 +83,7 @@ export const ReponseError = (code = "500", message = "ServerError") => {
 };
 
 export const getRealPath = (path: string) => {
-  return path.replace(/\\/g, "/");
+  return "/" + path.replace(/\\/g, "/");
 };
 
 export const getUrlPath = (url: string) => {

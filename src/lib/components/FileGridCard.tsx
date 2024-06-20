@@ -139,7 +139,28 @@ const FileGridCardItem = defineComponent({
     const imageRef = ref<HTMLImageElement>();
 
     // 得到变量
-    const { selectedFiles, addSelectFile, draggable } = useContext();
+    const {
+      selectedFiles,
+      addSelectFile,
+      draggable,
+      copyMode,
+      latestCopySelectedFiles,
+    } = useContext();
+
+    const isSliceFile = computed(() => {
+      return unref(selectedFiles).some(
+        (i) => i.name === unref(currentFile).name
+      );
+    });
+
+    const isCuttingFile = computed(() => {
+      return (
+        unref(copyMode) === "cut" &&
+        unref(latestCopySelectedFiles).some(
+          (f) => f.path === unref(currentFile).path
+        )
+      );
+    });
 
     // 点击选取文件
     const handleSelectFile = (e: MouseEvent) => {
@@ -147,19 +168,13 @@ const FileGridCardItem = defineComponent({
       addSelectFile(props.currentFile);
     };
 
-    const currentFile = toRef(props, "currentFile");
+    const currentFile = toRef(() => props.currentFile);
 
     const getCurrentFileThumbnail = computed(() => {
       if (isImage(unref(currentFile).type) && unref(currentFile).url) {
         return unref(currentFile).url as string;
       }
       return new URL("@/assets/otherfile.png", import.meta.url).href;
-    });
-
-    const isSliceFile = computed(() => {
-      return unref(selectedFiles).some(
-        (i) => i.name === unref(currentFile).name
-      );
     });
 
     const handleDragStart = (e: DragEvent) => {};
@@ -184,7 +199,10 @@ const FileGridCardItem = defineComponent({
     return () => (
       <>
         <div
-          class="file-manager__file-item--grid"
+          class={[
+            "file-manager__file-item--grid",
+            unref(isCuttingFile) && "is-cutting",
+          ]}
           onContextmenu={handleContextMenu}
           onClick={handleSelectFile}
           onDragstart={handleDragStart}

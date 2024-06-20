@@ -1,6 +1,6 @@
 import { defineComponent, ref, unref, watch } from "vue";
 import { useContext } from "../utils/context";
-import { NScrollbar, NSpin } from "naive-ui";
+import { NScrollbar, NSpin, useDialog } from "naive-ui";
 import { FileList } from "../components/FileList";
 import { useFileSelectAll } from "../hooks/useFileSelect";
 import { getDirFiles } from "../api";
@@ -10,6 +10,7 @@ import { FileItem } from "../types";
 import { FileStatus } from "../enum/file-status";
 import { EmptyIcon } from "../components/Empty";
 import { eventStop } from "../utils/event";
+import { useSelectedFileDelete } from "../hooks/useSelectedDel";
 
 export const Content = defineComponent({
   name: "Content",
@@ -17,6 +18,8 @@ export const Content = defineComponent({
     const id = uid("file-content");
 
     const queryLoading = ref(false);
+
+    const dialog = useDialog();
 
     const { currentPath, selectedFiles, fileList, filePutIn } = useContext();
 
@@ -30,6 +33,12 @@ export const Content = defineComponent({
 
     // 文件全选 ctrl + a；
     useFileSelectAll({ selectedFiles, fileList });
+
+    useSelectedFileDelete({
+      selectedFiles,
+      fileList,
+      dialog,
+    });
 
     const getCurrentDirFiles = async () => {
       if (!unref(currentPath)) return;
@@ -47,7 +56,6 @@ export const Content = defineComponent({
           status: FileStatus.Completed,
         }));
       }
-      selectedFiles.value = [];
 
       queryLoading.value = false;
     };
@@ -56,6 +64,7 @@ export const Content = defineComponent({
       currentPath,
       () => {
         getCurrentDirFiles();
+        selectedFiles.value = [];
       },
       { immediate: true }
     );

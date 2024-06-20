@@ -9,7 +9,7 @@ export const commandCopy = async ({
 }: {
   file: FileItem[];
   path: string;
-  currentPath: Ref<string>;
+  currentPath?: Ref<string>;
 }) => {
   const pts = file.map((f) => {
     return {
@@ -18,7 +18,17 @@ export const commandCopy = async ({
     };
   });
 
-  await copyFile(pts);
+  const res = (await copyFile(pts)) as any;
 
-  currentPath.value = path;
+  for (const r of res) {
+    const cfile = file.find((f) => f.path === r.oldpath);
+    if (cfile) {
+      cfile.path = r.path;
+      cfile.uploadTime = r.uploadTime;
+    }
+  }
+
+  if (currentPath) {
+    currentPath.value = path;
+  }
 };

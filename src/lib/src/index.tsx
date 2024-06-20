@@ -4,7 +4,7 @@ import { FileManagerOptions } from "../types";
 import { Content } from "./content";
 import { Slider } from "./slider";
 import { Toolbar } from "./toolbar";
-import { NSplit } from "naive-ui";
+import { NSplit, NDialogProvider } from "naive-ui";
 
 import { useFileSelect } from "../hooks/useFileSelect";
 import { uid } from "../utils/uid";
@@ -15,6 +15,8 @@ import "../style/index.less";
 import { useChooseFile } from "../hooks/useChooseFile";
 import { useFileRename } from "../hooks/useFileRename";
 import { useFileChange } from "../hooks/useFileChange";
+import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
+
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -70,6 +72,12 @@ export const FileManager = defineComponent({
       currentPath,
     });
 
+    const { copyMode, latestCopySelectedFiles } = useFileCutAndCopy({
+      currentPath,
+      selectedFiles,
+      fileList,
+    });
+
     createContext({
       currentPath,
       selectMode,
@@ -83,6 +91,8 @@ export const FileManager = defineComponent({
       chooseFile,
       fileChange,
       fileRename,
+      copyMode,
+      latestCopySelectedFiles,
       emit,
     });
 
