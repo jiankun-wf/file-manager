@@ -7,14 +7,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    height: 38px;
-    line-height: 38px;
+    height: 42px;
+    line-height: 42px;
     transition: background-color 0.3s ease-in-out;
     border-radius: var(--radius);
+    position: relative;
     
-    * {
-      pointer-events: none;
-    }
     &:hover {
       background-color: var(--bg);
     }
@@ -44,6 +42,22 @@
 
     &.dragging-in {
       background-color: var(--border);
+
+      &::after {
+        position: absolute;
+        content: '移动至此文件夹';
+        color: var(--placeholder);
+        font-size: 12px;
+        top: 50%;
+        right: 26px;
+        transform: translateY(-50%);
+      }
+    }
+
+    &.has-dragging {
+      * {
+        pointer-events: none;
+      }
     }
 
     &.is-indent {

@@ -16,6 +16,7 @@ export interface FileManagerOptions {
   selectedFiles: FileItem[];
   dirList: FileDirItem[];
   draggable: boolean;
+  fileDragging: boolean;
   fileList: FileItem[];
 }
 
@@ -25,6 +26,7 @@ export interface FileManagerContext {
   viewType: Ref<"list" | "grid">;
   selectedFiles: Ref<FileItem[]>;
   draggable: Ref<boolean>;
+  fileDragging: Ref<boolean>;
   addSelectFile: (file: FileItem) => void;
   fileList: Ref<FileItem[]>;
   dirList: Ref<FileDirItem[]>;
@@ -33,7 +35,7 @@ export interface FileManagerContext {
   fileRename: (file: FileItem) => void;
   copyMode: Ref<"copy" | "cut">;
   latestCopySelectedFiles: Ref<FileItem[]>;
-  fileChange: (data: {
+  openFileChangeModal: (data: {
     file: FileItem[];
     action: "move" | "copy";
     currentDirPath: string;

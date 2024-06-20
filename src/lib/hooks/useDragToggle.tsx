@@ -1,35 +1,39 @@
-import { onBeforeUnmount, onMounted, Ref, ref, unref } from "vue";
+import { ComputedRef, onBeforeUnmount, onMounted, Ref, ref, unref } from "vue";
 import { eventStop } from "../utils/event";
-import { debounce } from 'lodash-es'
-
+import { debounce } from "lodash-es";
 
 export const useDragInToggle = ({
   elementRef,
+  dirPath,
+  currentPath,
+  onDrop,
 }: {
   elementRef: Ref<HTMLDivElement | undefined>;
+  dirPath: ComputedRef<string>;
+  currentPath: Ref<string>;
+  onDrop?: (event: DragEvent) => void;
 }) => {
-  const isDragIn = ref(false);
-
-
   const in_handler = (event: DragEvent) => {
     eventStop(event);
-    unref(elementRef)?.classList.add('dragging-in');
-    console.log('in')
-    isDragIn.value = true;
+    if (unref(currentPath) === unref(dirPath)) {
+      return;
+    }
+    unref(elementRef)?.classList.add("dragging-in");
   };
 
   const leave_handler = (event: DragEvent) => {
     eventStop(event);
-    unref(elementRef)?.classList.remove('dragging-in');
-    isDragIn.value = false;
-    console.log('leave');
+    unref(elementRef)?.classList.remove("dragging-in");
   };
-  const debounce_in_handler = debounce(in_handler, 50)
-  const debounce_leave_handler = debounce(leave_handler, 50 )
+  const debounce_in_handler = debounce(in_handler, 50);
+  const debounce_leave_handler = debounce(leave_handler, 50);
 
   const drop_handler = (event: DragEvent) => {
     eventStop(event);
-    isDragIn.value = false;
+    if (unref(currentPath) === unref(dirPath)) {
+      return;
+    }
+    onDrop?.(event);
   };
 
   onMounted(() => {
@@ -50,6 +54,4 @@ export const useDragInToggle = ({
     el.removeEventListener("dragover", eventStop);
     el.removeEventListener("drop", drop_handler);
   });
-
-  return { isDragIn };
 };

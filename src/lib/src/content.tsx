@@ -31,9 +31,10 @@ export const Content = defineComponent({
       },
     });
 
-    // 文件全选 ctrl + a；
+    // 文件全选 ctrl + a;
     useFileSelectAll({ selectedFiles, fileList });
 
+    // ctrl + d 
     useSelectedFileDelete({
       selectedFiles,
       fileList,

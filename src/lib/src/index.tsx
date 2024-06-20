@@ -41,6 +41,7 @@ export const FileManager = defineComponent({
       draggable,
       dirList,
       fileList,
+      fileDragging,
     } = toRefs(
       reactive<FileManagerOptions>({
         currentPath: props.currentPath,
@@ -49,11 +50,12 @@ export const FileManager = defineComponent({
         fileList: [],
         dirList: [],
         draggable: true,
+        fileDragging: false,
         viewType: props.viewType,
       })
     );
 
-    // 文件选择 点击、或者ctrl多选
+    // 文件选择 点击、按住ctrl多选
     const { addSelectFile } = useFileSelect({
       selectedFiles,
       selectMode,
@@ -72,6 +74,7 @@ export const FileManager = defineComponent({
       currentPath,
     });
 
+    // 文件剪切、复制插件
     const { copyMode, latestCopySelectedFiles } = useFileCutAndCopy({
       currentPath,
       selectedFiles,
@@ -79,21 +82,22 @@ export const FileManager = defineComponent({
     });
 
     createContext({
-      currentPath,
-      selectMode,
-      selectedFiles,
-      viewType,
-      draggable,
-      fileList,
-      dirList,
-      addSelectFile,
-      filePutIn: handlePutIn,
-      chooseFile,
-      fileChange,
-      fileRename,
-      copyMode,
-      latestCopySelectedFiles,
-      emit,
+      currentPath, // 当前目录路径
+      selectMode, // 选择模式，单选/多选
+      selectedFiles, // 已选中的文件列表
+      viewType, // 视图类型，列表/网格
+      draggable, // 文件卡片是否可以拖拽。场景，区域拖动选择时禁止可拖拽元素的文本选择与拖拽事件
+      fileDragging, // 文件卡片是否在拖拽状态。场景：左侧目录监听拖入事件，需禁止目录的子元素的鼠标事件
+      fileList, // 当前目录下的所有文件列表
+      dirList, // 服务器目录树集合
+      addSelectFile, // 根据选择模式进行选中目标文件
+      filePutIn: handlePutIn, // 将外部文件加入到当前目录，并自动上传。
+      chooseFile, // 公共的文件上传选择器
+      openFileChangeModal: fileChange, // 文件移动、复制，打开弹窗
+      fileRename, // 文件重命名
+      copyMode, // 文件剪切、复制模式
+      latestCopySelectedFiles, // 最近复制、剪切的文件列表
+      emit, // 事件触发器
     });
 
     return () => (

@@ -3,6 +3,7 @@ import {
   computed,
   defineComponent,
   inject,
+  onBeforeMount,
   onMounted,
   onUnmounted,
   PropType,
@@ -15,17 +16,15 @@ import { CaretRightOutlined } from "@vicons/antd";
 
 import "../style/dir-tree.less";
 import { DirIcon } from "./dirIcon";
-import {
-  eventPreventDefault,
-  eventStop,
-  eventStopPropagation,
-} from "../utils/event";
+import { eventStop } from "../utils/event";
 import { FileDirItem, FileDirTreeContext } from "../types";
 import { useDirRename } from "../hooks/useDirRename";
 import { eventBus } from "../utils/pub-sub";
 import { NK } from "../enum";
 import { useContext } from "../utils/context";
 import { useDragInToggle } from "../hooks/useDragToggle";
+import { commandMove } from "../command/file/move";
+import { cloneDeep } from "lodash-es";
 
 export const DirTree = defineComponent({
   name: "DirTree",
@@ -127,7 +126,7 @@ export const DirTreeItem = defineComponent({
 
     const elementRef = ref<HTMLDivElement>();
 
-    const { dirList } = useContext();
+    const { dirList, fileDragging, fileList, currentPath } = useContext();
 
     const { value, label, children } = configKey;
 
@@ -141,8 +140,39 @@ export const DirTreeItem = defineComponent({
       props.parent
     );
 
-    const { isDragIn } = useDragInToggle({
+    useDragInToggle({
       elementRef,
+      dirPath,
+      currentPath,
+      async onDrop(event) {
+        console.log(event.dataTransfer?.getData(NK.DRAG_DATA_TRANSFER_TYPE));
+        const dragData = event.dataTransfer?.getData(
+          NK.DRAG_DATA_TRANSFER_TYPE
+        );
+        if (!dragData) return;
+        try {
+          const dragJson = JSON.parse(dragData);
+          const isFromInner = dragJson[NK.INNER_DRAG_FLAG],
+            path = dragJson[NK.INNER_DRAG_PATH];
+
+          if (isFromInner) {
+            const paths = path.split(",");
+            const dragFileList = unref(fileList).filter((f) =>
+              paths.includes(f.path)
+            );
+            if (dragFileList.length) {
+              await commandMove({
+                file: cloneDeep(dragFileList),
+                path: unref(dirPath),
+              });
+              fileList.value = unref(fileList).filter(
+                (f) => !paths.includes(f.path)
+              );
+            }
+          }
+        } finally {
+        }
+      },
     });
 
     const getIsActive = computed(() => {
@@ -198,7 +228,7 @@ export const DirTreeItem = defineComponent({
       });
     });
 
-    onUnmounted(() => {
+    onBeforeMount(() => {
       eventBus.$unListen(NK.DIR_RENAME_EVENT, `dir_path_${unref(dirPath)}`);
     });
 
@@ -220,7 +250,7 @@ export const DirTreeItem = defineComponent({
             "file-manager-dir__tree-item",
             unref(getIsActive) && "is-selected",
             props.indent && "is-indent",
-            unref(isDragIn) && "dragging-in",
+            unref(fileDragging) && "has-dragging",
           ]}
           onDrop={handleFileDrop}
           ref={(ref) => (elementRef.value = ref as any)}

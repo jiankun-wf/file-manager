@@ -19,7 +19,7 @@ export const Toolbar = defineComponent({
       chooseFile,
       currentPath,
       filePutIn,
-      fileChange,
+      openFileChangeModal,
     } = useContext();
 
     const dialog = useDialog();
@@ -43,7 +43,7 @@ export const Toolbar = defineComponent({
     };
 
     const handleCopy = () => {
-      fileChange({
+      openFileChangeModal({
         file: unref(selectedFiles),
         action: "copy",
         currentDirPath: unref(currentPath),
@@ -51,7 +51,7 @@ export const Toolbar = defineComponent({
     };
 
     const handleMove = () => {
-      fileChange({
+      openFileChangeModal({
         file: unref(selectedFiles),
         action: "copy",
         currentDirPath: unref(currentPath),
