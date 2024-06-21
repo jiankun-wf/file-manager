@@ -1,0 +1,15 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "Less", "comment", "blank", "total"
+"d:\vite-npm\file-manager\src\lib\components\DirTree.tsx", "TypeScript JSX", 0, 53, 0, 6, 2, 61
+"d:\vite-npm\file-manager\src\lib\components\FileGridCard.tsx", "TypeScript JSX", 0, 17, 0, 0, 1, 18
+"d:\vite-npm\file-manager\src\lib\components\FileList.tsx", "TypeScript JSX", 0, -1, 0, 0, 0, -1
+"d:\vite-npm\file-manager\src\lib\enum\index.ts", "TypeScript", 6, 0, 0, 7, 4, 17
+"d:\vite-npm\file-manager\src\lib\hooks\useDirRename.tsx", "TypeScript JSX", 0, 0, 0, 2, -1, 1
+"d:\vite-npm\file-manager\src\lib\hooks\useDragToggle.tsx", "TypeScript JSX", 0, 26, 0, 0, 0, 26
+"d:\vite-npm\file-manager\src\lib\hooks\useFileSelectArea.tsx", "TypeScript JSX", 0, 3, 0, 0, 0, 3
+"d:\vite-npm\file-manager\src\lib\src\content.tsx", "TypeScript JSX", 0, 1, 0, 1, 1, 3
+"d:\vite-npm\file-manager\src\lib\style\content.less", "Less", 0, 0, 5, 0, 1, 6
+"d:\vite-npm\file-manager\src\lib\style\dir-tree.less", "Less", 0, 0, 17, 0, 5, 22
+"d:\vite-npm\file-manager\src\lib\style\index.less", "Less", 0, 0, 50, 0, 4, 54
+"d:\vite-npm\file-manager\src\lib\types\index.ts", "TypeScript", 5, 0, 0, 0, 0, 5
+"d:\vite-npm\file-manager\src\lib\utils\setDragTransfer.ts", "TypeScript", 49, 0, 0, 0, 8, 57
+"Total", "-", 60, 99, 72, 16, 25, 272

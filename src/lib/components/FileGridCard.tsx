@@ -28,6 +28,7 @@ import { FileAction } from "../enum/file-action";
 import { commandDelete } from "../command/file/delete";
 import { useDialog, useMessage } from "naive-ui";
 import { NK } from "../enum";
+import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
 
 const contextMenuOptions = [
   {
@@ -119,7 +120,7 @@ export const FileGridCard = defineComponent({
       onSelect: contextMenuOnSelect,
     });
     return () => (
-      <div class="file-manager__file-list--grid">
+      <div class="file-manager__file-list--grid" draggable="false">
         {unref(fileList).map((f) => (
           <FileGridCardItem
             key={f.path}
@@ -151,7 +152,7 @@ const FileGridCardItem = defineComponent({
       draggable,
       copyMode,
       latestCopySelectedFiles,
-      fileDragging,
+      contextDraggingArgs,
     } = useContext();
 
     const isSliceFile = computed(() => {
@@ -186,35 +187,26 @@ const FileGridCardItem = defineComponent({
 
     const handleDragStart = (e: DragEvent) => {
       eventStopPropagation(e);
-      fileDragging.value = true;
+      const paths = !unref(selectedFiles).length
+        ? unref(currentFile).path
+        : unref(selectedFiles)
+            .map((f) => f.path)
+            .join(",");
+
+      contextDraggingArgs.value.dragging = "file";
+      contextDraggingArgs.value.draggingPath = paths;
       if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = "move";
-        e.dataTransfer.effectAllowed = "move";
-        if (!unref(selectedFiles).length) {
-          e.dataTransfer.setData(
-            "text/plain",
-            JSON.stringify({
-              [NK.INNER_DRAG_FLAG]: true,
-              [NK.INNER_DRAG_PATH]: unref(currentFile).path,
-            })
-          );
-        } else {
-          e.dataTransfer.setData(
-            "text/plain",
-            JSON.stringify({
-              [NK.INNER_DRAG_FLAG]: true,
-              [NK.INNER_DRAG_PATH]: unref(selectedFiles)
-                .map((f) => f.path)
-                .join(","),
-            })
-          );
-        }
+        setDragStyle(e, NK.INNER_DRAG_FILE, paths);
+        e.dataTransfer.dropEffect = "link";
+        e.dataTransfer.effectAllowed = "linkMove";
+        setDragTransfer(e, NK.INNER_DRAG_FILE, paths);
       }
     };
 
     const handleDragEnd = (e: DragEvent) => {
-      eventStop(e);
-      fileDragging.value = false;
+      eventStopPropagation(e);
+      contextDraggingArgs.value.dragging = null;
+      contextDraggingArgs.value.draggingPath = "";
     };
 
     const handleContextMenu = (e: MouseEvent) => {
@@ -247,7 +239,7 @@ const FileGridCardItem = defineComponent({
           onDragend={handleDragEnd}
           draggable={unref(draggable)}
           onMousedown={eventStopPropagation}
-          data-name={unref(currentFile).name}
+          data-path-name={unref(currentFile).path}
         >
           <div class="file-manager__file-item__thumb">
             <img
@@ -281,7 +273,9 @@ const FileGridCardItem = defineComponent({
               {formatSize(unref(currentFile).size)}
             </div>
           </div>
-          {unref(isSliceFile) && <div class="is-selected"></div>}
+          <div
+            class={["border-state", unref(isSliceFile) && "is-selected"]}
+          ></div>
           {useUploadProgress(currentFile)}
         </div>
       </>

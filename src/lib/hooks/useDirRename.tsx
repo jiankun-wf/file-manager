@@ -30,6 +30,7 @@ export const useDirRename = (
   const handleBlur = async () => {
     const ndir = unref(inputValue);
 
+    // 如果为新建文件夹，则直接移除
     if (dir.__new) {
       if (!ndir) {
         const index = unref(dirParentList).findIndex(
@@ -43,7 +44,7 @@ export const useDirRename = (
       editable.value = false;
       return;
     }
-
+    // 与原名相同则不做任何操作
     if (ndir === dir.name) {
       editable.value = false;
       return;

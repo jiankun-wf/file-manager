@@ -1,5 +1,5 @@
 import { deleteFile } from "@/lib/api";
-import { FileDirItem, FileItem } from "@/lib/types";
+import { FileDirItem } from "@/lib/types";
 import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
 import { h, Ref, unref } from "vue";
 

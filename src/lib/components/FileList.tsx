@@ -1,4 +1,4 @@
-import { defineComponent, renderSlot, unref } from "vue";
+import { defineComponent, unref } from "vue";
 import { useContext } from "../utils/context";
 import { FileGridCard } from "./FileGridCard";
 import { FileGridList } from "./FileGridList";
@@ -6,7 +6,7 @@ import { uid } from "../utils/uid";
 import { useAreaSelect } from "../hooks/useFileSelectArea";
 
 export const FileList = defineComponent({
-  setup(_, { slots }) {
+  setup(_) {
     const { viewType, draggable, fileList, selectedFiles } = useContext();
 
     const id = uid("list");
@@ -22,7 +22,6 @@ export const FileList = defineComponent({
     return () => (
       <div class="file-list__wrapper" id={id} draggable="false">
         {unref(viewType) === "grid" ? <FileGridCard /> : <FileGridList />}
-        {slots.default && renderSlot(slots, "default", { id })}
         {renderAreaEl()}
       </div>
     );

@@ -1,8 +1,8 @@
-import { computed, onBeforeMount, onMounted, Ref, ref, unref } from "vue";
+import { computed, onMounted, Ref, ref, unref } from "vue";
 import { AreaSelectParams } from "../types/drag";
 import { FileItem } from "../types";
 import { isAreaIntersect } from "../utils/area";
-import { addMouseLeftEventListener } from "../utils/event";
+import { addMouseLeftEventListener, eventStop } from "../utils/event";
 
 export const useAreaSelect = ({
   scope,
@@ -68,6 +68,7 @@ export const useAreaSelect = ({
   });
 
   const handleMoseDown = (e: MouseEvent) => {
+    eventStop(e);
     x.value = e.clientX;
     y.value = e.clientY;
     width.value = 0;
@@ -78,6 +79,7 @@ export const useAreaSelect = ({
   };
 
   const handleMoseMove = (e: MouseEvent) => {
+    eventStop(e);
     if (!unref(show)) return;
     const { clientX, clientY } = e;
     const ox = unref(x);
@@ -103,7 +105,8 @@ export const useAreaSelect = ({
     selectedFiles.value = selectFiles;
   };
 
-  const handleMoseUp = () => {
+  const handleMoseUp = (e: MouseEvent) => {
+    eventStop(e);
     draggable.value = true;
     unref(scopeEl)!.classList.remove("is-selecting");
     const selectFiles = getSelectFiles();
@@ -126,7 +129,7 @@ export const useAreaSelect = ({
     };
     const files = unref(fileList).map((file) => {
       const el = document.querySelector<HTMLDivElement>(
-        `div[data-name="${file.name}"]`
+        `div[data-path-name="${file.path}"]`
       )!;
       return {
         rect: {

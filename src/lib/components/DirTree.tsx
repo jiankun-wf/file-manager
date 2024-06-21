@@ -5,7 +5,6 @@ import {
   inject,
   onBeforeMount,
   onMounted,
-  onUnmounted,
   PropType,
   provide,
   ref,
@@ -16,7 +15,7 @@ import { CaretRightOutlined } from "@vicons/antd";
 
 import "../style/dir-tree.less";
 import { DirIcon } from "./dirIcon";
-import { eventStop } from "../utils/event";
+import { eventStop, eventStopPropagation } from "../utils/event";
 import { FileDirItem, FileDirTreeContext } from "../types";
 import { useDirRename } from "../hooks/useDirRename";
 import { eventBus } from "../utils/pub-sub";
@@ -25,6 +24,7 @@ import { useContext } from "../utils/context";
 import { useDragInToggle } from "../hooks/useDragToggle";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
+import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
 
 export const DirTree = defineComponent({
   name: "DirTree",
@@ -121,19 +121,25 @@ export const DirTreeItem = defineComponent({
     },
   },
   setup(props) {
+    // treeContext变量
     const { currentValue, configKey, expandKeys, emit } =
       inject<FileDirTreeContext>("treeContext")!;
 
     const elementRef = ref<HTMLDivElement>();
 
-    const { dirList, fileDragging, fileList, currentPath } = useContext();
+    // 文件管理器暴漏的变量
+    const { dirList, contextDraggingArgs, fileList, currentPath } =
+      useContext();
 
+    // 目录配置
     const { value, label, children } = configKey;
 
+    // 当前目录路径
     const dirPath = computed(() => {
       return props.data[value];
     });
 
+    // 目录重命名
     const { renderDirRenameInput, handleRename, naming } = useDirRename(
       props.data as FileDirItem,
       props.parentList ?? dirList,
@@ -144,8 +150,8 @@ export const DirTreeItem = defineComponent({
       elementRef,
       dirPath,
       currentPath,
+      contextDraggingArgs,
       async onDrop(event) {
-        console.log(event.dataTransfer?.getData(NK.DRAG_DATA_TRANSFER_TYPE));
         const dragData = event.dataTransfer?.getData(
           NK.DRAG_DATA_TRANSFER_TYPE
         );
@@ -153,9 +159,10 @@ export const DirTreeItem = defineComponent({
         try {
           const dragJson = JSON.parse(dragData);
           const isFromInner = dragJson[NK.INNER_DRAG_FLAG],
-            path = dragJson[NK.INNER_DRAG_PATH];
-
-          if (isFromInner) {
+            path = dragJson[NK.INNER_DRAG_PATH],
+            type = dragJson[NK.INNER_DRAG_TYPE];
+          if (!isFromInner) return;
+          if (type === NK.INNER_DRAG_FILE) {
             const paths = path.split(",");
             const dragFileList = unref(fileList).filter((f) =>
               paths.includes(f.path)
@@ -169,6 +176,8 @@ export const DirTreeItem = defineComponent({
                 (f) => !paths.includes(f.path)
               );
             }
+          } else if (type === NK.INNER_DRAG_DIR) {
+            // todo 移动文件夹
           }
         } finally {
         }
@@ -217,6 +226,25 @@ export const DirTreeItem = defineComponent({
       );
     };
 
+    const handleDriDragStart = (e: DragEvent) => {
+      eventStopPropagation(e);
+      const path = unref(dirPath);
+      contextDraggingArgs.value.dragging = "dir";
+      contextDraggingArgs.value.draggingPath = path;
+      if (e.dataTransfer) {
+        setDragStyle(e, NK.INNER_DRAG_DIR, props.data[label]);
+        e.dataTransfer.dropEffect = "link";
+        e.dataTransfer.effectAllowed = "linkMove";
+        setDragTransfer(e, NK.INNER_DRAG_DIR, path);
+      }
+    };
+
+    const handleDirDragEnd = (e: DragEvent) => {
+      eventStopPropagation(e);
+      contextDraggingArgs.value.dragging = null;
+      contextDraggingArgs.value.draggingPath = "";
+    };
+
     const handleFileDrop = (e: DragEvent) => {
       eventStop(e);
     };
@@ -232,11 +260,11 @@ export const DirTreeItem = defineComponent({
       eventBus.$unListen(NK.DIR_RENAME_EVENT, `dir_path_${unref(dirPath)}`);
     });
 
-    watch(dirPath, (old, val) => {
-      if (old !== val) {
-        eventBus.$unListen(NK.DIR_RENAME_EVENT, `dir_path_${old}`);
+    watch(dirPath, (newval, oldval) => {
+      if (oldval !== newval) {
+        eventBus.$unListen(NK.DIR_RENAME_EVENT, `dir_path_${oldval}`);
         eventBus.$listen(NK.DIR_RENAME_EVENT, {
-          id: `dir_path_${val}`,
+          id: `dir_path_${newval}`,
           handler: handleRename,
         });
       }
@@ -249,43 +277,46 @@ export const DirTreeItem = defineComponent({
           class={[
             "file-manager-dir__tree-item",
             unref(getIsActive) && "is-selected",
-            props.indent && "is-indent",
-            unref(fileDragging) && "has-dragging",
+            unref(contextDraggingArgs).dragging !== null && "has-dragging",
           ]}
           onDrop={handleFileDrop}
           ref={(ref) => (elementRef.value = ref as any)}
           onContextmenu={onContextMenu}
+          draggable={true}
+          onDragstart={handleDriDragStart}
+          onDragend={handleDirDragEnd}
         >
-          <DirIcon class="file-manager-dir__tree-item-icon" />
-          <div class="file-manager-dir__tree-item-name">
-            {renderDirRenameInput(props.data[label])}
+          <div class="file-manager-dir__tree-item__inner">
+            <DirIcon class="file-manager-dir__tree-item-icon" />
+            <div class="file-manager-dir__tree-item-name">
+              {renderDirRenameInput(props.data[label])}
+            </div>
+            {props.data[children]?.length && (
+              <span
+                onClick={handleExpandToggle}
+                class={[
+                  "file-manager-dir__tree-item-expand",
+                  unref(getIsExpand) && "is-expand",
+                ]}
+              >
+                <NIcon size={14}>
+                  <CaretRightOutlined />
+                </NIcon>
+              </span>
+            )}
           </div>
-          {props.data[children]?.length && (
-            <span
-              onClick={handleExpandToggle}
-              class={[
-                "file-manager-dir__tree-item-expand",
-                unref(getIsExpand) && "is-expand",
-              ]}
-            >
-              <NIcon size={14}>
-                <CaretRightOutlined />
-              </NIcon>
-            </span>
-          )}
         </div>
         <>
           {unref(getIsExpand) && (
-            <>
+            <div class="file-manager-dir__tree-item__indent">
               {unref(props.data[children]).map((d: Record<string, any>) => (
                 <DirTreeItem
-                  indent
                   data={d}
                   parentList={props.data[children]}
                   parent={props.data}
                 />
               ))}
-            </>
+            </div>
           )}
         </>
       </>

@@ -4,7 +4,7 @@ import { FileManagerOptions } from "../types";
 import { Content } from "./content";
 import { Slider } from "./slider";
 import { Toolbar } from "./toolbar";
-import { NSplit, NDialogProvider } from "naive-ui";
+import { NSplit } from "naive-ui";
 
 import { useFileSelect } from "../hooks/useFileSelect";
 import { uid } from "../utils/uid";
@@ -41,7 +41,7 @@ export const FileManager = defineComponent({
       draggable,
       dirList,
       fileList,
-      fileDragging,
+      contextDraggingArgs,
     } = toRefs(
       reactive<FileManagerOptions>({
         currentPath: props.currentPath,
@@ -50,7 +50,7 @@ export const FileManager = defineComponent({
         fileList: [],
         dirList: [],
         draggable: true,
-        fileDragging: false,
+        contextDraggingArgs: { dragging: null, draggingPath: "" },
         viewType: props.viewType,
       })
     );
@@ -87,7 +87,7 @@ export const FileManager = defineComponent({
       selectedFiles, // 已选中的文件列表
       viewType, // 视图类型，列表/网格
       draggable, // 文件卡片是否可以拖拽。场景，区域拖动选择时禁止可拖拽元素的文本选择与拖拽事件
-      fileDragging, // 文件卡片是否在拖拽状态。场景：左侧目录监听拖入事件，需禁止目录的子元素的鼠标事件
+      contextDraggingArgs, // 文件卡片是否在拖拽状态。场景：左侧目录监听拖入事件，需禁止目录的子元素的鼠标事件
       fileList, // 当前目录下的所有文件列表
       dirList, // 服务器目录树集合
       addSelectFile, // 根据选择模式进行选中目标文件

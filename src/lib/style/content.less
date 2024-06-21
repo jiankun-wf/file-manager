@@ -5,7 +5,7 @@
   border: 1px solid var(--border);
   z-index: 1;
   .file-list__wrapper {
-    min-height: var(--height);
+    min-height: calc(var(--height) - 2px);
     padding: 16px 20px;
     position: relative;
 
@@ -72,14 +72,19 @@
           z-index: -1;
         }
   
-        .is-selected {
+        .border-state {
           inset: 0;
           position: absolute;
-          border: 2px solid var(--primary);
+          border: 2px solid transparent;
           border-radius: var(--radius);
           z-index: -1;
-          background-color: rgba(0, 37, 255, 0.08);
-        }
+          transition: border .3s, background-color .3s; 
+          &.is-selected {
+            border-color: var(--primary);
+            background-color: rgba(0, 37, 255, 0.08);
+          }
+         }
+
         .file-manager-upload-progress__mask {
           position: absolute;
           inset: 0;
@@ -103,6 +108,7 @@
     border: 1px solid var(--primary);
     background-color: rgba(0, 37, 255, 0.15);
     z-index: 2;
+    border-radius: 2px;
   }
 
   .file-manager__empty {

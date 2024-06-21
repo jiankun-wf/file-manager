@@ -110,3 +110,57 @@
   }
 
 }
+
+.folder-manager-drag-mask {
+  width: 120px;
+  border-radius: 4px;
+  padding-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: rgba(0, 37, 255, 0.12);
+  position: fixed;
+  top: -999px;
+  cursor: move;
+  img {
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+  }
+
+  &::after {
+    content: attr(data-number);
+    color: #666;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 12px 0;
+  }
+}
+.file-manager-drag-mask {
+  width: 120px;
+  border-radius: 4px;
+  padding-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: rgba(0, 37, 255, 0.12);
+  position: fixed;
+  top: -999px;
+  cursor: move;
+
+  img {
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+  }
+
+  &::after {
+    content: attr(data-number);
+    color: #666;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 12px 0;
+  }
+}

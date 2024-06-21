@@ -23,6 +23,8 @@ export const Content = defineComponent({
 
     const { currentPath, selectedFiles, fileList, filePutIn } = useContext();
 
+    const props = { id } as any;
+
     // 文件拖入
     useFileDragIn({
       scope: `#${id}`,
@@ -34,7 +36,7 @@ export const Content = defineComponent({
     // 文件全选 ctrl + a;
     useFileSelectAll({ selectedFiles, fileList });
 
-    // ctrl + d 
+    // ctrl + d
     useSelectedFileDelete({
       selectedFiles,
       fileList,
@@ -74,7 +76,7 @@ export const Content = defineComponent({
       <NScrollbar
         class="file-manager__content"
         data-allow-drop={true}
-        id={id}
+        {...props}
         onContextmenu={eventStop}
       >
         <NSpin size="large" show={unref(queryLoading)}>

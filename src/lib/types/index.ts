@@ -1,6 +1,5 @@
 import { Ref } from "vue";
 import { FileStatus } from "../enum/file-status";
-import { FileAction } from "../enum/file-action";
 
 export interface FileDirItem {
   name: string;
@@ -16,7 +15,10 @@ export interface FileManagerOptions {
   selectedFiles: FileItem[];
   dirList: FileDirItem[];
   draggable: boolean;
-  fileDragging: boolean;
+  contextDraggingArgs: {
+    dragging: "dir" | "file" | null;
+    draggingPath: "";
+  };
   fileList: FileItem[];
 }
 
@@ -26,7 +28,10 @@ export interface FileManagerContext {
   viewType: Ref<"list" | "grid">;
   selectedFiles: Ref<FileItem[]>;
   draggable: Ref<boolean>;
-  fileDragging: Ref<boolean>;
+  contextDraggingArgs: Ref<{
+    dragging: "dir" | "file" | null;
+    draggingPath: string;
+  }>;
   addSelectFile: (file: FileItem) => void;
   fileList: Ref<FileItem[]>;
   dirList: Ref<FileDirItem[]>;
