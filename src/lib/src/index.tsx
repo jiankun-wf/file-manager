@@ -11,12 +11,12 @@ import { uid } from "../utils/uid";
 import { Provider } from "../components/Provider";
 import { useFilePutIn } from "../hooks/useFilePuIn";
 
-import "../style/index.less";
 import { useChooseFile } from "../hooks/useChooseFile";
 import { useFileRename } from "../hooks/useFileRename";
 import { useFileChange } from "../hooks/useFileChange";
 import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
 
+import "../style/index.less";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -27,6 +27,10 @@ export const FileManager = defineComponent({
     viewType: {
       type: String as PropType<"list" | "grid">,
       default: "grid",
+    },
+    mode: {
+      type: String as PropType<"wr" | "r">,
+      default: "wr",
     },
   },
   emits: ["fileMove", "fileSelect"],
