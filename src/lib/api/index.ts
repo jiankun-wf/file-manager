@@ -39,6 +39,17 @@ export const createDir = (dir: string) => {
   });
 };
 
+export const moveDir = ({ dir, newdir }: { dir: string; newdir: string }) => {
+  return $http.request({
+    method: "put",
+    url: `/dir/move`,
+    data: {
+      dir,
+      newdir,
+    },
+  });
+};
+
 export const deleteDir = (pts: { dir: string }[]) => {
   return $http.request({
     method: "delete",

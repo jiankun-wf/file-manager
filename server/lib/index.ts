@@ -65,6 +65,22 @@ app.put("/dirs", (req, res) => {
   );
 });
 
+app.put("/dir/move", (req, res) => {
+  const { dir, newdir } = req.body;
+
+  const fullPath = getFullPath(dir as string);
+
+  const dirname = basename(fullPath);
+  const p = getFullPath(`${newdir}/${dirname}` as string);
+  console.log(dirname, p);
+  renameSync(fullPath, p);
+
+  res.json(
+    ReponseSuccess({
+      path: getRealPath(relative(assetsBasePath, p)),
+    })
+  );
+});
 // 创建文件夹
 app.post("/dirs", (req, res) => {
   const { dir } = req.body;

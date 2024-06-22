@@ -25,6 +25,8 @@ import { useDragInToggle } from "../hooks/useDragToggle";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
 import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
+import { commandDirMove } from "../command/dir/move";
+import { getDirsList } from "../api";
 
 export const DirTree = defineComponent({
   name: "DirTree",
@@ -146,6 +148,17 @@ export const DirTreeItem = defineComponent({
       props.parent
     );
 
+    const getDirs = async () => {
+      try {
+        const res = (await getDirsList()) as unknown as FileDirItem[];
+        if (res.length) {
+          currentPath.value = res[0].path;
+        }
+        dirList.value = res;
+      } finally {
+      }
+    };
+
     useDragInToggle({
       elementRef,
       dirPath,
@@ -178,6 +191,12 @@ export const DirTreeItem = defineComponent({
             }
           } else if (type === NK.INNER_DRAG_DIR) {
             // todo 移动文件夹
+            await commandDirMove({
+              targetDirPath: props.data[value],
+              fromDirPath: path,
+              currentPath,
+              dirList,
+            });
           }
         } finally {
         }

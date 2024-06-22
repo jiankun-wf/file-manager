@@ -10,7 +10,9 @@ import { eventBus } from "../utils/pub-sub";
 import { NK } from "../enum";
 import { commandDirDelete } from "../command/dir/delete";
 import { useDialog } from "naive-ui";
-import { eventStop } from "../utils/event";
+import { eventStop, eventStopPropagation } from "../utils/event";
+import { findTreeNode } from "../utils/tree-node";
+import { commandDirMove } from "../command/dir/move";
 
 export const Slider = defineComponent({
   name: "Slider",
@@ -90,6 +92,32 @@ export const Slider = defineComponent({
       }
     };
 
+    const handleDrop = async (event: DragEvent) => {
+      eventStopPropagation(event);
+      const dragData = event.dataTransfer?.getData(NK.DRAG_DATA_TRANSFER_TYPE);
+      if (!dragData) return;
+      try {
+        const dragJson = JSON.parse(dragData);
+        const type = dragJson[NK.INNER_DRAG_TYPE],
+          path = dragJson[NK.INNER_DRAG_PATH],
+          isFromInner = dragJson[NK.INNER_DRAG_FLAG];
+        if (!isFromInner) return;
+        if (type !== NK.INNER_DRAG_DIR) return;
+        const node = findTreeNode(
+          unref(dirList),
+          (node: Record<string, any>) => node.path === path
+        );
+        if (!node || node.root) return;
+        await commandDirMove({
+          targetDirPath: "/",
+          fromDirPath: path,
+          currentPath,
+          dirList,
+        });
+      } finally {
+      }
+    };
+
     onMounted(() => {
       getDirs();
     });
@@ -98,7 +126,9 @@ export const Slider = defineComponent({
       <div
         class="file-manager__slider"
         onContextmenu={onContextMenu}
-        onDragenter={eventStop}
+        onDragenter={eventStopPropagation}
+        onDragover={eventStop}
+        onDrop={handleDrop}
       >
         <DirTree
           data={unref(dirList)}

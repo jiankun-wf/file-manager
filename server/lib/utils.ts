@@ -13,10 +13,11 @@ export const assetsBasePath = resolve(
 type DirObj = {
   name: string;
   path: string;
+  root: boolean;
   children?: DirObj[];
 };
 
-export const getFullDir = (path: string) => {
+export const getFullDir = (path: string, root = true) => {
   const dirs: DirObj[] = [];
   const files = readdirSync(path);
   files.forEach((file) => {
@@ -27,14 +28,13 @@ export const getFullDir = (path: string) => {
       const dirObj: DirObj = {
         name: file,
         path: "/" + relative(assetsBasePath, fp).replace(/\\/g, "/"),
+        root,
       };
 
-      if (isDir) {
-        const ds = getFullDir(fp);
+      const ds = getFullDir(fp, false);
 
-        if (ds.length) {
-          dirObj.children = ds;
-        }
+      if (ds.length) {
+        dirObj.children = ds;
       }
       dirs.push(dirObj);
     }
