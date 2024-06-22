@@ -28,6 +28,7 @@ export const useChooseFile = () => {
         type="file"
         id={id}
         multiple
+        dir="true"
         style={{ display: "none!important" }}
       />
     );

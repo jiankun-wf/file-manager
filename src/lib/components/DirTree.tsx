@@ -326,7 +326,7 @@ export const DirTreeItem = defineComponent({
           </div>
         </div>
         <>
-          {unref(getIsExpand) && (
+          {unref(getIsExpand) && unref(props.data[children])?.length && (
             <div class="file-manager-dir__tree-item__indent">
               {unref(props.data[children]).map((d: Record<string, any>) => (
                 <DirTreeItem
