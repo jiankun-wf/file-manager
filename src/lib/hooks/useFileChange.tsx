@@ -11,9 +11,9 @@ import { FileAction } from "../enum/file-action";
 import { FileDirItem, FileItem } from "../types";
 import { getDirsList } from "../api";
 import { NIcon, NModal, NTree } from "naive-ui";
-import { DirIcon } from "../components/dirIcon";
-import { MoveIcon } from "../components/Move";
-import { CopyIcon } from "../components/Copy";
+import { DirIcon } from "../icons/DirIcon";
+import { MoveIcon } from "../icons/Move";
+import { CopyIcon } from "../icons/Copy";
 import { commandCopy } from "../command/file/copy";
 import { commandMove } from "../command/file/move";
 

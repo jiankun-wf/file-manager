@@ -14,7 +14,7 @@ import {
 import { CaretRightOutlined } from "@vicons/antd";
 
 import "../style/dir-tree.less";
-import { DirIcon } from "./dirIcon";
+import { DirIcon } from "../icons/DirIcon";
 import { eventStop, eventStopPropagation } from "../utils/event";
 import { FileDirItem, FileDirTreeContext } from "../types";
 import { useDirRename } from "../hooks/useDirRename";

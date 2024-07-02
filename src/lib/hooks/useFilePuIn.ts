@@ -24,6 +24,7 @@ export const useFilePutIn = ({
         nameing: false,
         progress: 0,
         url: "",
+        dir: false,
       };
       fileList.value.push(fileItem);
 
@@ -33,6 +34,7 @@ export const useFilePutIn = ({
         getFileExtension(currentFile.name)!;
 
       const names = unref(fileList).filter((f) => {
+        if (f.dir) return false;
         const { fileName } = getFileExtension(f.name)!;
         return fileName.replace(/\([0-9]+\)$/, "") === currentFileName;
       });

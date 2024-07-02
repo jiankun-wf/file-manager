@@ -26,9 +26,10 @@ import { isImage } from "../utils/minetype";
 import { useUploadProgress } from "../hooks/useUploadProgress";
 import { FileAction } from "../enum/file-action";
 import { commandDelete } from "../command/file/delete";
-import { useDialog, useMessage } from "naive-ui";
+import { NEllipsis, useDialog, useMessage } from "naive-ui";
 import { NK } from "../enum";
 import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
+import { FileDir } from "./FileDir";
 
 const contextMenuOptions = [
   {
@@ -81,19 +82,19 @@ export const FileGridCard = defineComponent({
     const dialog = useDialog();
 
     const contextMenuOnSelect = async (...args: any[]) => {
-      const [action, _, file, fileList] = args;
+      const [action, _, file, argsFileList] = args;
 
       switch (action) {
         case FileAction.COPY:
           openFileChangeModal({
-            file: fileList,
+            file: argsFileList,
             action: FileAction.COPY,
             currentDirPath: unref(currentPath),
           });
           return;
         case FileAction.MOVE:
           openFileChangeModal({
-            file: fileList,
+            file: argsFileList,
             action: FileAction.MOVE,
             currentDirPath: unref(currentPath),
           });
@@ -103,7 +104,7 @@ export const FileGridCard = defineComponent({
           return;
         case FileAction.DELETE:
           const flag = await commandDelete({
-            files: fileList,
+            files: argsFileList,
             fileList,
             selectedFiles,
             dialog,
@@ -121,13 +122,21 @@ export const FileGridCard = defineComponent({
     });
     return () => (
       <div class="file-manager__file-list--grid" draggable="false">
-        {unref(fileList).map((f) => (
-          <FileGridCardItem
-            key={f.path}
-            currentFile={f}
-            onMouseContextMenu={handleContextMenu}
-          />
-        ))}
+        {unref(fileList).map((f) =>
+          f.dir ? (
+            <FileDir
+              key={f.path}
+              currentFile={f}
+              onMouseContextMenu={handleContextMenu}
+            />
+          ) : (
+            <FileGridCardItem
+              key={f.path}
+              currentFile={f}
+              onMouseContextMenu={handleContextMenu}
+            />
+          )
+        )}
         {renderContextMenu()}
       </div>
     );
@@ -182,7 +191,7 @@ const FileGridCardItem = defineComponent({
       if (isImage(unref(currentFile).type) && unref(currentFile).url) {
         return unref(currentFile).url as string;
       }
-      return new URL("@/assets/otherfile.png", import.meta.url).href;
+      return new URL("@/lib/assets/otherfile.png", import.meta.url).href;
     });
 
     const handleDragStart = (e: DragEvent) => {
@@ -219,12 +228,7 @@ const FileGridCardItem = defineComponent({
 
     onMounted(() => {
       const imgEl = unref(imageRef)!;
-      if (/image/.test(unref(currentFile).type)) {
-        resizeImage(unref(getCurrentFileThumbnail), imgEl, 150, 100);
-      } else {
-        imgEl.width = 48;
-        imgEl.height = 48;
-      }
+      resizeImage(unref(getCurrentFileThumbnail), imgEl, 96, 116);
     });
     return () => (
       <>
@@ -255,9 +259,9 @@ const FileGridCardItem = defineComponent({
               class="file-manager__file-item__name"
               title={unref(currentFile).name}
             >
-              {unref(currentFile).name}
+              <NEllipsis line-clamp={3}>{unref(currentFile).name}</NEllipsis>
             </div>
-            {unref(currentFile).status === "completed" ? (
+            {/* {unref(currentFile).status === "completed" ? (
               <div class="file-manager__file-item__time">
                 {formatDate(
                   unref(currentFile).uploadTime,
@@ -268,10 +272,10 @@ const FileGridCardItem = defineComponent({
               <div class="file-manager__file-item__status">
                 {unref(currentFile).status}
               </div>
-            )}
-            <div class="file-manager__file-item__size">
+            )} */}
+            {/* <div class="file-manager__file-item__size">
               {formatSize(unref(currentFile).size)}
-            </div>
+            </div> */}
           </div>
           <div
             class={["border-state", unref(isSliceFile) && "is-selected"]}

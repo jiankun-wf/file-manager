@@ -42,6 +42,37 @@ export const getFullDir = (path: string, root = true) => {
   return dirs;
 };
 
+export const getDirContenet = (path: string, root: string) => {
+  const output: Record<string, any>[] = [];
+  const files = readdirSync(path);
+
+  files.forEach((file) => {
+    const fp = join(path, file);
+    const fileStat = statSync(fp);
+    if (!fileStat.isDirectory()) {
+      output.push({
+        name: basename(fp),
+        path: getRealPath(relative(root, fp)),
+        size: fileStat.size,
+        type: mime.getType(fp) || "application/octet-stream",
+        uploadTime: Date.prototype.getTime.call(fileStat.birthtime),
+        url: getUrlPath(relative(root, fp)),
+        dir: false,
+      });
+    } else {
+      console.log(fileStat);
+      output.push({
+        name: basename(fp),
+        path: getRealPath(relative(root, fp)),
+        dir: true,
+        size: fileStat.size,
+        uploadTime: Date.prototype.getTime.call(fileStat.birthtime),
+      });
+    }
+  });
+  return output;
+};
+
 export const getDirFile = (path: string, root: string) => {
   const output: Record<string, any>[] = [];
   const files = readdirSync(path);
