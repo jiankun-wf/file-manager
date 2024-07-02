@@ -53,7 +53,7 @@ export const Toolbar = defineComponent({
     const handleMove = () => {
       openFileChangeModal({
         file: unref(selectedFiles),
-        action: "copy",
+        action: "move",
         currentDirPath: unref(currentPath),
       });
     };

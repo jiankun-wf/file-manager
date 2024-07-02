@@ -55,7 +55,6 @@ app.put("/dirs", (req, res) => {
 
   const dirname = basename(fullPath);
   const p = fullPath.replace(dirname, newdir);
-  console.log(fullPath, p);
   renameSync(fullPath, p);
 
   res.json(
