@@ -3,12 +3,12 @@ import { useContext } from "../utils/context";
 import { NScrollbar, NSpin, useDialog } from "naive-ui";
 import { FileList } from "../components/FileList";
 import { useFileSelectAll } from "../hooks/useFileSelect";
-import { getDirFiles } from "../api";
+import { getDirContent } from "../api";
 import { useFileDragIn } from "../hooks/useFileDragIn";
 import { uid } from "../utils/uid";
 import { FileItem } from "../types";
 import { FileStatus } from "../enum/file-status";
-import { EmptyIcon } from "../components/Empty";
+import { EmptyIcon } from "../icons/Empty";
 import { eventStop } from "../utils/event";
 import { useSelectedFileDelete } from "../hooks/useSelectedDel";
 
@@ -46,7 +46,7 @@ export const Content = defineComponent({
     const getCurrentDirFiles = async () => {
       if (!unref(currentPath)) return;
       queryLoading.value = true;
-      const files = (await getDirFiles(
+      const files = (await getDirContent(
         unref(currentPath)
       )) as unknown as FileItem[];
       if (!files.length) {

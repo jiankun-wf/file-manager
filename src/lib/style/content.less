@@ -26,12 +26,12 @@
         background-color: var(--bg);
         border-radius: var(--radius);
         overflow: hidden;
-        width: 150px;
+        width: 126px;
         position: relative;
         z-index: 1;
         .file-manager__file-item__thumb {
+          padding: 8px 0;
           display: flex;
-          height: 100px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -42,28 +42,31 @@
           }
         }
         .file-manager__file-item__info {
-          padding: 4px 6px;
           .file-manager__file-item__name {
-            font-size: 14px;
+            padding: 0 6px;
+            font-size: 12px;
             color: var(--black);
             font-weight: 500;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
+            text-align: center;
+            line-height: 18px;
+            & > span {
+              max-width: 100%;
+              word-break: break-all;
+            }
           }
-          .file-manager__file-item__size {
-            font-size: 12px;
-            color: var(--placeholder);
-          }
-          .file-manager__file-item__time {
-            font-size: 12px;
-            color: var(--placeholder);
-            margin-top: 6px;
-          }
-          .file-manager__file-item__status {
-            font-size: 12px;
-            margin-top: 6px;
-          }
+          // .file-manager__file-item__size {
+          //   font-size: 12px;
+          //   color: var(--placeholder);
+          // }
+          // .file-manager__file-item__time {
+          //   font-size: 12px;
+          //   color: var(--placeholder);
+          //   margin-top: 6px;
+          // }
+          // .file-manager__file-item__status {
+          //   font-size: 12px;
+          //   margin-top: 6px;
+          // }
         }
   
         .darg-area {

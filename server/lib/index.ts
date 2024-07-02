@@ -9,6 +9,7 @@ import {
   ReponseError,
   getUrlPath,
   getRealPath,
+  getDirContenet,
 } from "./utils.ts";
 import { rmSync, renameSync, readFileSync, mkdirSync, writeFileSync } from "fs";
 import mintype from "mime";
@@ -112,6 +113,15 @@ app.delete("/dirs", (req, res) => {
   }
 
   res.json(ReponseSuccess());
+});
+
+app.get("/dir-content", (req, res) => {
+  const { dir } = req.query;
+  const fullDir = join(assetsBasePath, dir as string);
+
+  const files = getDirContenet(fullDir, assetsBasePath);
+  console.log(files);
+  res.json(ReponseSuccess(files));
 });
 
 // 获取文件夹下文件

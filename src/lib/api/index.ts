@@ -8,13 +8,13 @@ export const getDirsList = () => {
   });
 };
 
-export const getDirFiles = (dir: string) => {
+export const getDirContent = (dir: string) => {
   return $http.request({
     method: "get",
     params: {
       dir,
     },
-    url: "/dir-file",
+    url: "/dir-content",
   });
 };
 

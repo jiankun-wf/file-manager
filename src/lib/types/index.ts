@@ -69,6 +69,7 @@ export interface FileItem {
   __isnew?: boolean;
   status?: `${FileStatus}`;
   progress?: number;
+  dir: boolean;
 }
 
 export type FileSelectMode = "single" | "multiple";
