@@ -60,7 +60,6 @@ export const getDirContenet = (path: string, root: string) => {
         dir: false,
       });
     } else {
-      console.log(fileStat);
       output.push({
         name: basename(fp),
         path: getRealPath(relative(root, fp)),

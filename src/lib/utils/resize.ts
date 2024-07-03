@@ -9,7 +9,8 @@ export function resizeImage(
     const width = img.width;
     const height = img.height;
     if (width > limitWidth || height > limitHeight) {
-      const ratio = limitWidth / limitHeight;
+      const ratio =
+        height > width ? limitHeight / limitWidth : limitWidth / limitHeight;
       if (width > height) {
         imgTarget.width = limitWidth;
         imgTarget.height = limitWidth / ratio;
