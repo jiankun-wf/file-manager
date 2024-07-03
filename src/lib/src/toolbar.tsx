@@ -73,7 +73,7 @@ export const Toolbar = defineComponent({
 
         {unref(selectedFiles).length ? (
           <>
-            <NButton>
+            {/* <NButton>
               {{
                 icon: () => (
                   <NIcon>
@@ -82,7 +82,7 @@ export const Toolbar = defineComponent({
                 ),
                 default: () => "下载",
               }}
-            </NButton>
+            </NButton> */}
 
             <NButton onClick={handleMove}>
               {{

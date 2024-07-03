@@ -17,19 +17,17 @@ export const removeTreeNode = (
 export const findTreeNode = (
   treeList: Record<string, any>[],
   condition: (node: Record<string, any>) => boolean
-) => {
+): Record<string, any> | undefined => {
   let result: Record<string, any> | undefined;
-  treeList.forEach((node) => {
+  for (let node of treeList) {
     if (condition(node)) {
       result = node;
-      return;
+      return result;
     }
     if (node.children) {
       result = findTreeNode(node.children, condition);
-      if (result) {
-        return;
-      }
+      return result;
     }
-  });
+  }
   return result;
 };
