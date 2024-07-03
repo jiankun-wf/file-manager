@@ -1,20 +1,24 @@
-@import './content.less';
-@import './slider.less';
-@import './toobar.less';
+@import "./content.less";
+@import "./slider.less";
+@import "./toobar.less";
 
 .file-manager {
-  --primary: #0025ff;
+  --primary: rgb(0, 37, 255);
   --primary-light: #6279ff;
   --primary-dark: #1436ff;
   --primary-lighter: rgba(0, 37, 255, 0.2);
-  --border: #e7e7e7;
+  --primary-hsien: rgba(0, 37, 255, 0.08);
+  --border: rgba(231, 231, 231, 1);
+  --border-light: rgba(231, 231, 231, 0.56);
   --white: #fff;
   --black: #000;
   --title: #333;
   --text: #666;
   --placeholder: #999;
   --success: #00b700;
-  --error: #d03050;
+  --error: #D03050;
+  --error-lighter: rgba(208,48,80, 0.2);
+  --error-hsien: rgba(208,48,80, 0.08);
   --warning: #ff9900;
   --radius: 3px;
   --height: calc(800px - 63px);
@@ -34,9 +38,8 @@
   border-top: 1px solid var(--border);
   border-left: 1px solid var(--border);
 
-
   .n-split__resize-trigger-wrapper {
-    width: 1px!important;
+    width: 1px !important;
     .file-manager-resize-triiger {
       height: var(--height);
       width: 1px;
@@ -76,7 +79,6 @@
     }
   }
 
-
   .file-manager-change__type {
     display: flex;
     justify-content: space-evenly;
@@ -99,16 +101,14 @@
       row-gap: 12px;
 
       &:hover {
-        background-color: var( --primary-lighter);
+        background-color: var(--primary-lighter);
       }
       &.is-active {
-        background-color: var( --primary-lighter);
+        background-color: var(--primary-lighter);
         cursor: default;
       }
     }
-
   }
-
 }
 
 .folder-manager-drag-mask {

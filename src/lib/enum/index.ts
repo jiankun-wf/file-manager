@@ -1,4 +1,6 @@
 export enum NK {
+  // 数组转字符串join分隔符
+  ARRAY_JOIN_SEPARATOR = ",",
   // 文件重命名事件名注册
   DIR_RENAME_EVENT = "dir_rename_event",
 

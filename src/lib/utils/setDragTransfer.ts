@@ -38,7 +38,7 @@ export const setDragStyle = (
   dragMaskEl.innerHTML = "";
 
   if (type === NK.INNER_DRAG_FILE) {
-    const ps = path.split(",");
+    const ps = path.split(NK.ARRAY_JOIN_SEPARATOR);
 
     dragMaskEl.setAttribute("data-number", `移动${ps.length}个文件`);
 

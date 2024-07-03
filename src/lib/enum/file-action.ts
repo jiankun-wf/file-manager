@@ -6,4 +6,5 @@ export enum FileAction {
   UPLOAD = "upload",
   DOWNLOAD = "download",
   NEW_FOLDER = "new_folder",
+  IMAGE_EDIT = "image_edit",
 }

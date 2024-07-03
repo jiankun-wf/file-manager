@@ -3,6 +3,7 @@ import { AreaSelectParams } from "../types/drag";
 import { FileItem } from "../types";
 import { isAreaIntersect } from "../utils/area";
 import { addMouseLeftEventListener, eventStop } from "../utils/event";
+import { FileStatus } from "../enum/file-status";
 
 export const useAreaSelect = ({
   scope,
@@ -127,20 +128,22 @@ export const useAreaSelect = ({
       right: el.clientWidth + Math.max(el.offsetLeft, 0),
       bottom: el.clientHeight + Math.max(el.offsetTop, 0),
     };
-    const files = unref(fileList).map((file) => {
-      const el = document.querySelector<HTMLDivElement>(
-        `div[data-path-name="${file.path}"]`
-      )!;
-      return {
-        rect: {
-          top: el.offsetTop,
-          left: el.offsetLeft,
-          right: el.offsetLeft + el.clientWidth,
-          bottom: el.offsetTop + el.clientHeight,
-        },
-        file,
-      };
-    });
+    const files = unref(fileList)
+      .filter((f) => !!f.path && f.status === FileStatus.Completed)
+      .map((file) => {
+        const el = document.querySelector<HTMLDivElement>(
+          `div[data-path-name="${file.path}"]`
+        )!;
+        return {
+          rect: {
+            top: el.offsetTop,
+            left: el.offsetLeft,
+            right: el.offsetLeft + el.clientWidth,
+            bottom: el.offsetTop + el.clientHeight,
+          },
+          file,
+        };
+      });
     const selectFiles = files.filter((file) => {
       const { rect } = file;
       return isAreaIntersect(position, rect);

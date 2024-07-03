@@ -1,4 +1,5 @@
 import { deleteFile } from "@/lib/api";
+import { NK } from "@/lib/enum";
 import { FileDirItem } from "@/lib/types";
 import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
 import { h, Ref, unref } from "vue";
@@ -37,7 +38,7 @@ export const commandDirDelete = ({
       async onPositiveClick() {
         try {
           d.loading = true;
-          await deleteFile(dirs.map((file) => file.path).join(","));
+          await deleteFile(dirs.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR));
 
           dirs.forEach((dir) => {
             const index = unref(parentDirList).findIndex(
