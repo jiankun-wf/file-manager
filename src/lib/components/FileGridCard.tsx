@@ -8,17 +8,17 @@ import {
   unref,
 } from "vue";
 import { FileItem } from "../types";
-import { formatDate } from "../utils/date";
-import { formatSize } from "../utils/size";
 import { resizeImage } from "../utils/resize";
 import { useContextMenu } from "../hooks/useContextMenu";
 import { useContext } from "../utils/context";
 import {
-  DownloadOutlined,
+  FormOutlined,
+  ReloadOutlined,
   CopyOutlined,
   DragOutlined,
   EditOutlined,
   DeleteOutlined,
+  UploadOutlined,
 } from "@vicons/antd";
 import { renderIcon } from "../utils/icon";
 import { eventStop, eventStopPropagation } from "../utils/event";
@@ -30,6 +30,8 @@ import { NEllipsis, useDialog, useMessage } from "naive-ui";
 import { NK } from "../enum";
 import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
 import { FileDir } from "./FileDir";
+import { FileStatus } from "../enum/file-status";
+import { commandUpload } from "../command/file/upload";
 
 const contextMenuOptions = [
   {
@@ -52,10 +54,31 @@ const contextMenuOptions = [
     key: "d1",
   },
   {
-    label: "下载",
-    key: FileAction.DOWNLOAD,
-    icon: renderIcon(DownloadOutlined),
+    label: "编辑图像",
+    key: FileAction.IMAGE_EDIT,
+    icon: renderIcon(FormOutlined),
   },
+  {
+    label: "上传",
+    key: FileAction.UPLOAD,
+    props: {
+      style: { color: "#0025ff" },
+    },
+    icon: renderIcon(UploadOutlined, { color: "#0025ff" }),
+  },
+  // {
+  //   label: "重新上传",
+  //   key: FileAction.UPLOAD,
+  //   props: {
+  //     style: { color: "#0025ff" },
+  //   },
+  //   icon: renderIcon(ReloadOutlined, { color: "#0025ff" }),
+  // },
+  // {
+  //   label: "下载",
+  //   key: FileAction.DOWNLOAD,
+  //   icon: renderIcon(DownloadOutlined),
+  // },
   {
     label: "删除",
     key: FileAction.DELETE,
@@ -92,6 +115,12 @@ export const FileGridCard = defineComponent({
             currentDirPath: unref(currentPath),
           });
           return;
+        case FileAction.IMAGE_EDIT:
+          console.log(file.__FILE);
+          return;
+        case FileAction.UPLOAD:
+          commandUpload(file, unref(currentPath));
+          return;
         case FileAction.MOVE:
           openFileChangeModal({
             file: argsFileList,
@@ -120,6 +149,24 @@ export const FileGridCard = defineComponent({
       options: contextMenu,
       onSelect: contextMenuOnSelect,
     });
+
+    const onContextMenu = (event: MouseEvent, file: FileItem) => {
+      const { path, type } = file;
+      if (!path) {
+        if (isImage(type)) {
+          contextMenu.value = contextMenuOptions.slice(4);
+        } else {
+          contextMenu.value = contextMenuOptions.slice(5);
+        }
+      } else {
+        contextMenu.value = [
+          ...contextMenuOptions.slice(0, 4),
+          ...contextMenuOptions.slice(-1),
+        ];
+      }
+      handleContextMenu(event, file, unref(selectedFiles));
+    };
+
     return () => (
       <div class="file-manager__file-list--grid" draggable="false">
         {unref(fileList).map((f) =>
@@ -127,13 +174,13 @@ export const FileGridCard = defineComponent({
             <FileDir
               key={f.path}
               currentFile={f}
-              onMouseContextMenu={handleContextMenu}
+              onMouseContextMenu={onContextMenu}
             />
           ) : (
             <FileGridCardItem
               key={f.path}
               currentFile={f}
-              onMouseContextMenu={handleContextMenu}
+              onMouseContextMenu={onContextMenu}
             />
           )
         )}
@@ -181,6 +228,8 @@ const FileGridCardItem = defineComponent({
 
     // 点击选取文件
     const handleSelectFile = (e: MouseEvent) => {
+      if (!props.currentFile.path) return;
+      if (props.currentFile.status !== FileStatus.Completed) return;
       e.stopPropagation();
       addSelectFile(props.currentFile);
     };
@@ -188,6 +237,7 @@ const FileGridCardItem = defineComponent({
     const currentFile = toRef(() => props.currentFile);
 
     const getCurrentFileThumbnail = computed(() => {
+      // 图片
       if (isImage(unref(currentFile).type) && unref(currentFile).url) {
         return unref(currentFile).url as string;
       }
@@ -200,7 +250,7 @@ const FileGridCardItem = defineComponent({
         ? unref(currentFile).path
         : unref(selectedFiles)
             .map((f) => f.path)
-            .join(",");
+            .join(NK.ARRAY_JOIN_SEPARATOR);
 
       contextDraggingArgs.value.dragging = "file";
       contextDraggingArgs.value.draggingPath = paths;
@@ -220,10 +270,12 @@ const FileGridCardItem = defineComponent({
 
     const handleContextMenu = (e: MouseEvent) => {
       eventStop(e);
-      if (unref(selectedFiles).length <= 1) {
+      if (!unref(currentFile).path) {
+        selectedFiles.value = [];
+      } else if (unref(selectedFiles).length <= 1) {
         addSelectFile(props.currentFile);
       }
-      emit("mouseContextMenu", e, unref(currentFile), unref(selectedFiles));
+      emit("mouseContextMenu", e, unref(currentFile));
     };
 
     onMounted(() => {
@@ -236,6 +288,8 @@ const FileGridCardItem = defineComponent({
           class={[
             "file-manager__file-item--grid",
             unref(isCuttingFile) && "is-cutting",
+            unref(isSliceFile) && "is-selected",
+            unref(currentFile).status == FileStatus.Ready && "is-ready",
           ]}
           onContextmenu={handleContextMenu}
           onClick={handleSelectFile}
@@ -277,9 +331,7 @@ const FileGridCardItem = defineComponent({
               {formatSize(unref(currentFile).size)}
             </div> */}
           </div>
-          <div
-            class={["border-state", unref(isSliceFile) && "is-selected"]}
-          ></div>
+          <div class="border-state"></div>
           {useUploadProgress(currentFile)}
         </div>
       </>

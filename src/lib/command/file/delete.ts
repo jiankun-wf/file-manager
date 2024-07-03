@@ -1,4 +1,5 @@
 import { deleteFile } from "@/lib/api";
+import { NK } from "@/lib/enum";
 import { FileItem } from "@/lib/types";
 import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
 import { h, Ref } from "vue";
@@ -39,7 +40,7 @@ export const commandDelete = ({
       async onPositiveClick() {
         try {
           d.loading = true;
-          await deleteFile(files.map((file) => file.path).join(","));
+          await deleteFile(files.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR));
 
           fileList.value = fileList.value.filter((file) =>
             files.every((f) => f.path !== file.path)

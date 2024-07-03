@@ -3,6 +3,7 @@ import { Ref, unref } from "vue";
 import { commandUpload } from "../command/file/upload";
 import { getFileExtension } from "../utils/extension";
 import { FileStatus } from "../enum/file-status";
+import { fileToBase64, isImage } from "../utils/minetype";
 
 export const useFilePutIn = ({
   fileList,
@@ -10,7 +11,7 @@ export const useFilePutIn = ({
   fileList: Ref<FileItem[]>;
   currentPath: Ref<string>;
 }) => {
-  const handlePutIn = (files: FileList | File[], currentPath: string) => {
+  const handlePutIn = async (files: FileList | File[], currentPath: string) => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileItem: FileItem = {
@@ -23,7 +24,7 @@ export const useFilePutIn = ({
         mockname: file.name,
         nameing: false,
         progress: 0,
-        url: "",
+        url: isImage(file.type) ? await fileToBase64(file) : "",
         dir: false,
       };
       fileList.value.push(fileItem);
@@ -49,12 +50,12 @@ export const useFilePutIn = ({
         currentFile.mockname = nname;
         currentFile.__FILE = new File([currentFile.__FILE], nname);
       }
-      commandUpload(currentFile, currentPath);
+      // commandUpload(currentFile, currentPath);
 
       // 如果为图片文件，则需要先编辑
-      // if (!/image/.test(currentFile.type)) {
-      //   commandUpload(currentFile, currentPath);
-      // }
+      if (!/image/.test(currentFile.type)) {
+        commandUpload(currentFile, currentPath);
+      }
     }
   };
 

@@ -125,6 +125,7 @@ export const FileManager = defineComponent({
           {renderRenameContext(id)}
           {/* 移动 || 复制 */}
           {renderChangeContext(id)}
+          {/* 文件详情tooltip */}
         </div>
       </Provider>
     );

@@ -21,7 +21,7 @@
       flex-wrap: wrap;
       gap: 20px;
       z-index: 1;
-  
+
       .file-manager__file-item--grid {
         background-color: var(--bg);
         border-radius: var(--radius);
@@ -29,6 +29,7 @@
         width: 126px;
         position: relative;
         z-index: 1;
+        
         .file-manager__file-item__thumb {
           padding: 8px 0;
           display: flex;
@@ -68,25 +69,26 @@
           //   margin-top: 6px;
           // }
         }
-  
+
         .darg-area {
           inset: 0;
           position: absolute;
           z-index: -1;
         }
-  
+
         .border-state {
           inset: 0;
           position: absolute;
           border: 2px solid transparent;
           border-radius: var(--radius);
           z-index: -1;
-          transition: border .3s, background-color .3s; 
-          &.is-selected {
-            border-color: var(--primary);
-            background-color: rgba(0, 37, 255, 0.08);
-          }
-         }
+          transition: border 0.2s, background-color 0.2s;
+        }
+
+        &.is-selected > .border-state {
+          border-color: var(--primary);
+          background-color: var(--primary-hsien);
+        }
 
         .file-manager-upload-progress__mask {
           position: absolute;
@@ -100,11 +102,47 @@
         &.is-cutting {
           opacity: 0.6;
         }
+        &.is-ready {
+          background-color: var(--error-lighter);
+
+          & > .border-state {
+            background-color: var(--error-hsien);
+          }
+
+          &.is-selected > .border-state {
+            border-color: var(--error);
+          }
+        } 
+
+        &.file-manager__dir {
+          &.has-dragging {
+            * {
+              pointer-events: none;
+            }
+          }
+
+          &.dragging-in {
+            --border-opacity: 0.4;
+            & > .border-state {
+              border-color: var(--primary);
+            }
+
+            &::after {
+              inset: 2px;
+              position: absolute;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              content: '移动至此文件夹';
+              background-color: var(--border-light);
+              color: var(--placeholder);
+              font-size: 12px;
+            }
+          }
+        }
       }
     }
   }
-
-
 
   .filer-manager-area-select {
     position: absolute;

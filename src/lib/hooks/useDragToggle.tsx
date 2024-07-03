@@ -6,7 +6,6 @@ import { NK } from "../enum";
 export const useDragInToggle = ({
   elementRef,
   dirPath,
-  currentPath,
   contextDraggingArgs,
   onDrop,
 }: {
@@ -14,22 +13,24 @@ export const useDragInToggle = ({
   dirPath: ComputedRef<string>;
   currentPath: Ref<string>;
   contextDraggingArgs: Ref<{
-    dragging: "file" | "dir" | null;
+    dragging: "file" | "dir" | "mixed" | null;
     draggingPath: string;
   }>;
   onDrop?: (event: DragEvent) => void;
 }) => {
-  
   const in_handler = (event: DragEvent) => {
     eventStop(event);
     const { dragging, draggingPath } = unref(contextDraggingArgs);
+
+    if (!draggingPath) return;
     if (!dragging) return;
-    if (unref(dragging) === "file" && unref(currentPath) === unref(dirPath)) {
-      return;
-    }
-    if (unref(dragging) === "dir" && unref(dirPath) === draggingPath) {
-      return;
-    }
+    //拖拽对象是否包含当前拖拽目录
+    // 举个栗子：如果当前拖拽的对象有 folder/a.png、folder/b.png folder/folder-child  两个文件，三个文件夹，那么folder/folder-child拖入事件中，
+    // 当前拖拽对象 包含了本目录，那么不允许拖入，也不会触发拖入样式触发
+    // 除此之外，可以正常出发拖入样式的切换
+    const path_arr = draggingPath.split(NK.ARRAY_JOIN_SEPARATOR);
+    if (path_arr.some((p) => p === unref(dirPath))) return;
+
     unref(elementRef)?.classList.add("dragging-in");
   };
 
@@ -44,13 +45,12 @@ export const useDragInToggle = ({
   const drop_handler = (event: DragEvent) => {
     eventStop(event);
     const { dragging, draggingPath } = unref(contextDraggingArgs);
+    if (!draggingPath) return;
     if (!dragging) return;
-    if (unref(dragging) === "file" && unref(currentPath) === unref(dirPath)) {
-      return;
-    }
-    if (unref(dragging) === "dir" && unref(dirPath) === draggingPath) {
-      return;
-    }
+
+    const path_arr = draggingPath.split(NK.ARRAY_JOIN_SEPARATOR);
+    if (path_arr.some((p) => p === unref(dirPath))) return;
+
     onDrop?.(event);
   };
 

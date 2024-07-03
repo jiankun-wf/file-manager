@@ -176,7 +176,7 @@ export const DirTreeItem = defineComponent({
             type = dragJson[NK.INNER_DRAG_TYPE];
           if (!isFromInner) return;
           if (type === NK.INNER_DRAG_FILE) {
-            const paths = path.split(",");
+            const paths = path.split(NK.ARRAY_JOIN_SEPARATOR);
             const dragFileList = unref(fileList).filter((f) =>
               paths.includes(f.path)
             );

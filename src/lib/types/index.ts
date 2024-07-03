@@ -29,13 +29,13 @@ export interface FileManagerContext {
   selectedFiles: Ref<FileItem[]>;
   draggable: Ref<boolean>;
   contextDraggingArgs: Ref<{
-    dragging: "dir" | "file" | null;
+    dragging: "dir" | "file" | "mixed" | null;
     draggingPath: string;
   }>;
   addSelectFile: (file: FileItem) => void;
   fileList: Ref<FileItem[]>;
   dirList: Ref<FileDirItem[]>;
-  filePutIn: (files: FileList | File[], path: string) => void;
+  filePutIn: (files: FileList | File[], path: string) => Promise<void>;
   chooseFile: () => Promise<File[] | null>;
   fileRename: (file: FileItem) => void;
   copyMode: Ref<"copy" | "cut">;
