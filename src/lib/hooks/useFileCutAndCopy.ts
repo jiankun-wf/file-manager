@@ -5,6 +5,7 @@ import { eventStop } from "../utils/event";
 import { commandCopy } from "../command/file/copy";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
+import { FileAction } from "../enum/file-action";
 
 export const useFileCutAndCopy = ({
   currentPath,
@@ -17,9 +18,9 @@ export const useFileCutAndCopy = ({
 }) => {
   const lastDirPath = ref("");
   const latestCopySelectedFiles = ref<FileItem[]>([]);
-  const copyMode = ref<"cut" | "copy">("copy");
+  const copyMode = ref<FileAction.COPY | FileAction.CUT>(FileAction.COPY);
 
-  const trigger = (type: "cut" | "copy") => {
+  const trigger = (type: FileAction.COPY | FileAction.CUT) => {
     if (!unref(selectedFiles).length) {
       return;
     }
@@ -78,10 +79,10 @@ export const useFileCutAndCopy = ({
   };
 
   const copyFile = () => {
-    trigger("copy");
+    trigger(FileAction.COPY);
   };
   const cutFile = () => {
-    trigger("cut");
+    trigger(FileAction.COPY);
   };
 
   onMounted(() => {

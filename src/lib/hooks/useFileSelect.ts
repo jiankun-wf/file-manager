@@ -8,6 +8,7 @@ import {
 } from "vue";
 import hotkeys from "hotkeys-js";
 import { eventStop } from "../utils/event";
+import { FileStatus } from "../enum/file-status";
 
 export const useFileSelect = ({
   selectedFiles,
@@ -60,7 +61,9 @@ export const useFileSelectAll = ({
   onMounted(() => {
     hotkeys("ctrl+a", (event: KeyboardEvent) => {
       eventStop(event);
-      selectedFiles.value = [...fileList.value];
+      selectedFiles.value = [
+        ...unref(fileList).filter((f) => f.status === FileStatus.Completed),
+      ];
     });
   });
 };

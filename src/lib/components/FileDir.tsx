@@ -1,11 +1,13 @@
 import {
   computed,
   defineComponent,
+  onBeforeMount,
   onMounted,
   PropType,
   ref,
   toRef,
   unref,
+  watch,
 } from "vue";
 import { NK } from "../enum";
 import { useContext } from "../utils/context";
@@ -13,11 +15,14 @@ import { eventStopPropagation, eventStop } from "../utils/event";
 import { resizeImage } from "../utils/resize";
 import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
 import { FileItem } from "../types";
-import { NEllipsis } from "naive-ui";
 import { useDragInToggle } from "../hooks/useDragToggle";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
 import { commandDirMove } from "../command/dir/move";
+import { getShouldStartDragPaths } from "../utils/from-darg";
+import { FileStatus } from "../enum/file-status";
+import { useFileRename } from "../hooks/useRename";
+import { eventBus } from "../utils/pub-sub";
 
 export const FileDir = defineComponent({
   name: "FileDir",
@@ -87,13 +92,13 @@ export const FileDir = defineComponent({
 
     const handleDragStart = (e: DragEvent) => {
       eventStopPropagation(e);
-      const paths = !unref(selectedFiles).length
-        ? unref(currentFile).path
-        : unref(selectedFiles)
-            .map((f) => f.path)
-            .join(NK.ARRAY_JOIN_SEPARATOR);
 
-      contextDraggingArgs.value.dragging = "mixed";
+      const paths = getShouldStartDragPaths(
+        unref(currentFile).path,
+        unref(selectedFiles)
+      );
+
+      contextDraggingArgs.value.dragging = NK.INNER_DRAG_FILE_TYPE_MIXED;
       contextDraggingArgs.value.draggingPath = paths;
       if (e.dataTransfer) {
         setDragStyle(e, NK.INNER_DRAG_FILE, paths);
@@ -166,10 +171,36 @@ export const FileDir = defineComponent({
       },
     });
 
+    const { renderFileRenameContext, handleRename } = useFileRename({
+      currentFile: currentFile,
+      currentPath,
+      fileList,
+    });
+
     onMounted(() => {
       const imgEl = unref(imageRef)!;
       resizeImage(unref(getCurrentFileThumbnail), imgEl, 96, 116);
+
+      eventBus.$listen(NK.FILE_RENAME_EVENT, {
+        id: `file_path_${unref(dirPath)}`,
+        handler: handleRename,
+      });
     });
+
+    onBeforeMount(() => {
+      eventBus.$unListen(NK.FILE_RENAME_EVENT, `file_path_${unref(dirPath)}`);
+    });
+
+    watch(dirPath, (newval, oldval) => {
+      if (oldval !== newval) {
+        eventBus.$unListen(NK.FILE_RENAME_EVENT, `file_path_${oldval}`);
+        eventBus.$listen(NK.FILE_RENAME_EVENT, {
+          id: `file_path_${newval}`,
+          handler: handleRename,
+        });
+      }
+    });
+
     return () => (
       <>
         <div
@@ -184,7 +215,10 @@ export const FileDir = defineComponent({
           onClick={handleSelectFile}
           onDragstart={handleDragStart}
           onDragend={handleDragEnd}
-          draggable={unref(draggable)}
+          draggable={
+            unref(currentFile).status === FileStatus.Completed &&
+            unref(draggable)
+          }
           onMousedown={eventStopPropagation}
           onDblclick={handleOpenFolder}
           data-path-name={unref(currentFile).path}
@@ -193,18 +227,14 @@ export const FileDir = defineComponent({
             <img
               src={unref(getCurrentFileThumbnail)}
               alt={unref(currentFile).name}
+              onDragstart={eventStop}
               ref={(ref) => {
                 imageRef.value = ref as HTMLImageElement;
               }}
             />
           </div>
           <div class="file-manager__file-item__info">
-            <div
-              class="file-manager__file-item__name"
-              title={unref(currentFile).name}
-            >
-              <NEllipsis line-clamp={3}>{unref(currentFile).name}</NEllipsis>
-            </div>
+            {renderFileRenameContext()}
           </div>
           <div class="border-state"></div>
         </div>
