@@ -1,6 +1,7 @@
 export enum FileAction {
   RENAME = "rename",
   DELETE = "delete",
+  CUT = "cut",
   COPY = "copy",
   MOVE = "move",
   UPLOAD = "upload",

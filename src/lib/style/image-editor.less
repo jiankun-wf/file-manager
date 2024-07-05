@@ -1,0 +1,68 @@
+
+.file-manager__image-editor {
+  --height: 60px;
+  width: 100vw;
+  height: 100vh;  
+  background-color: #fff;
+  * { box-sizing: border-box; }
+
+  .file-manager__image-editor-header { 
+     height: var(--height);
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     border-bottom: 1px solid rgba(231, 231, 231, 1);
+     padding: 0 12px;
+
+     .file-manager__image-editor-header-back {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border-radius: 4px;
+        color: #666;
+        &:hover {
+          color: #333;  
+          background-color: rgb(243, 243, 245);
+        }
+
+     }
+
+     .file-manager__image-editor-header-action {
+        display: flex;
+
+        button + button { 
+          margin-left: 12px;
+        }
+     }
+  }
+
+
+
+  .file-manager__image-editor-body {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    
+    .file-manager__image-editor-body-slider {
+       width: 300px;
+       border-right: 1px solid rgba(231, 231, 231, 1);
+    }
+
+    .file-manager__image-editor-body-stage {
+        flex: 1;
+        height: calc(100vh - var(--height));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        cropper-canvas {
+            width: 100%;
+            height: 100%;
+        }
+    }
+  }
+}

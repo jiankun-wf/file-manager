@@ -17,7 +17,7 @@ import "../style/dir-tree.less";
 import { DirIcon } from "../icons/DirIcon";
 import { eventStop, eventStopPropagation } from "../utils/event";
 import { FileDirItem, FileDirTreeContext } from "../types";
-import { useDirRename } from "../hooks/useDirRename";
+import { useDirRename } from "../hooks/useRename";
 import { eventBus } from "../utils/pub-sub";
 import { NK } from "../enum";
 import { useContext } from "../utils/context";
@@ -248,7 +248,7 @@ export const DirTreeItem = defineComponent({
     const handleDriDragStart = (e: DragEvent) => {
       eventStopPropagation(e);
       const path = unref(dirPath);
-      contextDraggingArgs.value.dragging = "dir";
+      contextDraggingArgs.value.dragging = NK.INNER_DRAG_FILE_TYPE_DIR;
       contextDraggingArgs.value.draggingPath = path;
       if (e.dataTransfer) {
         setDragStyle(e, NK.INNER_DRAG_DIR, props.data[label]);

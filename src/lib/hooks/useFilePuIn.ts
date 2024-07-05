@@ -1,9 +1,11 @@
-import { FileItem } from "@/lib/types";
-import { Ref, unref } from "vue";
+import { FileItem, FileItemType } from "@/lib/types";
+import { nextTick, Ref, unref } from "vue";
 import { commandUpload } from "../command/file/upload";
-import { getFileExtension } from "../utils/extension";
+import { makeFileName } from "../utils/extension";
 import { FileStatus } from "../enum/file-status";
 import { fileToBase64, isImage } from "../utils/minetype";
+import { NK } from "../enum";
+import { eventBus } from "../utils/pub-sub";
 
 export const useFilePutIn = ({
   fileList,
@@ -11,50 +13,46 @@ export const useFilePutIn = ({
   fileList: Ref<FileItem[]>;
   currentPath: Ref<string>;
 }) => {
-  const handlePutIn = async (files: FileList | File[], currentPath: string) => {
+  const handlePutIn = async (
+    files: FileList | File[],
+    currentPath: string,
+    type: FileItemType
+  ) => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      const newFileName = makeFileName(files[i].name, unref(fileList), type);
+
       const fileItem: FileItem = {
-        name: file.name,
+        name: newFileName,
         size: file.size,
         type: file.type,
         status: FileStatus.Ready,
         __FILE: file,
-        path: "",
-        mockname: file.name,
+        path: `${unref(currentPath)}/${newFileName}`,
+        mockname: newFileName,
         nameing: false,
         progress: 0,
         url: isImage(file.type) ? await fileToBase64(file) : "",
-        dir: false,
+        dir: type === NK.FILE_DIR_FLAG_TYPE,
+        __isnew: true,
       };
       fileList.value.push(fileItem);
 
-      const currentFile = fileList.value[fileList.value.length - 1];
-
-      const { fileName: currentFileName, fileExt: currentFileExt } =
-        getFileExtension(currentFile.name)!;
-
-      const names = unref(fileList).filter((f) => {
-        if (f.dir) return false;
-        const { fileName } = getFileExtension(f.name)!;
-        return fileName.replace(/\([0-9]+\)$/, "") === currentFileName;
-      });
-      if (names.length > 1) {
-        // 如果文件名重复，则自动重命名，与windows系统默认行为一致 添加（1）
-        const nname = `${currentFileName}(${
-          names.length - 1
-        }).${currentFileExt}`;
-        // 获取文件后缀名
-
-        currentFile.name = nname;
-        currentFile.mockname = nname;
-        currentFile.__FILE = new File([currentFile.__FILE], nname);
-      }
-      // commandUpload(currentFile, currentPath);
+      const currentFile = unref(fileList).find(
+        (f) => f.path === fileItem.path
+      )!;
+      if (!currentFile) return;
 
       // 如果为图片文件，则需要先编辑
-      if (!/image/.test(currentFile.type)) {
+      if (!currentFile.dir && !/image/.test(currentFile.type)) {
         commandUpload(currentFile, currentPath);
+      } else if (currentFile.dir) {
+        nextTick(() => {
+          eventBus.$scope(
+            NK.FILE_RENAME_EVENT,
+            `file_path_${currentFile.path}`
+          );
+        });
       }
     }
   };
