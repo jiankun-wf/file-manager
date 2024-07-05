@@ -3,13 +3,13 @@ import {
   CloudUploadOutlined,
   CopyOutlined,
   DeleteFilled,
-  DownloadOutlined,
   DragOutlined,
 } from "@vicons/antd";
 
 import { NButton, NIcon, useDialog, useMessage } from "naive-ui";
 import { useContext } from "../utils/context";
 import { commandDelete } from "../command/file/delete";
+import { NK } from "../enum";
 export const Toolbar = defineComponent({
   name: "Toolbar",
   setup() {
@@ -39,7 +39,7 @@ export const Toolbar = defineComponent({
     const handleUploadFiles = async () => {
       const files = await chooseFile();
       if (!files) return;
-      filePutIn(files, unref(currentPath));
+      filePutIn(files, unref(currentPath), NK.FILE_FLAG_TYPE);
     };
 
     const handleCopy = () => {

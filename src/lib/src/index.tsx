@@ -17,6 +17,7 @@ import { useFileChange } from "../hooks/useFileChange";
 import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
 
 import "../style/index.less";
+import { useImageEdit } from "../hooks/useImageEdit";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -84,6 +85,9 @@ export const FileManager = defineComponent({
       selectedFiles,
       fileList,
     });
+    // 图片编辑
+    const { render: renderImageEditModal, open: handleEditImage } =
+      useImageEdit();
 
     createContext({
       currentPath, // 当前目录路径
@@ -101,6 +105,7 @@ export const FileManager = defineComponent({
       fileRename, // 文件重命名
       copyMode, // 文件剪切、复制模式
       latestCopySelectedFiles, // 最近复制、剪切的文件列表
+      openImageEditor: handleEditImage, // 打开图片编辑器
       emit, // 事件触发器
     });
 
@@ -125,7 +130,8 @@ export const FileManager = defineComponent({
           {renderRenameContext(id)}
           {/* 移动 || 复制 */}
           {renderChangeContext(id)}
-          {/* 文件详情tooltip */}
+          {/* 图像编辑 */}
+          {renderImageEditModal()}
         </div>
       </Provider>
     );

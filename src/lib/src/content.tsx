@@ -11,6 +11,7 @@ import { FileStatus } from "../enum/file-status";
 import { EmptyIcon } from "../icons/Empty";
 import { eventStop } from "../utils/event";
 import { useSelectedFileDelete } from "../hooks/useSelectedDel";
+import { NK } from "../enum";
 
 export const Content = defineComponent({
   name: "Content",
@@ -29,7 +30,7 @@ export const Content = defineComponent({
     useFileDragIn({
       scope: `#${id}`,
       onFileDragIn: (files: FileList) => {
-        filePutIn(files, unref(currentPath));
+        filePutIn(files, unref(currentPath), NK.FILE_FLAG_TYPE);
       },
     });
 

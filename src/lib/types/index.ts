@@ -1,5 +1,7 @@
 import { Ref } from "vue";
 import { FileStatus } from "../enum/file-status";
+import { NK } from "../enum";
+import { FileAction } from "../enum/file-action";
 
 export interface FileDirItem {
   name: string;
@@ -16,7 +18,7 @@ export interface FileManagerOptions {
   dirList: FileDirItem[];
   draggable: boolean;
   contextDraggingArgs: {
-    dragging: "dir" | "file" | null;
+    dragging: Extract<NK, NK.FILE_FLAG_TYPE | NK.FILE_DIR_FLAG_TYPE> | null;
     draggingPath: "";
   };
   fileList: FileItem[];
@@ -29,22 +31,32 @@ export interface FileManagerContext {
   selectedFiles: Ref<FileItem[]>;
   draggable: Ref<boolean>;
   contextDraggingArgs: Ref<{
-    dragging: "dir" | "file" | "mixed" | null;
+    dragging: Extract<
+      NK,
+      | NK.INNER_DRAG_FILE_TYPE_FILE
+      | NK.INNER_DRAG_FILE_TYPE_DIR
+      | NK.INNER_DRAG_FILE_TYPE_MIXED
+    > | null;
     draggingPath: string;
   }>;
   addSelectFile: (file: FileItem) => void;
   fileList: Ref<FileItem[]>;
   dirList: Ref<FileDirItem[]>;
-  filePutIn: (files: FileList | File[], path: string) => Promise<void>;
+  filePutIn: (
+    files: FileList | File[],
+    path: string,
+    type: FileItemType
+  ) => Promise<void>;
   chooseFile: () => Promise<File[] | null>;
   fileRename: (file: FileItem) => void;
-  copyMode: Ref<"copy" | "cut">;
+  copyMode: Ref<Extract<FileAction, FileAction.COPY | FileAction.CUT>>;
   latestCopySelectedFiles: Ref<FileItem[]>;
   openFileChangeModal: (data: {
     file: FileItem[];
-    action: "move" | "copy";
+    action: Extract<FileAction, FileAction.MOVE | FileAction.COPY>;
     currentDirPath: string;
   }) => void;
+  openImageEditor: (file: FileItem) => void;
   emit: Emit;
 }
 
@@ -55,11 +67,11 @@ export interface FileDirTreeContext {
   currentValue: Ref<string>;
 }
 
-export interface FileItem {
+export interface FileItem<T extends "dir" | "file" = "file"> {
   name: string;
   path: string;
   size: number;
-  type: string;
+  type: T extends "file" ? string : undefined;
   id?: string;
   uploadTime?: number;
   __FILE: File;
@@ -75,3 +87,8 @@ export interface FileItem {
 export type FileSelectMode = "single" | "multiple";
 
 export type Emit = (event: "fileSelect" | "fileMove", ...args: any[]) => void;
+
+export type FileItemType = Extract<
+  NK,
+  NK.FILE_FLAG_TYPE | NK.FILE_DIR_FLAG_TYPE
+>;
