@@ -26,7 +26,6 @@ import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
 import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
 import { commandDirMove } from "../command/dir/move";
-import { getDirsList } from "../api";
 
 export const DirTree = defineComponent({
   name: "DirTree",
@@ -130,7 +129,7 @@ export const DirTreeItem = defineComponent({
     const elementRef = ref<HTMLDivElement>();
 
     // 文件管理器暴漏的变量
-    const { dirList, contextDraggingArgs, fileList, currentPath } =
+    const { dirList, contextDraggingArgs, fileList, currentPath, goPath } =
       useContext();
 
     // 目录配置
@@ -147,17 +146,6 @@ export const DirTreeItem = defineComponent({
       props.parentList ?? dirList,
       props.parent
     );
-
-    const getDirs = async () => {
-      try {
-        const res = (await getDirsList()) as unknown as FileDirItem[];
-        if (res.length) {
-          currentPath.value = res[0].path;
-        }
-        dirList.value = res;
-      } finally {
-      }
-    };
 
     useDragInToggle({
       elementRef,
@@ -230,7 +218,7 @@ export const DirTreeItem = defineComponent({
       if (unref(getIsActive)) {
         return;
       }
-      currentValue.value = props.data[value];
+      goPath(props.data[value]);
       emit("update:value", props.data[value]);
     };
 

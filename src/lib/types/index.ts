@@ -57,6 +57,8 @@ export interface FileManagerContext {
     currentDirPath: string;
   }) => void;
   openImageEditor: (file: FileItem) => void;
+  goPath: (path: string, replace?: boolean) => void;
+  loadDirContent: () => Promise<any>;
   emit: Emit;
 }
 

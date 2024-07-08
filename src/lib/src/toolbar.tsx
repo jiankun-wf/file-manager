@@ -1,4 +1,4 @@
-import { defineComponent, unref } from "vue";
+import { defineComponent, renderSlot, unref } from "vue";
 import {
   CloudUploadOutlined,
   CopyOutlined,
@@ -10,9 +10,10 @@ import { NButton, NIcon, useDialog, useMessage } from "naive-ui";
 import { useContext } from "../utils/context";
 import { commandDelete } from "../command/file/delete";
 import { NK } from "../enum";
+import { FileAction } from "../enum/file-action";
 export const Toolbar = defineComponent({
   name: "Toolbar",
-  setup() {
+  setup(_, { slots }) {
     const {
       selectedFiles,
       fileList,
@@ -45,7 +46,7 @@ export const Toolbar = defineComponent({
     const handleCopy = () => {
       openFileChangeModal({
         file: unref(selectedFiles),
-        action: "copy",
+        action: FileAction.COPY,
         currentDirPath: unref(currentPath),
       });
     };
@@ -53,13 +54,14 @@ export const Toolbar = defineComponent({
     const handleMove = () => {
       openFileChangeModal({
         file: unref(selectedFiles),
-        action: "move",
+        action: FileAction.MOVE,
         currentDirPath: unref(currentPath),
       });
     };
 
     return () => (
       <div class="file-manager__toolbar">
+        {slots.prefix && renderSlot(slots, "prefix")}
         <NButton onClick={handleUploadFiles}>
           {{
             icon: () => (

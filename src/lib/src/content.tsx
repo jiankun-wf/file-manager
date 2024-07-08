@@ -22,7 +22,8 @@ export const Content = defineComponent({
 
     const dialog = useDialog();
 
-    const { currentPath, selectedFiles, fileList, filePutIn } = useContext();
+    const { currentPath, selectedFiles, fileList, filePutIn, loadDirContent } =
+      useContext();
 
     const props = { id } as any;
 
@@ -46,22 +47,12 @@ export const Content = defineComponent({
 
     const getCurrentDirFiles = async () => {
       if (!unref(currentPath)) return;
-      queryLoading.value = true;
-      const files = (await getDirContent(
-        unref(currentPath)
-      )) as unknown as FileItem[];
-      if (!files.length) {
-        fileList.value = [];
-      } else {
-        fileList.value = files.map((i: any) => ({
-          ...i,
-          mockname: i.name,
-          nameing: false,
-          status: FileStatus.Completed,
-        }));
+      try {
+        queryLoading.value = true;
+        await loadDirContent();
+      } finally {
+        queryLoading.value = false;
       }
-
-      queryLoading.value = false;
     };
 
     watch(

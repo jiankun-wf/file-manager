@@ -48,6 +48,7 @@ export const FileDir = defineComponent({
       currentPath,
       fileList,
       dirList,
+      goPath,
     } = useContext();
 
     const currentFile = toRef(() => props.currentFile);
@@ -124,7 +125,10 @@ export const FileDir = defineComponent({
 
     const handleOpenFolder = (event: MouseEvent) => {
       eventStop(event);
-      currentPath.value = unref(currentFile).path;
+
+      goPath(unref(currentFile).path);
+
+      // currentPath.value = unref(currentFile).path;
     };
 
     useDragInToggle({
@@ -173,7 +177,6 @@ export const FileDir = defineComponent({
 
     const { renderFileRenameContext, handleRename } = useFileRename({
       currentFile: currentFile,
-      currentPath,
       fileList,
     });
 

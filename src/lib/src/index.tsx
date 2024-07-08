@@ -18,6 +18,8 @@ import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
 
 import "../style/index.less";
 import { useImageEdit } from "../hooks/useImageEdit";
+import { useBreadcrumb } from "../hooks/useBreadcrumb";
+import { useDirFiles } from "../hooks/useDirFiles";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -45,7 +47,6 @@ export const FileManager = defineComponent({
       viewType,
       draggable,
       dirList,
-      fileList,
       contextDraggingArgs,
     } = toRefs(
       reactive<FileManagerOptions>({
@@ -60,6 +61,14 @@ export const FileManager = defineComponent({
       })
     );
 
+    const { fileList, loadDirContent } = useDirFiles({
+      currentPath,
+    });
+    // 面包屑
+    const { render: renderBreadcrumb, to } = useBreadcrumb({
+      currentPath,
+      loadDirContent,
+    });
     // 文件选择 点击、按住ctrl多选
     const { addSelectFile } = useFileSelect({
       selectedFiles,
@@ -78,7 +87,6 @@ export const FileManager = defineComponent({
     const { fileChange, renderChangeContext } = useFileChange({
       currentPath,
     });
-
     // 文件剪切、复制插件
     const { copyMode, latestCopySelectedFiles } = useFileCutAndCopy({
       currentPath,
@@ -106,13 +114,19 @@ export const FileManager = defineComponent({
       copyMode, // 文件剪切、复制模式
       latestCopySelectedFiles, // 最近复制、剪切的文件列表
       openImageEditor: handleEditImage, // 打开图片编辑器
+      goPath: to, // 跳转
+      loadDirContent, // 加载目录内容
       emit, // 事件触发器
     });
 
     return () => (
       <Provider mount-id={`#${id}`}>
         <div class="file-manager" id={id}>
-          <Toolbar />
+          <Toolbar>
+            {{
+              prefix: renderBreadcrumb(),
+            }}
+          </Toolbar>
           <div class="file-manager-content">
             <NSplit default-size={0.18} min={0.15} max={0.8}>
               {{

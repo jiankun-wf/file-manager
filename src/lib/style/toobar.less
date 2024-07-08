@@ -4,7 +4,85 @@
   align-items: center;
   justify-content: flex-start;
   padding: 0 12px;
-  gap: 12px;
   border-right: 1px solid var(--border);
-}
+  background-color: var(--bg);
 
+  .file-manager-breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-right: 20px;
+
+    .file-manager-breadcrumb__toolbar {
+      display: flex;
+      align-items: center;
+      margin-right: 16px;
+      column-gap: 10px;
+
+      .file-manager-breadcrumb__toolbar-item {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        cursor: pointer;
+        border-radius: var(--radius);
+        align-items: center;
+        justify-content: center;
+        transition: background-color var(--duration) ease;
+
+        &:not(.is-disabled):hover {
+          background-color: var(--white);
+        }
+
+        &.is-disabled {
+          cursor: not-allowed;
+          color: var(--placeholder);
+        }
+      }
+    }
+
+    .file-manager-breadcrumb__content {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      background-color: var(--white);
+      padding: 4px 16px;
+      border-radius: var(--radius);
+      .file-manager-breadcrumb__item {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+        border: 1px solid transparent;
+        transition: border var(--duration) ease;
+        border-radius: var(--radius);
+
+        &:not(:first-child) {
+          margin-left: 1px;
+        }
+
+        &:hover {
+          border-color: var(--border);
+        }
+
+        .file-manager-breadcrumb__item-separator {
+          fill: var(--title);
+          width: 24px;
+          height: 24px;
+          padding: 5px 0;
+        }
+
+        .file-manager-breadcrumb__item-text {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--title);
+          transition: background-color var(--duration) ease;
+          cursor: pointer;
+          padding: 5px 12px;
+          &:hover {
+            background-color: var(--bg);
+          }
+        }
+      }
+    }
+  }
+}

@@ -19,7 +19,7 @@ export const Slider = defineComponent({
   setup() {
     const dialog = useDialog();
 
-    const { currentPath, dirList } = useContext();
+    const { currentPath, dirList, goPath } = useContext();
 
     const contextMenu = ref(getDirContextMenus(false));
     const dirExpandKeys = ref<string[]>([]);
@@ -78,14 +78,14 @@ export const Slider = defineComponent({
     };
 
     const handleSelectedKeysChange = (key: string) => {
-      currentPath.value = key;
+      goPath(key);
     };
 
     const getDirs = async () => {
       try {
         const res = (await getDirsList()) as unknown as FileDirItem[];
         if (res.length) {
-          currentPath.value = res[0].path;
+          goPath(res[0].path);
         }
         dirList.value = res;
       } finally {
