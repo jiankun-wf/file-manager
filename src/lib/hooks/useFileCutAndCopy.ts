@@ -42,7 +42,7 @@ export const useFileCutAndCopy = ({
     }
 
     switch (unref(copyMode)) {
-      case "cut":
+      case FileAction.CUT:
         const ncutFiles = files.map((file) =>
           cloneDeep({
             ...file,
@@ -59,7 +59,7 @@ export const useFileCutAndCopy = ({
         });
 
         return;
-      case "copy":
+      case FileAction.COPY:
         const nfiles = files.map((file) =>
           cloneDeep({
             ...file,
@@ -82,7 +82,7 @@ export const useFileCutAndCopy = ({
     trigger(FileAction.COPY);
   };
   const cutFile = () => {
-    trigger(FileAction.COPY);
+    trigger(FileAction.CUT);
   };
 
   onMounted(() => {

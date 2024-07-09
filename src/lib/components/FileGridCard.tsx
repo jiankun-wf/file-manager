@@ -100,7 +100,6 @@ export const FileGridCard = defineComponent({
     const {
       fileList,
       selectedFiles,
-      fileRename,
       openFileChangeModal,
       currentPath,
       openImageEditor,
@@ -158,7 +157,7 @@ export const FileGridCard = defineComponent({
 
     const onContextMenu = (event: MouseEvent, file: FileItem) => {
       const { path, type } = file;
-      if (!path) {
+      if (file.status !== FileStatus.Completed) {
         if (isImage(type)) {
           contextMenu.value = contextMenuOptions.slice(4);
         } else {
@@ -215,7 +214,6 @@ const FileGridCardItem = defineComponent({
       copyMode,
       latestCopySelectedFiles,
       contextDraggingArgs,
-      currentPath,
       fileList,
     } = useContext();
 
@@ -290,7 +288,6 @@ const FileGridCardItem = defineComponent({
 
     const { renderFileRenameContext, handleRename } = useFileRename({
       currentFile: currentFile,
-      currentPath,
       fileList,
     });
 

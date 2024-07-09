@@ -12,7 +12,7 @@
       justify-content: flex-start;
       height: 38px;
       line-height: 38px;
-      transition: background-color 0.3s ease-in-out;
+      transition: background-color var(--duration) ease-in-out;
       border-radius: var(--radius);
       .file-manager-dir__tree-item-icon {
         font-size: 18px;
@@ -24,9 +24,16 @@
         flex: 1;
       }
       .file-manager-dir__tree-item-expand {
-        font-size: 14px;
         cursor: pointer;
-        transition: transform 0.3s ease-in-out;
+        border-radius: 4px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 6px;
+        border: 1px solid transparent;
+
+        transition: transform var(--duration) ease-in-out;
+
         &.is-expand {
           transform: rotate(90deg);
         }
