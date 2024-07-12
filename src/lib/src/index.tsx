@@ -132,9 +132,6 @@ export const FileManager = defineComponent({
               {{
                 1: () => <Slider />,
                 2: () => <Content />,
-                "resize-trigger": () => (
-                  <div class="file-manager-resize-triiger"></div>
-                ),
               }}
             </NSplit>
           </div>

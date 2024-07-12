@@ -27,7 +27,7 @@ import { isImage } from "../utils/minetype";
 import { useUploadProgress } from "../hooks/useUploadProgress";
 import { FileAction } from "../enum/file-action";
 import { commandDelete } from "../command/file/delete";
-import { NEllipsis, useDialog, useMessage } from "naive-ui";
+import { useDialog, useMessage } from "naive-ui";
 import { NK } from "../enum";
 import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
 import { FileDir } from "./FileDir";
@@ -156,7 +156,7 @@ export const FileGridCard = defineComponent({
     });
 
     const onContextMenu = (event: MouseEvent, file: FileItem) => {
-      const { path, type } = file;
+      const { type } = file;
       if (file.status !== FileStatus.Completed) {
         if (isImage(type)) {
           contextMenu.value = contextMenuOptions.slice(4);

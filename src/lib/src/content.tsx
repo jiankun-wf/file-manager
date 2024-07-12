@@ -9,6 +9,11 @@ import { EmptyIcon } from "../icons/Empty";
 import { eventStop } from "../utils/event";
 import { useSelectedFileDelete } from "../hooks/useSelectedDel";
 import { NK } from "../enum";
+import { useContextMenu } from "../hooks/useContextMenu";
+import { makeFileName } from "../utils/extension";
+import { FileAction } from "../enum/file-action";
+import { renderIcon } from "../utils/icon";
+import { FolderOpenFilled } from "@vicons/antd";
 
 export const Content = defineComponent({
   name: "Content",
@@ -42,6 +47,43 @@ export const Content = defineComponent({
       dialog,
     });
 
+    const handleContextMenuSelect = (...args: any[]) => {
+      const [key] = args;
+      switch (key) {
+        case FileAction.NEW_FOLDER:
+          const newFileName = makeFileName(
+            "新建文件夹",
+            unref(fileList),
+            NK.FILE_DIR_FLAG_TYPE
+          );
+
+          filePutIn(
+            [
+              { name: newFileName, size: 0, type: undefined },
+            ] as unknown as File[],
+            unref(currentPath),
+            NK.FILE_DIR_FLAG_TYPE
+          );
+      }
+    };
+
+    const optionsRef = ref([
+      {
+        label: "新建文件夹",
+        key: FileAction.NEW_FOLDER,
+        icon: renderIcon(FolderOpenFilled),
+      },
+    ]);
+
+    const { renderContextMenu, handleContextMenu } = useContextMenu({
+      options: optionsRef,
+      onSelect: handleContextMenuSelect,
+    });
+
+    const onContextmenu = (event: MouseEvent) => {
+      handleContextMenu(event);
+    };
+
     const getCurrentDirFiles = async () => {
       if (!unref(currentPath)) return;
       try {
@@ -69,14 +111,17 @@ export const Content = defineComponent({
         onContextmenu={eventStop}
       >
         <NSpin size="large" show={unref(queryLoading)}>
-          {unref(fileList).length <= 0 ? (
-            <div class="file-manager__empty">
-              <EmptyIcon />
-              <span class="file-manager__empty-text">当前目录暂无文件</span>
-            </div>
-          ) : (
-            <FileList />
-          )}
+          <div class="file-manager__content" onContextmenu={onContextmenu}>
+            {unref(fileList).length <= 0 ? (
+              <div class="file-manager__empty">
+                <EmptyIcon />
+                <span class="file-manager__empty-text">当前目录暂无文件</span>
+              </div>
+            ) : (
+              <FileList />
+            )}
+            {renderContextMenu()}
+          </div>
         </NSpin>
       </NScrollbar>
     );

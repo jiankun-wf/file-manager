@@ -2,7 +2,11 @@ import { computed, onMounted, Ref, ref, unref } from "vue";
 import { AreaSelectParams } from "../types/drag";
 import { FileItem } from "../types";
 import { isAreaIntersect } from "../utils/area";
-import { addMouseLeftEventListener, eventStop } from "../utils/event";
+import {
+  addMouseLeftEventListener,
+  eventStop,
+  eventStopPropagation,
+} from "../utils/event";
 import { FileStatus } from "../enum/file-status";
 
 export const useAreaSelect = ({
@@ -69,7 +73,7 @@ export const useAreaSelect = ({
   });
 
   const handleMoseDown = (e: MouseEvent) => {
-    eventStop(e);
+    eventStopPropagation(e);
     x.value = e.clientX;
     y.value = e.clientY;
     width.value = 0;
@@ -80,7 +84,7 @@ export const useAreaSelect = ({
   };
 
   const handleMoseMove = (e: MouseEvent) => {
-    eventStop(e);
+    eventStopPropagation(e);
     if (!unref(show)) return;
     const { clientX, clientY } = e;
     const ox = unref(x);
@@ -107,7 +111,7 @@ export const useAreaSelect = ({
   };
 
   const handleMoseUp = (e: MouseEvent) => {
-    eventStop(e);
+    eventStopPropagation(e);
     draggable.value = true;
     unref(scopeEl)!.classList.remove("is-selecting");
     const selectFiles = getSelectFiles();

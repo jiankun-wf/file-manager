@@ -2,6 +2,7 @@ import { ComputedRef, onBeforeUnmount, onMounted, Ref, unref } from "vue";
 import { eventStop } from "../utils/event";
 import { debounce } from "lodash-es";
 import { NK } from "../enum";
+import { findParentPath } from "../utils/path";
 
 export const useDragInToggle = ({
   elementRef,
@@ -21,7 +22,7 @@ export const useDragInToggle = ({
   const in_handler = (event: DragEvent) => {
     eventStop(event);
     const { dragging, draggingPath } = unref(contextDraggingArgs);
-  
+
     if (!draggingPath) return;
     if (!dragging) return;
     //拖拽对象是否包含当前拖拽目录
@@ -29,7 +30,13 @@ export const useDragInToggle = ({
     // 当前拖拽对象 包含了本目录，那么不允许拖入，也不会触发拖入样式触发
     // 除此之外，可以正常出发拖入样式的切换
     const path_arr = draggingPath.split(NK.ARRAY_JOIN_SEPARATOR);
-    if (path_arr.some((p) => p === unref(dirPath))) return;
+    if (
+      path_arr.some(
+        // 目录等于当前目录 或者 父目录等于当前目录
+        (p) => p === unref(dirPath) || findParentPath(p) === unref(dirPath)
+      )
+    )
+      return;
 
     unref(elementRef)?.classList.add("dragging-in");
   };
@@ -49,7 +56,12 @@ export const useDragInToggle = ({
     if (!dragging) return;
 
     const path_arr = draggingPath.split(NK.ARRAY_JOIN_SEPARATOR);
-    if (path_arr.some((p) => p === unref(dirPath))) return;
+    if (
+      path_arr.some(
+        (p) => p === unref(dirPath) || findParentPath(p) === unref(dirPath)
+      )
+    )
+      return;
 
     onDrop?.(event);
   };

@@ -1,5 +1,5 @@
 import { NButton, NIcon, NModal, NPopover, NSlider } from "naive-ui";
-import { Fragment, reactive, ref, toRefs, unref } from "vue";
+import { Fragment, nextTick, reactive, ref, toRefs, unref } from "vue";
 import {
   ArrowLeftOutlined,
   SaveTwotone,
@@ -41,6 +41,8 @@ export const useImageEdit = () => {
   const originSrc = ref("");
   const currentSrc = ref("");
 
+  const originalTransform = ref<number[]>([]);
+
   const { rotateAngle, submitLoading } = toRefs(
     reactive({
       rotateAngle: 90,
@@ -61,6 +63,71 @@ export const useImageEdit = () => {
       currentSrc.value = file.url;
     }
     showRef.value = true;
+    nextTick(() => {
+      resizeCropperImage();
+    });
+  };
+
+  const resizeCropperImage = () => {
+    const url = unref(originSrc);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = $refs["cropper-canvas"] as HTMLCanvasElement;
+
+      // console.log($refs["cropper-image"].$getTransform());
+
+      const maxWidth = canvas.clientWidth - 40;
+      const maxHeight = canvas.clientHeight - 40;
+      const iWidth = img.width;
+      const iHeight = img.height;
+
+      if (iWidth > maxWidth || iHeight > maxHeight) {
+        const radioX = iWidth > maxWidth ? maxWidth / iWidth : 1;
+        const radioY = iHeight > maxHeight ? maxHeight / iHeight : 1;
+
+        const distanceX = maxWidth - iWidth;
+        const distanceY = maxHeight - iHeight;
+
+        $refs["cropper-image"].$setTransform(
+          radioX,
+          0,
+          0,
+          radioY,
+          distanceX / 2 + 20,
+          distanceY / 2 + 20
+        );
+        originalTransform.value = [
+          radioX,
+          0,
+          0,
+          radioY,
+          distanceX / 2 + 20,
+          distanceY / 2 + 20,
+        ];
+      } else {
+        const distanceX = maxWidth - iWidth;
+        const distanceY = maxHeight - iHeight;
+
+        $refs["cropper-image"].$setTransform(
+          1,
+          0,
+          0,
+          1,
+          distanceX / 2 + 20,
+          distanceY / 2 + 20
+        );
+
+        originalTransform.value = [
+          1,
+          0,
+          0,
+          1,
+          distanceX / 2 + 20,
+          distanceY / 2 + 20,
+        ];
+      }
+    };
+    img.src = url;
   };
 
   const handleCloseModal = () => {
@@ -119,7 +186,7 @@ export const useImageEdit = () => {
 
   const scaleImage = (type: "-" | "+" | "reset") => {
     if (type === "reset") {
-      $refs["cropper-image"].$center("contain");
+      $refs["cropper-image"].$transform(unref(originalTransform));
     } else if (type === "+") {
       $refs["cropper-image"].$scale(1.1, 1.1);
     } else {
@@ -309,7 +376,6 @@ export const useImageEdit = () => {
           scalable
           skewable
           translatable
-          initial-center-size="contain"
           class="transition-transform duration-150 ease-in-out"
         ></cropper-image>
         <cropper-handle
