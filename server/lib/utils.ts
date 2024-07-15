@@ -119,3 +119,19 @@ export const getRealPath = (path: string) => {
 export const getUrlPath = (url: string) => {
   return `http://${ip.address()}:5715/${getRealPath(url)}`;
 };
+
+export const makeNewFile = (filename: string, sameFiles: string[]) => {
+  if (sameFiles.length === 0) {
+    return filename;
+  }
+  const currentIndex = sameFiles.map((f) => {
+    const index = f.match(/\(\d+?\)/);
+    if (index) {
+      return parseInt(index[0].slice(1, -1));
+    }
+    return 0;
+  });
+  const n_index = Math.max(...currentIndex) + 1;
+
+  return `${filename}(${n_index})`;
+};

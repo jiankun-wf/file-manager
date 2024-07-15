@@ -10,8 +10,16 @@ import {
   getUrlPath,
   getRealPath,
   getDirContenet,
+  makeNewFile,
 } from "./utils.ts";
-import { rmSync, renameSync, readFileSync, mkdirSync, writeFileSync } from "fs";
+import {
+  rmSync,
+  renameSync,
+  readFileSync,
+  mkdirSync,
+  writeFileSync,
+  readdirSync,
+} from "fs";
 import mintype from "mime";
 import multer from "multer";
 
@@ -158,14 +166,23 @@ app.post("/dir-file", upload.single("file"), (req, res) => {
   }
   const { dir } = req.query;
 
-  const fullDir = getFullPath(dir as string, req.file.originalname);
+  const filename = req.file.originalname;
+  const dir_path = getFullPath(dir as string);
 
-  writeFileSync(fullDir, req.file.buffer);
+  const files = readdirSync(dir_path);
+  //
+  const sameFiles = files.filter(
+    (f) => f.replace(/\(\d+?\)$/, "") === filename
+  );
+
+  const n_file_path = join(dir_path, makeNewFile(filename, sameFiles));
+
+  writeFileSync(n_file_path, req.file.buffer);
 
   res.json(
     ReponseSuccess({
-      path: getRealPath(relative(assetsBasePath, fullDir)),
-      url: getUrlPath(relative(assetsBasePath, fullDir)),
+      path: getRealPath(relative(assetsBasePath, n_file_path)),
+      url: getUrlPath(relative(assetsBasePath, n_file_path)),
       uploadTime: new Date().getTime(),
     })
   );
