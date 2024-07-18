@@ -1,4 +1,4 @@
-import { defineComponent, ref, unref } from "vue";
+import { defineComponent, unref } from "vue";
 import { useContext } from "../utils/context";
 import { FileGridCard } from "./FileGridCard";
 import { FileGridList } from "./FileGridList";

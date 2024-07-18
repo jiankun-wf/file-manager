@@ -13,8 +13,7 @@ import { NK } from "../enum";
 import { useContext } from "../utils/context";
 import { eventStopPropagation, eventStop } from "../utils/event";
 import { resizeImage } from "../utils/resize";
-import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
-import { FileItem } from "../types";
+import { setDragStyle, setDragTransfer } from "../utils/drag";
 import { useDragInToggle } from "../hooks/useDragToggle";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
@@ -23,12 +22,13 @@ import { getShouldStartDragPaths } from "../utils/from-darg";
 import { FileStatus } from "../enum/file-status";
 import { useFileRename } from "../hooks/useRename";
 import { eventBus } from "../utils/pub-sub";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const FileDir = defineComponent({
   name: "FileDir",
   props: {
     currentFile: {
-      type: Object as PropType<FileItem>,
+      type: Object as PropType<FileManagerSpirit.FileItem>,
       required: true,
     },
   },
@@ -182,7 +182,12 @@ export const FileDir = defineComponent({
 
     onMounted(() => {
       const imgEl = unref(imageRef)!;
-      resizeImage(unref(getCurrentFileThumbnail), imgEl, 96, 116);
+      resizeImage(
+        unref(getCurrentFileThumbnail),
+        imgEl,
+        NK.IMAGE_LIMIT_MAX_WIDTH,
+        NK.IMAGE_LIMIT_MAX_HEIGHT
+      );
 
       eventBus.$listen(NK.FILE_RENAME_EVENT, {
         id: `file_path_${unref(dirPath)}`,

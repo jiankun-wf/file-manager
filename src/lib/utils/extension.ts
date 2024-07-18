@@ -1,5 +1,6 @@
 import { NK } from "../enum";
-import { FileItem, FileItemType } from "../types";
+import { FileItemType } from "../types";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const getFileExtension = (filename: string) => {
   const reg = /^(.+?)\.([a-zA-Z0-9]+)$/;
@@ -14,7 +15,7 @@ export const getFileExtension = (filename: string) => {
 
 export const makeFileName = (
   filename: string,
-  fileList: FileItem[],
+  fileList: FileManagerSpirit.FileItem[],
   type: FileItemType
 ) => {
   if (fileList.length === 0) {

@@ -1,23 +1,23 @@
-import { onBeforeMount, onMounted, ref, Ref, unref } from "vue";
-import { FileItem } from "../types";
+import { onBeforeMount, onMounted, ref, unref } from "vue";
 import hotkeys from "hotkeys-js";
 import { eventStop } from "../utils/event";
 import { commandCopy } from "../command/file/copy";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
 import { FileAction } from "../enum/file-action";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useFileCutAndCopy = ({
   currentPath,
   selectedFiles,
   fileList,
 }: {
-  currentPath: Ref<string>;
-  selectedFiles: Ref<FileItem[]>;
-  fileList: Ref<FileItem[]>;
+  currentPath: FileManagerSpirit.currentPath;
+  selectedFiles: FileManagerSpirit.selectedFiles;
+  fileList: FileManagerSpirit.fileList;
 }) => {
   const lastDirPath = ref("");
-  const latestCopySelectedFiles = ref<FileItem[]>([]);
+  const latestCopySelectedFiles = ref<FileManagerSpirit.FileItem[]>([]);
   const copyMode = ref<FileAction.COPY | FileAction.CUT>(FileAction.COPY);
 
   const trigger = (type: FileAction.COPY | FileAction.CUT) => {

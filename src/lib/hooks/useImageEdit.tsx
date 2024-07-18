@@ -31,12 +31,13 @@ CropperGrid.$define();
 CropperViewer.$define();
 
 import "@/lib/style/image-editor.less";
-import { FileItem } from "../types";
 import { exportCavansImage, fileToBase64 } from "../utils/minetype";
 import { uniqueId } from "lodash-es";
+import { FileManagerSpirit } from "../types/namespace";
+
 export const useImageEdit = () => {
   const showRef = ref(false);
-  const currentFileRef = ref<FileItem>();
+  const currentFileRef = ref<FileManagerSpirit.FileItem>();
 
   const originSrc = ref("");
   const currentSrc = ref("");
@@ -52,7 +53,7 @@ export const useImageEdit = () => {
 
   const $refs: Record<string, any> = {};
 
-  const handleEditImage = async (file: FileItem) => {
+  const handleEditImage = async (file: FileManagerSpirit.FileItem) => {
     currentFileRef.value = file;
     if (!file.url) {
       const u = await fileToBase64(file.__FILE);
@@ -133,8 +134,6 @@ export const useImageEdit = () => {
   const handleCloseModal = () => {
     showRef.value = false;
   };
-
-  const handleResetFile = () => {};
 
   const handleSaveFile = async () => {
     try {

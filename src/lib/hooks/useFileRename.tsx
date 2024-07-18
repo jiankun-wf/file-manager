@@ -1,16 +1,16 @@
 import { InputInst, NInput, NModal } from "naive-ui";
 import { nextTick, ref, unref } from "vue";
-import { FileItem } from "../types";
 import { commandRename } from "../command/file/rename";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useFileRename = () => {
   const show = ref(false);
   const name = ref<string | undefined>(void 0);
-  const currentFile = ref<FileItem | undefined>(void 0);
+  const currentFile = ref<FileManagerSpirit.FileItem | undefined>(void 0);
   const submitLoading = ref(false);
   const inputRef = ref<InputInst>();
 
-  const fileRename = (file: FileItem) => {
+  const fileRename = (file: FileManagerSpirit.FileItem) => {
     name.value = file.name;
     currentFile.value = file;
     show.value = true;

@@ -14,6 +14,8 @@ import { makeFileName } from "../utils/extension";
 import { FileAction } from "../enum/file-action";
 import { renderIcon } from "../utils/icon";
 import { FolderOpenFilled } from "@vicons/antd";
+import { DragInFileItem } from "../types/drag";
+import { fileTreeUpload } from "../command/tree-create";
 
 export const Content = defineComponent({
   name: "Content",
@@ -32,8 +34,12 @@ export const Content = defineComponent({
     // 文件拖入
     useFileDragIn({
       scope: `#${id}`,
-      onFileDragIn: (files: FileList) => {
-        filePutIn(files, unref(currentPath), NK.FILE_FLAG_TYPE);
+      onFileDragIn: (files: DragInFileItem[]) => {
+        fileTreeUpload({
+          data: files,
+          currentPath,
+          filePutIn,
+        });
       },
     });
 

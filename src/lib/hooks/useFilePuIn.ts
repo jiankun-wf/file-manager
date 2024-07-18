@@ -1,4 +1,4 @@
-import { FileItem, FileItemType } from "@/lib/types";
+import { FileItemType } from "@/lib/types";
 import { nextTick, Ref, unref } from "vue";
 import { commandUpload } from "../command/file/upload";
 import { makeFileName } from "../utils/extension";
@@ -6,23 +6,26 @@ import { FileStatus } from "../enum/file-status";
 import { fileToBase64, isImage } from "../utils/minetype";
 import { NK } from "../enum";
 import { eventBus } from "../utils/pub-sub";
+import { FileManagerSpirit } from "../types/namespace";
+import { commandDirMkdir } from "../command/dir/mkdir";
 
 export const useFilePutIn = ({
   fileList,
 }: {
-  fileList: Ref<FileItem[]>;
+  fileList: Ref<FileManagerSpirit.FileItem[]>;
   currentPath: Ref<string>;
 }) => {
-  const handlePutIn = async (
+  const handlePutIn: FileManagerSpirit.filePutIn = async (
     files: FileList | File[],
     currentPath: string,
-    type: FileItemType
+    type: FileItemType,
+    naming = true
   ) => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const newFileName = makeFileName(files[i].name, unref(fileList), type);
 
-      const fileItem: FileItem = {
+      const fileItem: FileManagerSpirit.FileItem = {
         name: newFileName,
         size: file.size,
         type: file.type,
@@ -47,12 +50,16 @@ export const useFilePutIn = ({
       if (!currentFile.dir && !/image/.test(currentFile.type)) {
         commandUpload(currentFile, currentPath);
       } else if (currentFile.dir) {
-        nextTick(() => {
-          eventBus.$scope(
-            NK.FILE_RENAME_EVENT,
-            `file_path_${currentFile.path}`
-          );
-        });
+        if (naming) {
+          nextTick(() => {
+            eventBus.$scope(
+              NK.FILE_RENAME_EVENT,
+              `file_path_${currentFile.path}`
+            );
+          });
+        } else {
+          commandDirMkdir(currentFile, currentFile.path);
+        }
       }
     }
   };

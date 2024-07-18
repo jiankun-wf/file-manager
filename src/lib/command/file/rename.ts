@@ -1,7 +1,7 @@
 import { renameFile } from "@/lib/api";
-import { FileItem } from "@/lib/types";
+import { FileManagerSpirit } from "@/lib/types/namespace";
 
-export const commandRename = async (file: FileItem, newname: string) => {
+export const commandRename = async (file: FileManagerSpirit.FileItem, newname: string) => {
   const { path: oldPath } = file;
 
   const { path, url, uploadTime } = (await renameFile(oldPath, newname)) as any;

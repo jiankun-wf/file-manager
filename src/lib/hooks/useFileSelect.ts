@@ -1,4 +1,3 @@
-import { FileItem, FileSelectMode } from "../types";
 import {
   getCurrentInstance,
   onMounted,
@@ -9,22 +8,24 @@ import {
 import hotkeys from "hotkeys-js";
 import { eventStop } from "../utils/event";
 import { FileStatus } from "../enum/file-status";
+import { FileManagerSpirit } from "../types/namespace";
+import { NK } from "../enum";
 
 export const useFileSelect = ({
   selectedFiles,
   selectMode,
 }: {
-  selectedFiles: Ref<FileItem[]>;
-  selectMode: Ref<FileSelectMode>;
+  selectedFiles: FileManagerSpirit.selectedFiles;
+  selectMode: FileManagerSpirit.selectMode;
 }) => {
   const keydown_handler = (e: KeyboardEvent) => {
     if (e.ctrlKey || e.key === "Control") {
-      selectMode.value = "multiple";
+      selectMode.value = NK.SELECT_MODE_MULTIPLE;
     }
   };
   const keyup_handler = (e: KeyboardEvent) => {
     if (e.ctrlKey || e.key === "Control") {
-      selectMode.value = "single";
+      selectMode.value = NK.SELECT_MODE_SINGLE;
     }
   };
 
@@ -38,7 +39,7 @@ export const useFileSelect = ({
     window.removeEventListener("keyup", keyup_handler);
   });
 
-  const addFile = (file: FileItem) => {
+  const addFile = (file: FileManagerSpirit.FileItem) => {
     if (unref(selectMode) === "multiple") {
       selectedFiles.value.push(file);
     } else {
@@ -53,8 +54,8 @@ export const useFileSelectAll = ({
   selectedFiles,
   fileList,
 }: {
-  selectedFiles: Ref<FileItem[]>;
-  fileList: Ref<FileItem[]>;
+  selectedFiles: Ref<FileManagerSpirit.FileItem[]>;
+  fileList: Ref<FileManagerSpirit.FileItem[]>;
 }) => {
   if (!getCurrentInstance()) return;
 

@@ -1,17 +1,17 @@
-import { onBeforeMount, onMounted, Ref, unref } from "vue";
-import { FileItem } from "../types";
+import { onBeforeMount, onMounted, unref } from "vue";
 import hotkeys from "hotkeys-js";
 import { eventStop } from "../utils/event";
 import { commandDelete } from "../command/file/delete";
 import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useSelectedFileDelete = ({
   selectedFiles,
   fileList,
   dialog,
 }: {
-  selectedFiles: Ref<FileItem[]>;
-  fileList: Ref<FileItem[]>;
+  selectedFiles: FileManagerSpirit.selectedFiles;
+  fileList: FileManagerSpirit.fileList;
   dialog: DialogApiInjection;
 }) => {
   onMounted(() => {

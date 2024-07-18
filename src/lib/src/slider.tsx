@@ -1,7 +1,6 @@
 import { defineComponent, nextTick, onMounted, ref, unref } from "vue";
 import { useContext } from "../utils/context";
 import { getDirsList } from "../api";
-import { FileDirItem } from "../types";
 import { DirTree } from "../components/DirTree";
 import { useContextMenu } from "../hooks/useContextMenu";
 import { getDirContextMenus } from "../utils/contextmenuOption";
@@ -13,6 +12,8 @@ import { useDialog } from "naive-ui";
 import { eventStop, eventStopPropagation } from "../utils/event";
 import { findTreeNode } from "../utils/tree-node";
 import { commandDirMove } from "../command/dir/move";
+import { commandDownload } from "../command/download";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const Slider = defineComponent({
   name: "Slider",
@@ -32,7 +33,7 @@ export const Slider = defineComponent({
           eventBus.$scope(NK.DIR_RENAME_EVENT, `dir_path_${dir.path}`);
           return;
         case FileAction.NEW_FOLDER:
-          const newDir: FileDirItem = {
+          const newDir: FileManagerSpirit.FileDirItem = {
             name: "新建文件夹",
             path: `${dir ? dir.path + "/" : ""}新建文件夹`,
             __new: true,
@@ -60,6 +61,8 @@ export const Slider = defineComponent({
           });
           return;
         case FileAction.DOWNLOAD:
+          commandDownload(dir.path);
+          return;
       }
     };
 
@@ -70,7 +73,7 @@ export const Slider = defineComponent({
 
     const onContextMenu = (
       event: MouseEvent,
-      dir?: FileDirItem,
+      dir?: FileManagerSpirit.FileDirItem,
       ...args: any[]
     ) => {
       contextMenu.value = getDirContextMenus(!!dir);
@@ -83,7 +86,8 @@ export const Slider = defineComponent({
 
     const getDirs = async () => {
       try {
-        const res = (await getDirsList()) as unknown as FileDirItem[];
+        const res =
+          (await getDirsList()) as unknown as FileManagerSpirit.FileDirItem[];
         if (res.length) {
           goPath(res[0].path);
         }

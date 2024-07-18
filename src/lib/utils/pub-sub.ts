@@ -1,3 +1,4 @@
+// 观察、订阅者模式。
 type Id = string | number;
 type HandlerFn = (...args: any[]) => void | Promise<any>;
 type HanlderConfig = {

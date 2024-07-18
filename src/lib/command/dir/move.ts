@@ -1,5 +1,5 @@
 import { getDirsList, moveDir } from "@/lib/api";
-import { FileDirItem } from "@/lib/types";
+import { FileManagerSpirit } from "@/lib/types/namespace";
 import { Ref } from "vue";
 
 export const commandDirMove = async ({
@@ -11,7 +11,7 @@ export const commandDirMove = async ({
   targetDirPath: string;
   fromDirPath: string;
   currentPath: Ref<string>;
-  dirList: Ref<FileDirItem[]>;
+  dirList: Ref<FileManagerSpirit.FileDirItem[]>;
 }) => {
   const { path } = (await moveDir({
     dir: fromDirPath,

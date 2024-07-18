@@ -11,6 +11,7 @@ import {
   getRealPath,
   getDirContenet,
   makeNewFile,
+  doDirToZip,
 } from "./utils.ts";
 import {
   rmSync,
@@ -18,7 +19,7 @@ import {
   readFileSync,
   mkdirSync,
   writeFileSync,
-  readdirSync,
+  statSync,
 } from "fs";
 import mintype from "mime";
 import multer from "multer";
@@ -169,13 +170,7 @@ app.post("/dir-file", upload.single("file"), (req, res) => {
   const filename = req.file.originalname;
   const dir_path = getFullPath(dir as string);
 
-  const files = readdirSync(dir_path);
-  //
-  const sameFiles = files.filter(
-    (f) => f.replace(/\(\d+?\)$/, "") === filename
-  );
-
-  const n_file_path = join(dir_path, makeNewFile(filename, sameFiles));
+  const n_file_path = join(dir_path, makeNewFile(filename, dir_path));
 
   writeFileSync(n_file_path, req.file.buffer);
 
@@ -254,27 +249,39 @@ app.put("/dir-file", (req, res) => {
 });
 
 // 下载文件
-app.get("/download", (req, res) => {
+app.get("/download", async (req, res) => {
   const { dir } = req.query;
 
   const path = getFullPath(dir as string);
 
-  //   读取文件的二进制内容
-  const f = readFileSync(path, { flag: "r", encoding: null });
-  //   获取mineType和文件名
+  const info = statSync(path);
 
-  const mine = mintype.getType(path);
+  if (!info.isDirectory()) {
+    // 读取文件的二进制内容
+    const f = readFileSync(path, { flag: "r", encoding: null });
+    // 获取mineType和文件名
 
-  //   发送给前端
-  res.setHeader(
-    "Content-Type",
-    mine || req.headers["content-type"] || "text/plain"
-  );
-  res.setHeader(
-    "Content-Disposition",
-    "attachment; filename=" + basename(path)
-  );
-  res.send(f);
+    const mine = mintype.getType(path);
+
+    // 发送给前端
+    res.setHeader(
+      "Content-Type",
+      mine || req.headers["content-type"] || "text/plain"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=" + basename(path)
+    );
+    res.send(f);
+  } else {
+    const zipContent = await doDirToZip(path);
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=" + encodeURIComponent(basename(path)) + ".zip"
+    );
+    res.send(zipContent);
+  }
 });
 
 app.listen(5715, () => {

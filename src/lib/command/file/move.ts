@@ -1,5 +1,5 @@
 import { moveFile } from "@/lib/api";
-import { FileItem } from "@/lib/types";
+import { FileManagerSpirit } from "@/lib/types/namespace";
 import { Ref } from "vue";
 
 export const commandMove = async ({
@@ -7,7 +7,7 @@ export const commandMove = async ({
   path,
   currentPath,
 }: {
-  file: FileItem[];
+  file: FileManagerSpirit.FileItem[];
   path: string;
   currentPath?: Ref<string>;
 }) => {

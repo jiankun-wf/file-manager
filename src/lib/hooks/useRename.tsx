@@ -1,17 +1,17 @@
 import { NInput, InputInst, NEllipsis } from "naive-ui";
 import { nextTick, Ref, ref, unref } from "vue";
-import { FileDirItem, FileItem } from "../types";
 import { commandDirRename } from "../command/dir/rename";
 import { commandDirMkdir } from "../command/dir/mkdir";
 import { makeFileName } from "../utils/extension";
 import { NK } from "../enum";
 import { commandRename } from "../command/file/rename";
 import { eventStop } from "../utils/event";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useDirRename = (
-  dir: FileDirItem,
-  dirParentList: Record<string, any>[] | Ref<FileDirItem[]>,
-  parent?: FileDirItem | Record<string, any>
+  dir: FileManagerSpirit.FileDirItem,
+  dirParentList: Record<string, any>[] | Ref<FileManagerSpirit.FileDirItem[]>,
+  parent?: FileManagerSpirit.FileDirItem | Record<string, any>
 ) => {
   const editable = ref(false);
   const inputValue = ref("");
@@ -87,8 +87,8 @@ export const useFileRename = ({
   currentFile,
   fileList,
 }: {
-  currentFile: Readonly<Ref<FileItem>>;
-  fileList: Ref<FileItem[]>;
+  currentFile: Readonly<Ref<FileManagerSpirit.FileItem>>;
+  fileList: FileManagerSpirit.fileList;
 }) => {
   const editable = ref(false);
   const inputValue = ref("");

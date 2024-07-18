@@ -1,10 +1,14 @@
-import { nextTick, Ref, ref, unref } from "vue";
-import { FileItem } from "../types";
+import { nextTick, ref, unref } from "vue";
 import { getDirContent as getDirFiles } from "@/lib/api/index";
 import { FileStatus } from "../enum/file-status";
+import { FileManagerSpirit } from "../types/namespace";
 
-export const useDirFiles = ({ currentPath }: { currentPath: Ref<string> }) => {
-  const fileList = ref<FileItem[]>([]);
+export const useDirFiles = ({
+  currentPath,
+}: {
+  currentPath: FileManagerSpirit.currentPath;
+}) => {
+  const fileList = ref<FileManagerSpirit.FileItem[]>([]);
 
   const getDirContent = async (clear: boolean = false) => {
     try {
@@ -14,7 +18,7 @@ export const useDirFiles = ({ currentPath }: { currentPath: Ref<string> }) => {
       }
       const files = (await getDirFiles(
         unref(currentPath)
-      )) as unknown as FileItem[];
+      )) as unknown as FileManagerSpirit.FileItem[];
       if (!files.length) {
         fileList.value = [];
       } else {

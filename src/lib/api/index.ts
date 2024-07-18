@@ -109,3 +109,16 @@ export const moveFile = (pts: { dir: string; newdir: string }[]) => {
     data: pts,
   });
 };
+
+export const downloadFile = (
+  dir: string,
+  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void
+) => {
+  return $http.request({
+    responseType: "blob",
+    method: "get",
+    url: `/download`,
+    params: { dir },
+    onDownloadProgress,
+  });
+};

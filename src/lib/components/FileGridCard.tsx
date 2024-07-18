@@ -9,7 +9,6 @@ import {
   unref,
   watch,
 } from "vue";
-import { FileItem } from "../types";
 import { resizeImage } from "../utils/resize";
 import { useContextMenu } from "../hooks/useContextMenu";
 import { useContext } from "../utils/context";
@@ -20,6 +19,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   UploadOutlined,
+  DownloadOutlined,
 } from "@vicons/antd";
 import { renderIcon } from "../utils/icon";
 import { eventStop, eventStopPropagation } from "../utils/event";
@@ -29,13 +29,15 @@ import { FileAction } from "../enum/file-action";
 import { commandDelete } from "../command/file/delete";
 import { useDialog, useMessage } from "naive-ui";
 import { NK } from "../enum";
-import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
+import { setDragStyle, setDragTransfer } from "../utils/drag";
 import { FileDir } from "./FileDir";
 import { FileStatus } from "../enum/file-status";
 import { commandUpload } from "../command/file/upload";
 import { getShouldStartDragPaths } from "../utils/from-darg";
 import { eventBus } from "../utils/pub-sub";
 import { useFileRename } from "../hooks/useRename";
+import { commandDownload } from "../command/download";
+import { FileManagerSpirit } from "../types/namespace";
 
 const contextMenuOptions = [
   {
@@ -58,6 +60,11 @@ const contextMenuOptions = [
     key: "d1",
   },
   {
+    label: "下载",
+    key: FileAction.DOWNLOAD,
+    icon: renderIcon(DownloadOutlined),
+  },
+  {
     label: "编辑图像",
     key: FileAction.IMAGE_EDIT,
     icon: renderIcon(FormOutlined),
@@ -70,19 +77,6 @@ const contextMenuOptions = [
     },
     icon: renderIcon(UploadOutlined, { color: "#0025ff" }),
   },
-  // {
-  //   label: "重新上传",
-  //   key: FileAction.UPLOAD,
-  //   props: {
-  //     style: { color: "#0025ff" },
-  //   },
-  //   icon: renderIcon(ReloadOutlined, { color: "#0025ff" }),
-  // },
-  // {
-  //   label: "下载",
-  //   key: FileAction.DOWNLOAD,
-  //   icon: renderIcon(DownloadOutlined),
-  // },
   {
     label: "删除",
     key: FileAction.DELETE,
@@ -145,6 +139,7 @@ export const FileGridCard = defineComponent({
           flag && message.success("删除成功");
           return;
         case FileAction.DOWNLOAD:
+          commandDownload(file.path);
           return;
       }
     };
@@ -155,17 +150,20 @@ export const FileGridCard = defineComponent({
       onSelect: contextMenuOnSelect,
     });
 
-    const onContextMenu = (event: MouseEvent, file: FileItem) => {
+    const onContextMenu = (
+      event: MouseEvent,
+      file: FileManagerSpirit.FileItem
+    ) => {
       const { type } = file;
       if (file.status !== FileStatus.Completed) {
         if (isImage(type)) {
-          contextMenu.value = contextMenuOptions.slice(4);
-        } else {
           contextMenu.value = contextMenuOptions.slice(5);
+        } else {
+          contextMenu.value = contextMenuOptions.slice(6);
         }
       } else {
         contextMenu.value = [
-          ...contextMenuOptions.slice(0, 4),
+          ...contextMenuOptions.slice(0, 5),
           ...contextMenuOptions.slice(-1),
         ];
       }
@@ -198,7 +196,7 @@ export const FileGridCard = defineComponent({
 const FileGridCardItem = defineComponent({
   props: {
     currentFile: {
-      type: Object as PropType<FileItem>,
+      type: Object as PropType<FileManagerSpirit.FileItem>,
       required: true,
     },
   },
@@ -293,7 +291,12 @@ const FileGridCardItem = defineComponent({
 
     onMounted(() => {
       const imgEl = unref(imageRef)!;
-      resizeImage(unref(getCurrentFileThumbnail), imgEl, 96, 116);
+      resizeImage(
+        unref(getCurrentFileThumbnail),
+        imgEl,
+        NK.IMAGE_LIMIT_MAX_WIDTH,
+        NK.IMAGE_LIMIT_MAX_HEIGHT
+      );
 
       eventBus.$listen(NK.FILE_RENAME_EVENT, {
         id: `file_path_${unref(currentFile).path}`,
@@ -321,10 +324,6 @@ const FileGridCardItem = defineComponent({
       }
     );
 
-    onMounted(() => {
-      const imgEl = unref(imageRef)!;
-      resizeImage(unref(getCurrentFileThumbnail), imgEl, 96, 116);
-    });
     return () => (
       <>
         <div

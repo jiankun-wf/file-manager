@@ -1,21 +1,28 @@
 import { onBeforeUnmount, onMounted, ref, unref } from "vue";
 import { eventStop } from "../utils/event";
+import { splitDragFiles } from "../utils/drag";
+import { DragInFileItem } from "../types/drag";
 
 export const useFileDragIn = ({
   scope,
   onFileDragIn,
 }: {
   scope: string;
-  onFileDragIn: (files: FileList) => void;
+  onFileDragIn: (files: DragInFileItem[]) => void;
 }) => {
   const elRef = ref<HTMLDivElement>();
 
-  const drop_event = (event: DragEvent) => {
+  const drop_event = async (event: DragEvent) => {
     eventStop(event);
-    const files = event.dataTransfer?.files;
-    if (files?.length) {
-      onFileDragIn(files);
+    const items = event.dataTransfer?.items;
+
+    if (!items?.length) {
+      return;
     }
+
+    const fileAndDirList = await splitDragFiles(items);
+
+    onFileDragIn?.(fileAndDirList);
   };
 
   onMounted(() => {

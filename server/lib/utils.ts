@@ -1,8 +1,9 @@
-import { readdirSync, statSync } from "fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { basename, dirname, join, relative, resolve } from "path";
 import mime from "mime";
 import { fileURLToPath } from "url";
 import ip from "ip";
+import JSZip from "jszip";
 
 export const assetsBasePath = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -120,7 +121,15 @@ export const getUrlPath = (url: string) => {
   return `http://${ip.address()}:5715/${getRealPath(url)}`;
 };
 
-export const makeNewFile = (filename: string, sameFiles: string[]) => {
+export const makeNewFile = (filename: string, dirpath: string) => {
+  if (!existsSync(dirpath)) return filename;
+
+  const files = readdirSync(dirpath);
+  //
+  const sameFiles = files.filter(
+    (f) => f.replace(/\(\d+?\)$/, "") === filename
+  );
+
   if (sameFiles.length === 0) {
     return filename;
   }
@@ -134,4 +143,20 @@ export const makeNewFile = (filename: string, sameFiles: string[]) => {
   const n_index = Math.max(...currentIndex) + 1;
 
   return `${filename}(${n_index})`;
+};
+
+export const doDirToZip = (dir_path: string, zipcontext?: JSZip) => {
+  const zip = zipcontext || new JSZip();
+  const files = readdirSync(dir_path);
+  files.forEach((file) => {
+    const fp = join(dir_path, file);
+    const fileStat = statSync(fp);
+    if (!fileStat.isDirectory()) {
+      zip.file(file, readFileSync(fp));
+    } else {
+      const c_folder = zip.folder(file);
+      doDirToZip(fp, c_folder!);
+    }
+  });
+  return zip.generateAsync({ type: "nodebuffer" });
 };

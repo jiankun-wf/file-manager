@@ -16,7 +16,6 @@ import { CaretRightOutlined } from "@vicons/antd";
 import "../style/dir-tree.less";
 import { DirIcon } from "../icons/DirIcon";
 import { eventStop, eventStopPropagation } from "../utils/event";
-import { FileDirItem, FileDirTreeContext } from "../types";
 import { useDirRename } from "../hooks/useRename";
 import { eventBus } from "../utils/pub-sub";
 import { NK } from "../enum";
@@ -24,8 +23,9 @@ import { useContext } from "../utils/context";
 import { useDragInToggle } from "../hooks/useDragToggle";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
-import { setDragStyle, setDragTransfer } from "../utils/setDragTransfer";
+import { setDragStyle, setDragTransfer } from "../utils/drag";
 import { commandDirMove } from "../command/dir/move";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const DirTree = defineComponent({
   name: "DirTree",
@@ -61,7 +61,7 @@ export const DirTree = defineComponent({
 
     const currentValue = ref(props.value);
 
-    provide<FileDirTreeContext>("treeContext", {
+    provide<FileManagerSpirit.DirContext>("treeContext", {
       expandKeys,
       configKey: {
         value: props.valueKey,
@@ -124,7 +124,7 @@ export const DirTreeItem = defineComponent({
   setup(props) {
     // treeContext变量
     const { currentValue, configKey, expandKeys, emit } =
-      inject<FileDirTreeContext>("treeContext")!;
+      inject<FileManagerSpirit.DirContext>("treeContext")!;
 
     const elementRef = ref<HTMLDivElement>();
 
@@ -142,7 +142,7 @@ export const DirTreeItem = defineComponent({
 
     // 目录重命名
     const { renderDirRenameInput, handleRename, naming } = useDirRename(
-      props.data as FileDirItem,
+      props.data as FileManagerSpirit.FileDirItem,
       props.parentList ?? dirList,
       props.parent
     );

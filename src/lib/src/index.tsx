@@ -1,25 +1,29 @@
+// 其他 utils
 import { createContext } from "../utils/context";
 import { defineComponent, PropType, reactive, toRefs } from "vue";
-import { FileManagerOptions } from "../types";
+import { uid } from "../utils/uid";
+// components
 import { Content } from "./content";
 import { Slider } from "./slider";
 import { Toolbar } from "./toolbar";
 import { NSplit } from "naive-ui";
-
-import { useFileSelect } from "../hooks/useFileSelect";
-import { uid } from "../utils/uid";
 import { Provider } from "../components/Provider";
+// hooks
+import { useFileSelect } from "../hooks/useFileSelect";
+import { useImageEdit } from "../hooks/useImageEdit";
+import { useBreadcrumb } from "../hooks/useBreadcrumb";
+import { useDirFiles } from "../hooks/useDirFiles";
 import { useFilePutIn } from "../hooks/useFilePuIn";
-
 import { useChooseFile } from "../hooks/useChooseFile";
 import { useFileRename } from "../hooks/useFileRename";
 import { useFileChange } from "../hooks/useFileChange";
 import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
+// types
+import type { FileManagerOptions } from "../types";
+import type { FileManagerSpirit } from "../types/namespace";
 
 import "../style/index.less";
-import { useImageEdit } from "../hooks/useImageEdit";
-import { useBreadcrumb } from "../hooks/useBreadcrumb";
-import { useDirFiles } from "../hooks/useDirFiles";
+import { NK } from "../enum";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -36,8 +40,8 @@ export const FileManager = defineComponent({
       default: "wr",
     },
   },
-  emits: ["fileMove", "fileSelect"],
-  setup(props, { emit }) {
+  emits: ["file-move", "file-select", "path-change"],
+  setup(props, { emit, expose }) {
     const id = uid("file-manager");
 
     const {
@@ -51,7 +55,7 @@ export const FileManager = defineComponent({
     } = toRefs(
       reactive<FileManagerOptions>({
         currentPath: props.currentPath,
-        selectMode: "single",
+        selectMode: NK.SELECT_MODE_SINGLE,
         selectedFiles: [],
         fileList: [],
         dirList: [],
@@ -117,6 +121,13 @@ export const FileManager = defineComponent({
       goPath: to, // 跳转
       loadDirContent, // 加载目录内容
       emit, // 事件触发器
+    });
+
+    expose<FileManagerSpirit.Dispose>({
+      currentPath,
+      goPath: to,
+      filePutIn: handlePutIn,
+      chooseFile,
     });
 
     return () => (

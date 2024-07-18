@@ -1,4 +1,4 @@
-import { computed, ref, Ref, unref, watch } from "vue";
+import { computed, ref, unref } from "vue";
 import {
   RightOutlined,
   ArrowLeftOutlined,
@@ -6,13 +6,14 @@ import {
   ReloadOutlined,
 } from "@vicons/antd";
 import { NIcon } from "naive-ui";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useBreadcrumb = ({
   currentPath,
   loadDirContent,
 }: {
-  currentPath: Ref<string>;
-  loadDirContent: (clear?: boolean) => Promise<any>;
+  currentPath: FileManagerSpirit.currentPath;
+  loadDirContent: FileManagerSpirit.loadDirContent;
 }) => {
   const pathHistory = ref<string[]>([]);
   const pathHistoryPosition = ref(0);

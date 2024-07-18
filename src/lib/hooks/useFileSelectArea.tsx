@@ -1,13 +1,11 @@
 import { computed, onMounted, Ref, ref, unref } from "vue";
-import { AreaSelectParams } from "../types/drag";
-import { FileItem } from "../types";
 import { isAreaIntersect } from "../utils/area";
 import {
   addMouseLeftEventListener,
-  eventStop,
   eventStopPropagation,
 } from "../utils/event";
 import { FileStatus } from "../enum/file-status";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useAreaSelect = ({
   scope,
@@ -17,9 +15,9 @@ export const useAreaSelect = ({
 }: {
   scope: string;
   draggable: Ref<boolean>;
-  fileList: Ref<FileItem[]>;
-  selectedFiles: Ref<FileItem[]>;
-  onEnd?: (files: FileItem[]) => void;
+  fileList: FileManagerSpirit.fileList;
+  selectedFiles: FileManagerSpirit.selectedFiles;
+  onEnd?: (files: FileManagerSpirit.FileItem[]) => void;
 }) => {
   const scopeEl = ref<HTMLElement>();
   const x = ref(0);
@@ -126,7 +124,7 @@ export const useAreaSelect = ({
     // 抛出选择区域的面积
     const el = unref(areaRef)!;
 
-    const position: AreaSelectParams = {
+    const position: FileManagerSpirit.AreaRect = {
       top: Math.max(el.offsetTop, 0),
       left: Math.max(el.offsetLeft, 0),
       right: el.clientWidth + Math.max(el.offsetLeft, 0),

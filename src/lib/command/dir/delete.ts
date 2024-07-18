@@ -1,6 +1,7 @@
 import { deleteFile } from "@/lib/api";
 import { NK } from "@/lib/enum";
-import { FileDirItem } from "@/lib/types";
+import { FileManagerSpirit } from "@/lib/types/namespace";
+
 import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
 import { h, Ref, unref } from "vue";
 
@@ -9,8 +10,10 @@ export const commandDirDelete = ({
   parentDirList,
   dialog,
 }: {
-  dirs: FileDirItem[];
-  parentDirList: FileDirItem[] | Ref<FileDirItem[]>;
+  dirs: FileManagerSpirit.FileDirItem[];
+  parentDirList:
+    | FileManagerSpirit.FileDirItem[]
+    | Ref<FileManagerSpirit.FileDirItem[]>;
   dialog: DialogApiInjection;
 }) => {
   return new Promise((resolve) => {
@@ -38,11 +41,13 @@ export const commandDirDelete = ({
       async onPositiveClick() {
         try {
           d.loading = true;
-          await deleteFile(dirs.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR));
+          await deleteFile(
+            dirs.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR)
+          );
 
           dirs.forEach((dir) => {
             const index = unref(parentDirList).findIndex(
-              (item: FileDirItem) => item.path === dir.path
+              (item: FileManagerSpirit.FileDirItem) => item.path === dir.path
             );
             unref(parentDirList).splice(index, 1);
           });

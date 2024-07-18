@@ -1,8 +1,8 @@
-import { AreaSelectParams } from "../types/drag";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const isAreaIntersect = (
-  area: AreaSelectParams,
-  target: AreaSelectParams
+  area: FileManagerSpirit.AreaRect,
+  target: FileManagerSpirit.AreaRect
 ) => {
   // 检查第一个矩形的左上角是否位于第二个矩形的右下角右侧
   if (area.left > target.right) return false;

@@ -8,7 +8,6 @@ import {
   unref,
 } from "vue";
 import { FileAction } from "../enum/file-action";
-import { FileDirItem, FileItem } from "../types";
 import { getDirsList } from "../api";
 import { NIcon, NModal, NTree } from "naive-ui";
 import { DirIcon } from "../icons/DirIcon";
@@ -16,12 +15,13 @@ import { MoveIcon } from "../icons/Move";
 import { CopyIcon } from "../icons/Copy";
 import { commandCopy } from "../command/file/copy";
 import { commandMove } from "../command/file/move";
+import { FileManagerSpirit } from "../types/namespace";
 
 type FileChangeParams = {
   show: boolean;
   changeType: "move" | "copy";
-  currentFile: FileItem[];
-  dirList: FileDirItem[];
+  currentFile: FileManagerSpirit.FileItem[];
+  dirList: FileManagerSpirit.FileDirItem[];
   dirPath: string;
   newPath: string;
   submitLoading: boolean;
@@ -57,7 +57,7 @@ export const useFileChange = ({
     action = FileAction.MOVE,
     currentDirPath,
   }: {
-    file: FileItem[];
+    file: FileManagerSpirit.FileItem[];
     action: "move" | "copy";
     currentDirPath: string;
   }) => {
@@ -70,7 +70,8 @@ export const useFileChange = ({
 
   const getFileDirs = async () => {
     try {
-      const d = (await getDirsList()) as unknown as FileDirItem[];
+      const d =
+        (await getDirsList()) as unknown as FileManagerSpirit.FileDirItem[];
       dirList.value = d;
     } finally {
     }
@@ -104,7 +105,7 @@ export const useFileChange = ({
     });
   };
 
-  const renderLabel = ({ option }: { option: FileDirItem }) => {
+  const renderLabel = ({ option }: { option:  FileManagerSpirit.FileDirItem }) => {
     const { path, name } = option;
     if (path === unref(dirPath)) {
       return h("span", null, [

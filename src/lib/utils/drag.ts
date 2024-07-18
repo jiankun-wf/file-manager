@@ -1,4 +1,5 @@
 import { NK } from "../enum";
+import type { DragInFileItem } from "../types/drag";
 
 export const setDragTransfer = (
   event: DragEvent,
@@ -53,4 +54,80 @@ export const setDragStyle = (
     dragMaskEl.innerHTML = `<svg class="icon file-manager-dir__tree-item-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10594" width="48" height="48"><path d="M918.673 883H104.327C82.578 883 65 867.368 65 848.027V276.973C65 257.632 82.578 242 104.327 242h814.346C940.422 242 958 257.632 958 276.973v571.054C958 867.28 940.323 883 918.673 883z" fill="#FFE9B4" p-id="10595"></path><path d="M512 411H65V210.37C65 188.597 82.598 171 104.371 171h305.92c17.4 0 32.71 11.334 37.681 28.036L512 411z" fill="#FFB02C" p-id="10596"></path><path d="M918.673 883H104.327C82.578 883 65 865.42 65 843.668V335.332C65 313.58 82.578 296 104.327 296h814.346C940.422 296 958 313.58 958 335.332v508.336C958 865.32 940.323 883 918.673 883z" fill="#FFCA28" p-id="10597"></path></svg>`;
     event.dataTransfer?.setDragImage(dragMaskEl, 10, 10);
   }
+};
+
+export const getDirsContent = (dir: FileSystemDirectoryEntry) => {
+  return new Promise<DragInFileItem[]>((resolve) => {
+    const reader = dir.createReader();
+    const fileAndDirs: DragInFileItem[] = [];
+
+    let count = 0;
+    reader.readEntries(
+      async (entries) => {
+        // entries是包含文件夹内容的数组
+        for (let j = 0; j < entries.length; j++) {
+          const fileEntry = entries[j] as FileSystemFileEntry;
+          if (fileEntry.isFile) {
+            // 文件
+            fileEntry.file(function (file) {
+              fileAndDirs.push({
+                type: "file",
+                file,
+              } as DragInFileItem<"file">);
+              count++;
+              if (count === entries.length) {
+                resolve(fileAndDirs);
+              }
+            });
+          } else if (fileEntry.isDirectory) {
+            // 文件夹
+            const dirEntry = fileEntry as unknown as FileSystemDirectoryEntry;
+            const ojb: DragInFileItem<"dir"> = {
+              type: "dir",
+              children: [],
+              file: fileEntry.name,
+            };
+
+            ojb.children = await getDirsContent(dirEntry);
+            fileAndDirs.push(ojb);
+            count++;
+            if (count === entries.length) {
+              resolve(fileAndDirs);
+            }
+          }
+        }
+      },
+      function (error) {
+        console.error("读取文件夹出错:", dir.fullPath, error);
+        resolve(fileAndDirs);
+      }
+    );
+  });
+};
+
+export const splitDragFiles = async (
+  items: DataTransferItemList
+): Promise<DragInFileItem[]> => {
+  const files: DragInFileItem[] = [];
+
+  for (let i = 0, l = items.length; i < l; i++) {
+    const item = items[i];
+    const entry = item.webkitGetAsEntry();
+    if (!entry) continue;
+
+    if (entry.isDirectory) {
+      const children = await getDirsContent(entry as FileSystemDirectoryEntry);
+      files.push({
+        type: "dir",
+        children,
+        file: entry.name,
+      } as DragInFileItem<"dir">);
+    } else {
+      files.push({
+        type: "file",
+        file: item.getAsFile()!,
+      } as DragInFileItem<"file">);
+    }
+  }
+  return files;
 };

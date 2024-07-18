@@ -1,8 +1,8 @@
 import { NProgress } from "naive-ui";
-import { FileItem } from "../types";
 import { Ref, unref } from "vue";
+import { FileManagerSpirit } from "../types/namespace";
 
-export const useUploadProgress = (file: Ref<FileItem>) => {
+export const useUploadProgress = (file: Ref<FileManagerSpirit.FileItem>) => {
   const status = unref(file).status;
   if (status !== "uploading") return null;
   return (
