@@ -33,10 +33,10 @@ https://github.com/jiankun-wf/file-manager/assets/22322274/c8be1018-0a52-4542-8a
 
 # 现存一些棘手问题（There are a number of thorny issues）:
 
-1. 文件容器区域无法触发点击事件（The file container area can't trigger a click event）。
-2. 自动重命名功能(index)混乱（改到后端）（ Auto-rename function (index) confusion (changed to backend)） √
-3. 文件容器区拖入样式的样式（File container area styles when dragging in）
-4. 外部文件夹的拖入问题（Drag-in issue with external folders）。
+1. 文件容器区域无法触发点击事件（The file container area can't trigger a click event）√。
+2. 自动重命名功能(index)混乱（改到后端）（ Auto-rename function (index) confusion (changed to backend)） still need to be done.
+3. 文件容器区拖入样式的样式（File container area styles when dragging in）⚪（pause to resolve）。
+4. 外部文件夹的拖入问题（Drag-in issue with external folders） √。
 5. 右侧新增文件夹与侧边栏的刷新问题（Added folder and sidebar refresh issues on the right）。
 
 # feauture-list:
