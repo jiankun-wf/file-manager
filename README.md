@@ -16,6 +16,8 @@
 6. 上传文件（upload file）
 7. Ctrl + C、Ctrl + V、Ctrl + X、Ctrl + A 快捷键（Ctrl + C, Ctrl + V, Ctrl + X, Ctrl + A shortcuts）
 8. 右键菜单（right-click menu）
+9. 文件夹双击文件夹进入。（double-click folder to enter）
+10. 拖拽文件、文件夹移动。（drag and drop file or folder to move.）
 
 # src/lib
 

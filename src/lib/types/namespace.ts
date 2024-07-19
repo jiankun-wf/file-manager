@@ -4,6 +4,8 @@ import { NK } from "../enum";
 import { FileAction } from "../enum/file-action";
 import { FileStatus } from "../enum/file-status";
 
+type WindowFileList = FileList;
+
 export namespace FileManagerSpirit {
   export type currentPath = Ref<string>;
   export type selectMode = Ref<NK.SELECT_MODE_MULTIPLE | NK.SELECT_MODE_SINGLE>;
@@ -23,7 +25,7 @@ export namespace FileManagerSpirit {
   export type fileList = Ref<FileItem[]>;
   export type dirList = Ref<FileDirItem[]>;
   export type filePutIn = (
-    files: FileList | File[],
+    files: WindowFileList | File[],
     path: string,
     type: FileItemType,
     nameing?: boolean
@@ -81,6 +83,7 @@ export namespace FileManagerSpirit {
     progress?: number;
     dir: boolean;
   }
+  export type FileList = FileItem[];
 
   export interface FileDirItem {
     name: string;

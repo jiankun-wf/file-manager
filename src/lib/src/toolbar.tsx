@@ -73,7 +73,7 @@ export const Toolbar = defineComponent({
           }}
         </NButton>
 
-        {unref(selectedFiles).length ? (
+        {false ? (
           <>
             {/* <NButton>
               {{

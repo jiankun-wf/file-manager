@@ -16,7 +16,7 @@ export const eventStop = (event: Event) => {
 export const addMouseLeftEventListener = (
   element: HTMLElement | Document | Window,
   key:
-    | "mousedown"
+    | "mousedown" 
     | "mouseenter"
     | "mouseleave"
     | "mousemove"

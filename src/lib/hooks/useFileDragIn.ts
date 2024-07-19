@@ -14,13 +14,19 @@ export const useFileDragIn = ({
 
   const drop_event = async (event: DragEvent) => {
     eventStop(event);
+    const types = event.dataTransfer?.types ?? [];
+
+    if (types.some((type) => type !== "Files")) {
+      return;
+    }
+
     const items = event.dataTransfer?.items;
 
     if (!items?.length) {
       return;
     }
 
-    const fileAndDirList = await splitDragFiles(items);
+    const fileAndDirList = await splitDragFiles(Array.from(items));
 
     onFileDragIn?.(fileAndDirList);
   };

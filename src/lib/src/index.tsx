@@ -139,7 +139,12 @@ export const FileManager = defineComponent({
             }}
           </Toolbar>
           <div class="file-manager-content">
-            <NSplit default-size={0.18} min={0.15} max={0.8}>
+            <NSplit
+              default-size={0.15}
+              min={0.15}
+              max={0.8}
+              resizeTriggerSize={1}
+            >
               {{
                 1: () => <Slider />,
                 2: () => <Content />,

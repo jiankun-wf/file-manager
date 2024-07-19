@@ -106,28 +106,31 @@ export const getDirsContent = (dir: FileSystemDirectoryEntry) => {
 };
 
 export const splitDragFiles = async (
-  items: DataTransferItemList
+  items: DataTransferItem[]
 ): Promise<DragInFileItem[]> => {
-  const files: DragInFileItem[] = [];
+  const files = await Promise.all(
+    items.map(async (item) => {
+      if (!item) return;
+      const entry = item.webkitGetAsEntry();
 
-  for (let i = 0, l = items.length; i < l; i++) {
-    const item = items[i];
-    const entry = item.webkitGetAsEntry();
-    if (!entry) continue;
+      if (!entry) return;
 
-    if (entry.isDirectory) {
-      const children = await getDirsContent(entry as FileSystemDirectoryEntry);
-      files.push({
-        type: "dir",
-        children,
-        file: entry.name,
-      } as DragInFileItem<"dir">);
-    } else {
-      files.push({
-        type: "file",
-        file: item.getAsFile()!,
-      } as DragInFileItem<"file">);
-    }
-  }
-  return files;
+      if (entry.isDirectory) {
+        const children = await getDirsContent(
+          entry as FileSystemDirectoryEntry
+        );
+        return {
+          type: "dir",
+          children,
+          file: entry.name,
+        } as DragInFileItem<"dir">;
+      } else {
+        return {
+          type: "file",
+          file: item.getAsFile()!,
+        } as DragInFileItem<"file">;
+      }
+    })
+  );
+  return files.filter((f) => !!f);
 };

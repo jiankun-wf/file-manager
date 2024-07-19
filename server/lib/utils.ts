@@ -145,18 +145,21 @@ export const makeNewFile = (filename: string, dirpath: string) => {
   return `${filename}(${n_index})`;
 };
 
-export const doDirToZip = (dir_path: string, zipcontext?: JSZip) => {
+export const doDirToZip = async (dir_path: string, zipcontext?: JSZip) => {
   const zip = zipcontext || new JSZip();
   const files = readdirSync(dir_path);
-  files.forEach((file) => {
+  for (const file of files) {
     const fp = join(dir_path, file);
     const fileStat = statSync(fp);
     if (!fileStat.isDirectory()) {
       zip.file(file, readFileSync(fp));
     } else {
       const c_folder = zip.folder(file);
-      doDirToZip(fp, c_folder!);
+      await doDirToZip(fp, c_folder!);
     }
+  }
+  return await zip.generateAsync({
+    type: "nodebuffer",
+    compressionOptions: { level: 9 },
   });
-  return zip.generateAsync({ type: "nodebuffer" });
 };
