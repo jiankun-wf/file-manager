@@ -129,7 +129,6 @@ app.get("/dir-content", (req, res) => {
   const fullDir = join(assetsBasePath, dir as string);
 
   const files = getDirContenet(fullDir, assetsBasePath);
-  console.log(files);
   res.json(ReponseSuccess(files));
 });
 
@@ -270,7 +269,7 @@ app.get("/download", async (req, res) => {
     );
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=" + basename(path)
+      "attachment; filename=" + encodeURIComponent(basename(path))
     );
     res.send(f);
   } else {

@@ -70,6 +70,7 @@ export const getDirContenet = (path: string, root: string) => {
       });
     }
   });
+  output.sort((a, b) => a.uploadTime - b.uploadTime);
   return output;
 };
 

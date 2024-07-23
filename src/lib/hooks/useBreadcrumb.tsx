@@ -15,40 +15,35 @@ export const useBreadcrumb = ({
   currentPath: FileManagerSpirit.currentPath;
   loadDirContent: FileManagerSpirit.loadDirContent;
 }) => {
-  const pathHistory = ref<string[]>([]);
-  const pathHistoryPosition = ref(0);
+  const pathBackHistory = ref<string[]>([]);
+  const pathForwardHistory = ref<string[]>([]);
 
   const back = () => {
     if (!unref(backable)) return;
 
-    pathHistoryPosition.value--;
+    unref(pathForwardHistory).push(unref(currentPath));
 
-    const rp = unref(pathHistory)[unref(pathHistoryPosition)];
-
-    to(rp, true);
+    to(unref(pathBackHistory).pop()!, true);
   };
 
   const forward = () => {
     if (!unref(forwardable)) return;
 
-    pathHistoryPosition.value++;
+    unref(pathBackHistory).push(unref(currentPath));
 
-    const rp = unref(pathHistory)[unref(pathHistoryPosition)];
-
-    to(rp, true);
+    to(unref(pathForwardHistory).pop()!, true);
   };
 
   // replace是否记录历史，默认为true，相当于vue路由的push、replace方法，一个记录hashHistory， 一个不记录
   const to = (path: string, replace = false) => {
     if (unref(currentPath) === path) return;
 
-    currentPath.value = path;
-    if (!replace) {
-      if (unref(pathHistoryPosition) === unref(pathHistory).length - 1) {
-        pathHistoryPosition.value += 1;
-      }
-      unref(pathHistory).push(path);
+    if (!replace && unref(currentPath) !== path) {
+      unref(pathBackHistory).push(unref(currentPath) || path);
+      pathForwardHistory.value = [];
     }
+
+    currentPath.value = path;
   };
 
   const handleToPath = (pathSplitList: string[], startIndex: number) => {
@@ -60,21 +55,11 @@ export const useBreadcrumb = ({
   };
 
   const backable = computed(() => {
-    const historyList = unref(pathHistory);
-    const historyPosition = unref(pathHistoryPosition);
-
-    if (historyList.length <= 1) return false;
-
-    return historyPosition > 0 && historyPosition <= historyList.length - 1;
+    return unref(pathBackHistory).length > 1;
   });
 
   const forwardable = computed(() => {
-    const historyList = unref(pathHistory);
-    const historyPosition = unref(pathHistoryPosition);
-
-    if (historyList.length <= 1) return false;
-
-    return historyPosition < historyList.length - 1;
+    return unref(pathForwardHistory).length > 0;
   });
 
   const renderToolbar = () => {

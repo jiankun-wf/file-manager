@@ -27,6 +27,7 @@ export const useFileDragIn = ({
     }
 
     const fileAndDirList = await splitDragFiles(Array.from(items));
+    debugger;
 
     onFileDragIn?.(fileAndDirList);
   };

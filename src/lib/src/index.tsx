@@ -1,6 +1,14 @@
 // 其他 utils
 import { createContext } from "../utils/context";
-import { defineComponent, PropType, reactive, toRefs } from "vue";
+import {
+  compile,
+  computed,
+  defineComponent,
+  PropType,
+  reactive,
+  toRef,
+  toRefs,
+} from "vue";
 import { uid } from "../utils/uid";
 // components
 import { Content } from "./content";
@@ -36,8 +44,8 @@ export const FileManager = defineComponent({
       default: "grid",
     },
     mode: {
-      type: String as PropType<"wr" | "r">,
-      default: "wr",
+      type: String as PropType<NK.MODE_READ | NK.MODE_WRITE>,
+      default: NK.MODE_WRITE,
     },
   },
   emits: ["file-move", "file-select", "path-change"],
@@ -64,6 +72,10 @@ export const FileManager = defineComponent({
         viewType: props.viewType,
       })
     );
+
+    const isOnlyRead = computed(() => {
+      return props.mode === NK.MODE_READ;
+    });
 
     const { fileList, loadDirContent } = useDirFiles({
       currentPath,
@@ -102,6 +114,7 @@ export const FileManager = defineComponent({
       useImageEdit();
 
     createContext({
+      isOnlyRead, // 读写模式
       currentPath, // 当前目录路径
       selectMode, // 选择模式，单选/多选
       selectedFiles, // 已选中的文件列表

@@ -1,0 +1,78 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "Less", "XML", "comment", "blank", "total"
+"d:\vite-npm\file-manager\src\lib\api\index.ts", "TypeScript", 112, 0, 0, 0, 0, 13, 125
+"d:\vite-npm\file-manager\src\lib\assets\vue.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"d:\vite-npm\file-manager\src\lib\command\dir\copy.ts", "TypeScript", 0, 0, 0, 0, 0, 1, 1
+"d:\vite-npm\file-manager\src\lib\command\dir\delete.ts", "TypeScript", 67, 0, 0, 0, 0, 5, 72
+"d:\vite-npm\file-manager\src\lib\command\dir\mkdir.ts", "TypeScript", 16, 0, 0, 0, 0, 5, 21
+"d:\vite-npm\file-manager\src\lib\command\dir\move.ts", "TypeScript", 22, 0, 0, 0, 4, 6, 32
+"d:\vite-npm\file-manager\src\lib\command\dir\rename.ts", "TypeScript", 10, 0, 0, 0, 0, 2, 12
+"d:\vite-npm\file-manager\src\lib\command\download.ts", "TypeScript", 15, 0, 0, 0, 0, 3, 18
+"d:\vite-npm\file-manager\src\lib\command\file\copy.ts", "TypeScript", 30, 0, 0, 0, 0, 5, 35
+"d:\vite-npm\file-manager\src\lib\command\file\delete.ts", "TypeScript", 67, 0, 0, 0, 0, 4, 71
+"d:\vite-npm\file-manager\src\lib\command\file\move.ts", "TypeScript", 30, 0, 0, 0, 0, 5, 35
+"d:\vite-npm\file-manager\src\lib\command\file\rename.ts", "TypeScript", 12, 0, 0, 0, 0, 5, 17
+"d:\vite-npm\file-manager\src\lib\command\file\upload.ts", "TypeScript", 29, 0, 0, 0, 1, 9, 39
+"d:\vite-npm\file-manager\src\lib\command\tree-create.ts", "TypeScript", 71, 0, 0, 0, 1, 6, 78
+"d:\vite-npm\file-manager\src\lib\components\DirTree.tsx", "TypeScript JSX", 0, 300, 0, 0, 6, 27, 333
+"d:\vite-npm\file-manager\src\lib\components\FileDir.tsx", "TypeScript JSX", 0, 224, 0, 0, 4, 25, 253
+"d:\vite-npm\file-manager\src\lib\components\FileGridCard.tsx", "TypeScript JSX", 0, 336, 0, 0, 3, 27, 366
+"d:\vite-npm\file-manager\src\lib\components\FileGridList.tsx", "TypeScript JSX", 0, 7, 0, 0, 0, 2, 9
+"d:\vite-npm\file-manager\src\lib\components\FileList.tsx", "TypeScript JSX", 0, 24, 0, 0, 1, 5, 30
+"d:\vite-npm\file-manager\src\lib\components\Provider.tsx", "TypeScript JSX", 0, 41, 0, 0, 0, 2, 43
+"d:\vite-npm\file-manager\src\lib\enum\file-action.ts", "TypeScript", 11, 0, 0, 0, 0, 1, 12
+"d:\vite-npm\file-manager\src\lib\enum\file-status.ts", "TypeScript", 7, 0, 0, 0, 0, 3, 10
+"d:\vite-npm\file-manager\src\lib\enum\index.ts", "TypeScript", 20, 0, 0, 0, 11, 10, 41
+"d:\vite-npm\file-manager\src\lib\hooks\useBreadcrumb.tsx", "TypeScript JSX", 0, 132, 0, 0, 4, 27, 163
+"d:\vite-npm\file-manager\src\lib\hooks\useChooseFile.tsx", "TypeScript JSX", 0, 33, 0, 0, 0, 6, 39
+"d:\vite-npm\file-manager\src\lib\hooks\useContextMenu.tsx", "TypeScript JSX", 0, 52, 0, 0, 0, 9, 61
+"d:\vite-npm\file-manager\src\lib\hooks\useDirFiles.ts", "TypeScript", 35, 0, 0, 0, 0, 4, 39
+"d:\vite-npm\file-manager\src\lib\hooks\useDragToggle.tsx", "TypeScript JSX", 0, 72, 0, 0, 5, 10, 87
+"d:\vite-npm\file-manager\src\lib\hooks\useFileChange.tsx", "TypeScript JSX", 0, 206, 0, 0, 0, 15, 221
+"d:\vite-npm\file-manager\src\lib\hooks\useFileCutAndCopy.ts", "TypeScript", 102, 0, 0, 0, 0, 14, 116
+"d:\vite-npm\file-manager\src\lib\hooks\useFileDragIn.ts", "TypeScript", 41, 0, 0, 0, 0, 10, 51
+"d:\vite-npm\file-manager\src\lib\hooks\useFileInfoTip.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 1, 1
+"d:\vite-npm\file-manager\src\lib\hooks\useFilePuIn.ts", "TypeScript", 64, 0, 0, 0, 1, 6, 71
+"d:\vite-npm\file-manager\src\lib\hooks\useFileRename.tsx", "TypeScript JSX", 0, 69, 0, 0, 0, 8, 77
+"d:\vite-npm\file-manager\src\lib\hooks\useFileSelect.ts", "TypeScript", 63, 0, 0, 0, 0, 8, 71
+"d:\vite-npm\file-manager\src\lib\hooks\useFileSelectArea.tsx", "TypeScript JSX", 0, 156, 0, 0, 4, 18, 178
+"d:\vite-npm\file-manager\src\lib\hooks\useImageEdit.tsx", "TypeScript JSX", 0, 413, 0, 0, 1, 35, 449
+"d:\vite-npm\file-manager\src\lib\hooks\useRename.tsx", "TypeScript JSX", 0, 177, 0, 0, 3, 22, 202
+"d:\vite-npm\file-manager\src\lib\hooks\useSelectedDel.ts", "TypeScript", 33, 0, 0, 0, 0, 3, 36
+"d:\vite-npm\file-manager\src\lib\hooks\useUploadProgress.tsx", "TypeScript JSX", 0, 19, 0, 0, 0, 2, 21
+"d:\vite-npm\file-manager\src\lib\icons\Copy.tsx", "TypeScript JSX", 0, 23, 0, 0, 0, 2, 25
+"d:\vite-npm\file-manager\src\lib\icons\DirIcon.tsx", "TypeScript JSX", 0, 33, 0, 0, 0, 2, 35
+"d:\vite-npm\file-manager\src\lib\icons\Empty.tsx", "TypeScript JSX", 0, 73, 0, 0, 0, 2, 75
+"d:\vite-npm\file-manager\src\lib\icons\Floder.tsx", "TypeScript JSX", 0, 30, 0, 0, 0, 2, 32
+"d:\vite-npm\file-manager\src\lib\icons\Move.tsx", "TypeScript JSX", 0, 23, 0, 0, 0, 2, 25
+"d:\vite-npm\file-manager\src\lib\index.ts", "TypeScript", 1, 0, 0, 0, 0, 1, 2
+"d:\vite-npm\file-manager\src\lib\src\content.tsx", "TypeScript JSX", 0, 116, 0, 0, 3, 17, 136
+"d:\vite-npm\file-manager\src\lib\src\index.tsx", "TypeScript JSX", 0, 144, 0, 0, 16, 7, 167
+"d:\vite-npm\file-manager\src\lib\src\slider.tsx", "TypeScript JSX", 0, 139, 0, 0, 0, 13, 152
+"d:\vite-npm\file-manager\src\lib\src\toolbar.tsx", "TypeScript JSX", 0, 106, 0, 0, 10, 13, 129
+"d:\vite-npm\file-manager\src\lib\style\content.less", "Less", 0, 0, 143, 0, 13, 15, 171
+"d:\vite-npm\file-manager\src\lib\style\dir-tree.less", "Less", 0, 0, 71, 0, 0, 10, 81
+"d:\vite-npm\file-manager\src\lib\style\image-editor.less", "Less", 0, 0, 57, 0, 0, 11, 68
+"d:\vite-npm\file-manager\src\lib\style\index.less", "Less", 0, 0, 148, 0, 9, 17, 174
+"d:\vite-npm\file-manager\src\lib\style\slider.less", "Less", 0, 0, 4, 0, 2, 0, 6
+"d:\vite-npm\file-manager\src\lib\style\toobar.less", "Less", 0, 0, 80, 0, 1, 11, 92
+"d:\vite-npm\file-manager\src\lib\types\drag.ts", "TypeScript", 5, 0, 0, 0, 0, 1, 6
+"d:\vite-npm\file-manager\src\lib\types\index.ts", "TypeScript", 26, 0, 0, 0, 1, 5, 32
+"d:\vite-npm\file-manager\src\lib\types\namespace.ts", "TypeScript", 111, 0, 0, 0, 0, 10, 121
+"d:\vite-npm\file-manager\src\lib\utils\area.ts", "TypeScript", 11, 0, 0, 0, 5, 6, 22
+"d:\vite-npm\file-manager\src\lib\utils\axios.ts", "TypeScript", 48, 0, 0, 0, 2, 11, 61
+"d:\vite-npm\file-manager\src\lib\utils\context.ts", "TypeScript", 13, 0, 0, 0, 0, 4, 17
+"d:\vite-npm\file-manager\src\lib\utils\contextmenuOption.ts", "TypeScript", 43, 0, 0, 0, 0, 2, 45
+"d:\vite-npm\file-manager\src\lib\utils\date.ts", "TypeScript", 7, 0, 0, 0, 0, 2, 9
+"d:\vite-npm\file-manager\src\lib\utils\drag.ts", "TypeScript", 120, 0, 0, 0, 3, 14, 137
+"d:\vite-npm\file-manager\src\lib\utils\event.ts", "TypeScript", 34, 0, 0, 0, 0, 7, 41
+"d:\vite-npm\file-manager\src\lib\utils\extension.ts", "TypeScript", 39, 0, 0, 0, 0, 7, 46
+"d:\vite-npm\file-manager\src\lib\utils\from-darg.ts", "TypeScript", 15, 0, 0, 0, 0, 2, 17
+"d:\vite-npm\file-manager\src\lib\utils\icon.ts", "TypeScript", 13, 0, 0, 0, 0, 2, 15
+"d:\vite-npm\file-manager\src\lib\utils\minetype.ts", "TypeScript", 30, 0, 0, 0, 0, 3, 33
+"d:\vite-npm\file-manager\src\lib\utils\path.ts", "TypeScript", 4, 0, 0, 0, 1, 2, 7
+"d:\vite-npm\file-manager\src\lib\utils\pub-sub.ts", "TypeScript", 96, 0, 0, 0, 5, 13, 114
+"d:\vite-npm\file-manager\src\lib\utils\resize.ts", "TypeScript", 26, 0, 0, 0, 2, 3, 31
+"d:\vite-npm\file-manager\src\lib\utils\size.ts", "TypeScript", 8, 0, 0, 0, 0, 4, 12
+"d:\vite-npm\file-manager\src\lib\utils\tree-node.ts", "TypeScript", 32, 0, 0, 0, 0, 2, 34
+"d:\vite-npm\file-manager\src\lib\utils\uid.ts", "TypeScript", 5, 0, 0, 0, 0, 1, 6
+"Total", "-", 1544, 2948, 503, 1, 122, 595, 5713

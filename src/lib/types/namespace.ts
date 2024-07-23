@@ -1,4 +1,4 @@
-import { Ref } from "vue";
+import { ComputedRef, Ref } from "vue";
 import { FileItemType } from ".";
 import { NK } from "../enum";
 import { FileAction } from "../enum/file-action";
@@ -46,6 +46,7 @@ export namespace FileManagerSpirit {
   export type loadDirContent = (clear?: boolean) => Promise<void>;
 
   export type Context = {
+    isOnlyRead: ComputedRef<boolean>;
     currentPath: currentPath;
     selectMode: selectMode;
     viewType: viewType;

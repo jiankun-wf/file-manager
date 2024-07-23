@@ -1,4 +1,9 @@
 export enum NK {
+
+  // 模式
+  MODE_WRITE = "write",
+  MODE_READ = "read",
+
   // 数组转字符串join分隔符
   ARRAY_JOIN_SEPARATOR = "|",
   // 文件重命名事件名注册
@@ -31,10 +36,11 @@ export enum NK {
   FILE_FLAG_TYPE = "file",
   FILE_DIR_FLAG_TYPE = "dir",
 
-  IMAGE_LIMIT_MAX_WIDTH = 124,
-  IMAGE_LIMIT_MAX_HEIGHT = 120,
+  IMAGE_LIMIT_MAX_WIDTH = 120,
+  IMAGE_LIMIT_MAX_HEIGHT = 92,
 
   // 选择模式
   SELECT_MODE_SINGLE = "single",
   SELECT_MODE_MULTIPLE = "multiple",
+
 }
