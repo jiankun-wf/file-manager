@@ -171,7 +171,10 @@ app.post("/dir-file", upload.single("file"), (req, res) => {
 
   const n_file_path = join(dir_path, makeNewFile(filename, dir_path));
 
-  writeFileSync(n_file_path, req.file.buffer);
+  writeFileSync(n_file_path, new Uint8Array(req.file.buffer), {
+    flag: "w",
+    encoding: "binary",
+  });
 
   res.json(
     ReponseSuccess({
@@ -211,7 +214,7 @@ app.post("/dir-file/copy", (req, res) => {
 
     const newpath = getFullPath(pt.newdir, basename(fullDir));
 
-    const content = readFileSync(fullDir, { flag: "r", encoding: null });
+    const content = readFileSync(fullDir, { flag: "r", encoding: "binary" });
 
     writeFileSync(newpath, content);
 

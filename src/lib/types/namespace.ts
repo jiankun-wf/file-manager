@@ -6,6 +6,8 @@ import { FileStatus } from "../enum/file-status";
 
 type WindowFileList = FileList;
 
+// 类型等于Sprit，即灵魂
+// 肉体与灵魂结合，才是完整的一个生物
 export namespace FileManagerSpirit {
   export type currentPath = Ref<string>;
   export type selectMode = Ref<NK.SELECT_MODE_MULTIPLE | NK.SELECT_MODE_SINGLE>;

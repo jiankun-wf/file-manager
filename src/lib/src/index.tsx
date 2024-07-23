@@ -44,7 +44,7 @@ export const FileManager = defineComponent({
       default: "grid",
     },
     mode: {
-      type: String as PropType<NK.MODE_READ | NK.MODE_WRITE>,
+      type: String as PropType<"read" | "write">,
       default: NK.MODE_WRITE,
     },
   },
@@ -148,7 +148,7 @@ export const FileManager = defineComponent({
         <div class="file-manager" id={id}>
           <Toolbar>
             {{
-              prefix: renderBreadcrumb(),
+              prefix: () => renderBreadcrumb(),
             }}
           </Toolbar>
           <div class="file-manager-content">

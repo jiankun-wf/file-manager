@@ -83,8 +83,18 @@ export const useImageEdit = () => {
       const iHeight = img.height;
 
       if (iWidth > maxWidth || iHeight > maxHeight) {
-        const radioX = iWidth > maxWidth ? maxWidth / iWidth : 1;
-        const radioY = iHeight > maxHeight ? maxHeight / iHeight : 1;
+        let radioX = maxWidth / iWidth;
+        let radioY = maxHeight / iHeight;
+        if (radioX < radioY) {
+          radioX = radioX > 1 ? 1 : radioX;
+          radioY = radioY > 1 ? radioX : radioY;
+        } else if (radioY < radioX) {
+          radioY = radioY > 1 ? 1 : radioY;
+          radioX = radioX > 1 ? radioY : radioX;
+        } else {
+          radioX = radioX > 1 ? 1 : radioX;
+          radioY = radioY > 1 ? 1 : radioY;
+        }
 
         const distanceX = maxWidth - iWidth;
         const distanceY = maxHeight - iHeight;
@@ -185,7 +195,7 @@ export const useImageEdit = () => {
 
   const scaleImage = (type: "-" | "+" | "reset") => {
     if (type === "reset") {
-      $refs["cropper-image"].$transform(unref(originalTransform));
+      $refs["cropper-image"].$setTransform(...unref(originalTransform));
     } else if (type === "+") {
       $refs["cropper-image"].$scale(1.1, 1.1);
     } else {

@@ -5,18 +5,22 @@ export const eventPreventDefault = (event: Event) => {
 };
 
 export const eventStopPropagation = (event: Event) => {
-  event.stopPropagation();
+  if (event.stopPropagation) {
+    event.stopPropagation();
+  } else {
+    event.cancelBubble = true;
+  }
 };
 
 export const eventStop = (event: Event) => {
   event.preventDefault();
-  event.stopPropagation();
+  eventStopPropagation(event);
 };
 
 export const addMouseLeftEventListener = (
   element: HTMLElement | Document | Window,
   key:
-    | "mousedown" 
+    | "mousedown"
     | "mouseenter"
     | "mouseleave"
     | "mousemove"

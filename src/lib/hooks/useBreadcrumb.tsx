@@ -1,12 +1,13 @@
-import { computed, ref, unref } from "vue";
+import { computed, nextTick, ref, unref } from "vue";
 import {
   RightOutlined,
   ArrowLeftOutlined,
   ArrowRightOutlined,
   ReloadOutlined,
 } from "@vicons/antd";
-import { NIcon } from "naive-ui";
+import { InputInst, NIcon, NInput } from "naive-ui";
 import { FileManagerSpirit } from "../types/namespace";
+import { eventStopPropagation } from "../utils/event";
 
 export const useBreadcrumb = ({
   currentPath,
@@ -17,6 +18,10 @@ export const useBreadcrumb = ({
 }) => {
   const pathBackHistory = ref<string[]>([]);
   const pathForwardHistory = ref<string[]>([]);
+
+  const showInputRef = ref(false);
+  const inputPathRef = ref<InputInst>();
+  const inputPathValueRef = ref("");
 
   const back = () => {
     if (!unref(backable)) return;
@@ -61,6 +66,27 @@ export const useBreadcrumb = ({
   const forwardable = computed(() => {
     return unref(pathForwardHistory).length > 0;
   });
+
+  const handleClickBreadcrumb = (event: MouseEvent) => {
+    eventStopPropagation(event);
+    inputPathValueRef.value = unref(currentPath);
+    showInputRef.value = true;
+    nextTick(() => {
+      unref(inputPathRef)?.select();
+    });
+  };
+
+  const handleInputJump = (event: KeyboardEvent) => {
+    eventStopPropagation(event);
+    if (event.key === "Enter") {
+      to(unref(inputPathValueRef));
+      handleCancelInput();
+    }
+  };
+
+  const handleCancelInput = () => {
+    showInputRef.value = false;
+  };
 
   const renderToolbar = () => {
     const canBack = unref(backable);
@@ -109,20 +135,46 @@ export const useBreadcrumb = ({
     const pathList = unref(currentPath).split("/").slice(1);
 
     return (
-      <div class="file-manager-breadcrumb__content">
-        {pathList.map((item, index) => (
-          <div
-            class="file-manager-breadcrumb__item"
-            onClick={handleToPath.bind(null, pathList, index)}
-          >
-            <span class="file-manager-breadcrumb__item-text">{item}</span>
-            {index < pathList.length - 1 && (
-              <NIcon class="file-manager-breadcrumb__item-separator" size={14}>
-                <RightOutlined />
-              </NIcon>
-            )}
-          </div>
-        ))}
+      <div
+        class="file-manager-breadcrumb__content"
+        onClick={handleClickBreadcrumb}
+      >
+        {unref(showInputRef) ? (
+          <NInput
+            ref={(_ref) => {
+              inputPathRef.value = _ref as any;
+            }}
+            size="small"
+            bordered={false}
+            themeOverrides={{ heightSmall: "26px" }}
+            value={unref(inputPathValueRef)}
+            onUpdate:value={(value) => {
+              inputPathValueRef.value = value;
+            }}
+            onBlur={handleCancelInput}
+            onKeydown={handleInputJump}
+          />
+        ) : (
+          pathList.map((item, index) => (
+            <div
+              class="file-manager-breadcrumb__item"
+              onClick={(event: MouseEvent) => {
+                eventStopPropagation(event);
+                handleToPath(pathList, index);
+              }}
+            >
+              <span class="file-manager-breadcrumb__item-text">{item}</span>
+              {index < pathList.length - 1 && (
+                <NIcon
+                  class="file-manager-breadcrumb__item-separator"
+                  size={14}
+                >
+                  <RightOutlined />
+                </NIcon>
+              )}
+            </div>
+          ))
+        )}
       </div>
     );
   };
