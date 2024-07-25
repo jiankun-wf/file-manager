@@ -5,7 +5,7 @@ import { FileManager } from "./lib";
 <template>
   <div class="wrapper">
     <div class="inner">
-      <FileManager mode="read" />
+      <FileManager />
     </div>
   </div>
 </template>

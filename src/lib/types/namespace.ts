@@ -2,12 +2,10 @@ import { ComputedRef, Ref } from "vue";
 import { FileItemType } from ".";
 import { NK } from "../enum";
 import { FileAction } from "../enum/file-action";
-import { FileStatus } from "../enum/file-status";
 
 type WindowFileList = FileList;
 
 // 类型等于Sprit，即灵魂
-// 肉体与灵魂结合，才是完整的一个生物
 export namespace FileManagerSpirit {
   export type currentPath = Ref<string>;
   export type selectMode = Ref<NK.SELECT_MODE_MULTIPLE | NK.SELECT_MODE_SINGLE>;
@@ -70,6 +68,14 @@ export namespace FileManagerSpirit {
     emit: Emit;
   };
 
+  enum FileStatus {
+    Ready = "ready",
+    Uploading = "uploading",
+
+    Completed = "completed",
+    Error = "error",
+  }
+
   export interface FileItem<T extends "dir" | "file" = "file"> {
     name: string;
     path: string;
@@ -86,6 +92,7 @@ export namespace FileManagerSpirit {
     progress?: number;
     dir: boolean;
   }
+
   export type FileList = FileItem[];
 
   export interface FileDirItem {
