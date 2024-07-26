@@ -4,3 +4,7 @@ export const findParentPath = (path: string) => {
 
   return path.replace(/\/[^/]+$/, "");
 };
+
+export const isCurrentPathParent = (father: string, currentPath: string) => {
+  return currentPath.startsWith(father);
+};

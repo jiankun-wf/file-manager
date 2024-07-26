@@ -1,5 +1,4 @@
 export enum NK {
-
   // 模式
   MODE_WRITE = "write",
   MODE_READ = "read",
@@ -36,11 +35,10 @@ export enum NK {
   FILE_FLAG_TYPE = "file",
   FILE_DIR_FLAG_TYPE = "dir",
 
-  IMAGE_LIMIT_MAX_WIDTH = 120,
-  IMAGE_LIMIT_MAX_HEIGHT = 92,
+  IMAGE_LIMIT_MAX_WIDTH = 110,
+  IMAGE_LIMIT_MAX_HEIGHT = 109,
 
   // 选择模式
   SELECT_MODE_SINGLE = "single",
   SELECT_MODE_MULTIPLE = "multiple",
-
 }

@@ -2,7 +2,7 @@ import { ComputedRef, onBeforeUnmount, onMounted, Ref, unref } from "vue";
 import { eventStop } from "../utils/event";
 import { debounce } from "lodash-es";
 import { NK } from "../enum";
-import { findParentPath } from "../utils/path";
+import { findParentPath, isCurrentPathParent } from "../utils/path";
 
 export const useDragInToggle = ({
   elementRef,
@@ -32,8 +32,11 @@ export const useDragInToggle = ({
     const path_arr = draggingPath.split(NK.ARRAY_JOIN_SEPARATOR);
     if (
       path_arr.some(
-        // 目录等于当前目录 或者 父目录等于当前目录
-        (p) => p === unref(dirPath) || findParentPath(p) === unref(dirPath)
+        // 目录等于当前目录 或者 父目录等于当前目录 或者父目录拖拽进入子目录，这个也不被允许
+        (p) =>
+          p === unref(dirPath) ||
+          findParentPath(p) === unref(dirPath) ||
+          isCurrentPathParent(p, unref(dirPath))
       )
     )
       return;

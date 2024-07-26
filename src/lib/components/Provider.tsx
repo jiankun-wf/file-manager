@@ -3,6 +3,7 @@ import {
   NDialogProvider,
   NMessageProvider,
   NModalProvider,
+  zhCN,
 } from "naive-ui";
 import { defineComponent, PropType, renderSlot } from "vue";
 
@@ -17,6 +18,7 @@ export const Provider = defineComponent({
   setup(props, { slots }) {
     return () => (
       <NConfigProvider
+        locale={zhCN}
         themeOverrides={{
           common: {
             primaryColor: "#0025ff",

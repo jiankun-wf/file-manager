@@ -114,7 +114,7 @@ app.delete("/dirs", (req, res) => {
     return res.json(ReponseError("500", "缺少参数"));
   }
 
-  const pts = (dir as string).split(",");
+  const pts = (dir as string).split("|");
 
   for (const pt of pts) {
     const fullPath = getFullPath(pt);
@@ -149,7 +149,7 @@ app.delete("/dir-file", (req, res) => {
     return res.json(ReponseError("500", "缺少参数"));
   }
 
-  const dirs = (dir as string).split(",");
+  const dirs = (dir as string).split("|");
 
   for (const d of dirs) {
     const fullDir = join(assetsBasePath, d);

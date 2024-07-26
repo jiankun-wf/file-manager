@@ -122,6 +122,13 @@ export const getUrlPath = (url: string) => {
   return `http://${ip.address()}:5715/${getRealPath(url)}`;
 };
 
+export const getFileExt = (filename: string) => {
+  if (!filename) return ["", ""];
+  const index = filename.lastIndexOf(".");
+  if (index === -1) return ["", ""];
+  return [filename.slice(0, index), filename.slice(index + 1)];
+};
+
 export const makeNewFile = (filename: string, dirpath: string) => {
   if (!existsSync(dirpath)) return filename;
 
@@ -143,7 +150,9 @@ export const makeNewFile = (filename: string, dirpath: string) => {
   });
   const n_index = Math.max(...currentIndex) + 1;
 
-  return `${filename}(${n_index})`;
+  const [prefix, suffix] = getFileExt(filename);
+
+  return `${prefix}(${n_index}).${suffix}`;
 };
 
 export const doDirToZip = async (dir_path: string, zipcontext?: JSZip) => {
