@@ -1,14 +1,6 @@
 // 其他 utils
 import { createContext } from "../utils/context";
-import {
-  compile,
-  computed,
-  defineComponent,
-  PropType,
-  reactive,
-  toRef,
-  toRefs,
-} from "vue";
+import { computed, defineComponent, PropType, reactive, toRefs } from "vue";
 import { uid } from "../utils/uid";
 // components
 import { Content } from "./content";
