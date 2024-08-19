@@ -51,12 +51,7 @@ export const useFilePutIn = ({
         commandUpload(currentFile, currentPath);
       } else if (currentFile.dir) {
         if (naming) {
-          nextTick(() => {
-            eventBus.$scope(
-              NK.FILE_RENAME_EVENT,
-              `file_path_${currentFile.path}`
-            );
-          });
+ 
         } else {
           commandDirMkdir(currentFile, currentFile.path);
         }

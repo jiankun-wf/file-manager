@@ -40,8 +40,12 @@ export const commandDelete = ({
       async onPositiveClick() {
         try {
           d.loading = true;
+
+          // 为 __new的文件直接删除，不走接口
+          const delOriFiles = files.filter((file) => !file.__isnew);
+
           await deleteFile(
-            files.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR)
+            delOriFiles.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR)
           );
 
           fileList.value = fileList.value.filter((file) =>

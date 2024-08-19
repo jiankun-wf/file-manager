@@ -41,8 +41,11 @@ export const commandDirDelete = ({
       async onPositiveClick() {
         try {
           d.loading = true;
+
+          const shold_del_dir = dirs.filter((d) => !d.__new);
+
           await deleteFile(
-            dirs.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR)
+            shold_del_dir.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR)
           );
 
           dirs.forEach((dir) => {
