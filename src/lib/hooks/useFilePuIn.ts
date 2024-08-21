@@ -1,11 +1,10 @@
 import { FileItemType } from "@/lib/types";
-import { nextTick, Ref, unref } from "vue";
+import { Ref, unref } from "vue";
 import { commandUpload } from "../command/file/upload";
 import { makeFileName } from "../utils/extension";
 import { FileStatus } from "../enum/file-status";
 import { fileToBase64, isImage } from "../utils/minetype";
 import { NK } from "../enum";
-import { eventBus } from "../utils/pub-sub";
 import { FileManagerSpirit } from "../types/namespace";
 import { commandDirMkdir } from "../command/dir/mkdir";
 
@@ -51,7 +50,6 @@ export const useFilePutIn = ({
         commandUpload(currentFile, currentPath);
       } else if (currentFile.dir) {
         if (naming) {
- 
         } else {
           commandDirMkdir(currentFile, currentFile.path);
         }

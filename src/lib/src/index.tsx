@@ -21,9 +21,9 @@ import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
 // types
 import type { FileManagerOptions } from "../types";
 import type { FileManagerSpirit } from "../types/namespace";
+import { NK } from "../enum";
 
 import "../style/index.less";
-import { NK } from "../enum";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -104,6 +104,8 @@ export const FileManager = defineComponent({
     // 图片编辑
     const { render: renderImageEditModal, open: handleEditImage } =
       useImageEdit();
+
+    // 悬浮展示文件详情
 
     createContext({
       isOnlyRead, // 读写模式

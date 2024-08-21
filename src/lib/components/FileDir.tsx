@@ -23,6 +23,7 @@ import { FileStatus } from "../enum/file-status";
 import { useFileRename } from "../hooks/useRename";
 import { eventBus } from "../utils/pub-sub";
 import { FileManagerSpirit } from "../types/namespace";
+import { useParticulars } from "../hooks/useParticulars";
 
 export const FileDir = defineComponent({
   name: "FileDir",
@@ -180,6 +181,10 @@ export const FileDir = defineComponent({
       fileList,
     });
 
+    const { render: renderFileInfoPopover } = useParticulars({
+      currentFileRef: currentFile,
+    });
+
     onMounted(() => {
       const imgEl = unref(imageRef)!;
       resizeImage(
@@ -209,44 +214,45 @@ export const FileDir = defineComponent({
       }
     });
 
-    return () => (
-      <>
-        <div
-          ref={(_ref) => (elementRef.value = _ref as HTMLDivElement)}
-          class={[
-            "file-manager__file-item--grid file-manager__dir",
-            unref(isSliceFile) && "is-selected",
-            unref(isCuttingFile) && "is-cutting",
-            unref(hasDraggingFile) && "has-dragging",
-          ]}
-          onContextmenu={handleContextMenu}
-          onClick={handleSelectFile}
-          onDragstart={handleDragStart}
-          onDragend={handleDragEnd}
-          draggable={
-            unref(currentFile).status === FileStatus.Completed &&
-            unref(draggable)
-          }
-          onMousedown={eventStopPropagation}
-          onDblclick={handleOpenFolder}
-          data-path-name={unref(currentFile).path}
-        >
-          <div class="file-manager__file-item__thumb">
-            <img
-              src={unref(getCurrentFileThumbnail)}
-              alt={unref(currentFile).name}
-              onDragstart={eventStop}
-              ref={(ref) => {
-                imageRef.value = ref as HTMLImageElement;
-              }}
-            />
+    return () =>
+      renderFileInfoPopover(
+        <>
+          <div
+            ref={(_ref) => (elementRef.value = _ref as HTMLDivElement)}
+            class={[
+              "file-manager__file-item--grid file-manager__dir",
+              unref(isSliceFile) && "is-selected",
+              unref(isCuttingFile) && "is-cutting",
+              unref(hasDraggingFile) && "has-dragging",
+            ]}
+            onContextmenu={handleContextMenu}
+            onClick={handleSelectFile}
+            onDragstart={handleDragStart}
+            onDragend={handleDragEnd}
+            draggable={
+              unref(currentFile).status === FileStatus.Completed &&
+              unref(draggable)
+            }
+            onMousedown={eventStopPropagation}
+            onDblclick={handleOpenFolder}
+            data-path-name={unref(currentFile).path}
+          >
+            <div class="file-manager__file-item__thumb">
+              <img
+                src={unref(getCurrentFileThumbnail)}
+                alt={unref(currentFile).name}
+                onDragstart={eventStop}
+                ref={(ref) => {
+                  imageRef.value = ref as HTMLImageElement;
+                }}
+              />
+            </div>
+            <div class="file-manager__file-item__info">
+              {renderFileRenameContext()}
+            </div>
+            <div class="border-state"></div>
           </div>
-          <div class="file-manager__file-item__info">
-            {renderFileRenameContext()}
-          </div>
-          <div class="border-state"></div>
-        </div>
-      </>
-    );
+        </>
+      );
   },
 });
