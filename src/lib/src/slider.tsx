@@ -20,7 +20,7 @@ export const Slider = defineComponent({
   setup() {
     const dialog = useDialog();
 
-    const { currentPath, dirList, goPath } = useContext();
+    const { currentPath, dirList, goPath, handleMakeBuket } = useContext();
 
     const contextMenu = ref(getDirContextMenus(false));
     const dirExpandKeys = ref<string[]>([]);
@@ -31,6 +31,9 @@ export const Slider = defineComponent({
       switch (action) {
         case FileAction.RENAME:
           eventBus.$scope(NK.DIR_RENAME_EVENT, `dir_path_${dir.path}`);
+          return;
+        case FileAction.NEW_BUCKET:
+          handleMakeBuket(false);
           return;
         case FileAction.NEW_FOLDER:
           const newDir: FileManagerSpirit.FileDirItem = {

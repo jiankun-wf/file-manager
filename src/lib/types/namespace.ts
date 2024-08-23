@@ -65,6 +65,7 @@ export namespace FileManagerSpirit {
     openImageEditor: openImageEditor;
     goPath: goPath;
     loadDirContent: loadDirContent;
+    handleMakeBuket: (update: boolean, item?: FileItem) => void;
     emit: Emit;
   };
 
@@ -91,6 +92,7 @@ export namespace FileManagerSpirit {
     status?: `${FileStatus}`;
     progress?: number;
     dir: boolean;
+    buket?: boolean;
   }
 
   export type FileList = FileItem[];

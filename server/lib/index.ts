@@ -1,5 +1,5 @@
 import express from "express";
-import { basename, join, relative } from "path";
+import { basename, join, relative, resolve } from "path";
 import {
   getFullDir,
   getDirFile,
@@ -20,6 +20,8 @@ import {
   mkdirSync,
   writeFileSync,
   statSync,
+  readdirSync,
+  existsSync,
 } from "fs";
 import mintype from "mime";
 import multer from "multer";
@@ -48,6 +50,69 @@ app.use((req, res, next) => {
   );
   next();
   return req;
+});
+
+app.get("/bukets", (req, res) => {
+  const bukets = readdirSync(resolve(assetsBasePath));
+  const list = bukets.map((b) => ({
+    name: b,
+    path: getRealPath(relative(assetsBasePath, join(assetsBasePath, b))),
+    url: getUrlPath(relative(assetsBasePath, join(assetsBasePath, b))),
+    buket: true,
+    dir: false,
+    type: "",
+    size: 0,
+    uploadTime: 0,
+  }));
+
+  res.send(ReponseSuccess(list));
+
+  return req;
+});
+
+app.post("/buket", (req, res) => {
+  const { buketName } = req.body;
+  const fullPath = getFullPath(buketName as string);
+  const exist = existsSync(fullPath);
+  if (exist) {
+    return res.send(ReponseError("500", "该buket已存在"));
+  } else {
+    mkdirSync(fullPath, { recursive: true });
+    res.json(
+      ReponseSuccess({
+        path: getRealPath(relative(assetsBasePath, fullPath)),
+        url: getUrlPath(relative(assetsBasePath, fullPath)),
+        name: basename(fullPath),
+      })
+    );
+  }
+});
+
+app.delete("/buket", (req, res) => {
+  const { buketName } = req.body;
+
+  const fullPath = getFullPath(buketName);
+  rmSync(fullPath, { recursive: true });
+
+  res.json(ReponseSuccess());
+});
+
+app.put("/buket", (req, res) => {
+  const { buketName, newBuketName } = req.body;
+
+  const fullPath = getFullPath(buketName as string);
+
+  const dirname = basename(fullPath);
+  const p = fullPath.replace(dirname, newBuketName);
+  renameSync(fullPath, p);
+
+  res.json(
+    ReponseSuccess({
+      path: getRealPath(relative(assetsBasePath, p)),
+      url: getUrlPath(relative(assetsBasePath, p)),
+      name: basename(p),
+    })
+  );
 });
 
 // 获取文件夹目录

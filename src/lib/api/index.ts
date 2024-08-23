@@ -1,6 +1,13 @@
 import { AxiosProgressEvent } from "axios";
 import { $http } from "../utils/axios";
 
+export const getBuketList = () => {
+  return $http.request({
+    url: "/bukets",
+    method: "get",
+  });
+};
+
 export const getDirsList = () => {
   return $http.request({
     url: "/dirs",

@@ -5,16 +5,15 @@ import {
   inject,
   onBeforeMount,
   onMounted,
-  PropType,
+  type PropType,
   provide,
   ref,
   unref,
   watch,
 } from "vue";
 import { CaretRightOutlined } from "@vicons/antd";
-
-import "../style/dir-tree.less";
 import { DirIcon } from "../icons/DirIcon";
+import BuketIcon from "@/lib/assets/buket.png";
 import { eventStop, eventStopPropagation } from "../utils/event";
 import { useDirRename } from "../hooks/useRename";
 import { eventBus } from "../utils/pub-sub";
@@ -27,6 +26,7 @@ import { setDragStyle, setDragTransfer } from "../utils/drag";
 import { commandDirMove } from "../command/dir/move";
 import { FileManagerSpirit } from "../types/namespace";
 
+import "../style/dir-tree.less";
 export const DirTree = defineComponent({
   name: "DirTree",
   props: {
@@ -58,7 +58,6 @@ export const DirTree = defineComponent({
   emits: ["update:value", "contextmenu", "update:expandKeys"],
   setup(props, { emit }) {
     const expandKeys = ref<string[]>(props.expandKeys);
-
     const currentValue = ref(props.value);
 
     provide<FileManagerSpirit.DirContext>("treeContext", {
@@ -91,7 +90,7 @@ export const DirTree = defineComponent({
         {props.data.length ? (
           <>
             {props.data.map((d) => (
-              <DirTreeItem data={d} />
+              <DirTreeItem data={d} buket={d.buket} />
             ))}
           </>
         ) : (
@@ -117,6 +116,10 @@ export const DirTreeItem = defineComponent({
       default: undefined,
     },
     indent: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+    buket: {
       type: Boolean as PropType<boolean>,
       default: false,
     },
@@ -289,12 +292,16 @@ export const DirTreeItem = defineComponent({
           onDrop={handleFileDrop}
           ref={(ref) => (elementRef.value = ref as any)}
           onContextmenu={onContextMenu}
-          draggable={true}
+          draggable={!props.data.buket}
           onDragstart={handleDriDragStart}
           onDragend={handleDirDragEnd}
         >
           <div class="file-manager-dir__tree-item__inner">
-            <DirIcon class="file-manager-dir__tree-item-icon" />
+            {props.data.buket ? (
+              <img src={BuketIcon} alt="buket-icon" width={16} height={16} />
+            ) : (
+              <DirIcon class="file-manager-dir__tree-item-icon" />
+            )}
             <div class="file-manager-dir__tree-item-name">
               {renderDirRenameInput(props.data[label])}
             </div>

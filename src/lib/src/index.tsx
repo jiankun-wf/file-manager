@@ -24,6 +24,7 @@ import type { FileManagerSpirit } from "../types/namespace";
 import { NK } from "../enum";
 
 import "../style/index.less";
+import { useMakeBuket } from "../hooks/useMakeBuket";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -104,8 +105,9 @@ export const FileManager = defineComponent({
     // 图片编辑
     const { render: renderImageEditModal, open: handleEditImage } =
       useImageEdit();
-
-    // 悬浮展示文件详情
+    // 新建桶（buket）
+    const { render: renderMakeBuketModal, handleEdit: handleMakeBuket } =
+      useMakeBuket();
 
     createContext({
       isOnlyRead, // 读写模式
@@ -126,6 +128,7 @@ export const FileManager = defineComponent({
       latestCopySelectedFiles, // 最近复制、剪切的文件列表
       openImageEditor: handleEditImage, // 打开图片编辑器
       goPath: to, // 跳转
+      handleMakeBuket,
       loadDirContent, // 加载目录内容
       emit, // 事件触发器
     });
@@ -166,6 +169,8 @@ export const FileManager = defineComponent({
           {renderChangeContext(id)}
           {/* 图像编辑 */}
           {renderImageEditModal()}
+          {/* 新建Bucket */}
+          {renderMakeBuketModal()}
         </div>
       </Provider>
     );

@@ -231,7 +231,8 @@ export const FileDir = defineComponent({
             onDragend={handleDragEnd}
             draggable={
               unref(currentFile).status === FileStatus.Completed &&
-              unref(draggable)
+              unref(draggable) &&
+              !unref(currentFile).buket
             }
             onMousedown={eventStopPropagation}
             onDblclick={handleOpenFolder}

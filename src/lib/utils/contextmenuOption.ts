@@ -10,6 +10,11 @@ import { renderIcon } from "./icon";
 export const getDirContextMenus = (isInDirectory: boolean = false) => {
   const contextMenuOptions = [
     {
+      label: "新建buket",
+      key: FileAction.NEW_BUCKET,
+      icon: renderIcon(PlusOutlined),
+    },
+    {
       label: "重命名",
       key: FileAction.RENAME,
       icon: renderIcon(EditOutlined),
@@ -19,6 +24,7 @@ export const getDirContextMenus = (isInDirectory: boolean = false) => {
       key: FileAction.DOWNLOAD,
       icon: renderIcon(DownloadOutlined),
     },
+
     {
       label: "新建文件夹",
       key: FileAction.NEW_FOLDER,
@@ -38,7 +44,7 @@ export const getDirContextMenus = (isInDirectory: boolean = false) => {
     },
   ];
   if (isInDirectory) {
-    return contextMenuOptions;
+    return contextMenuOptions.slice(1);
   }
-  return contextMenuOptions.slice(2, 3);
+  return contextMenuOptions.slice(0, 1);
 };
