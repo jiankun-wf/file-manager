@@ -25,6 +25,8 @@ export const Provider = defineComponent({
             primaryColorHover: "#6279ff",
             primaryColorPressed: "#1436ff",
             primaryColorSuppl: "#6279ff",
+            fontFamily:
+              'sans-serif, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif',
           },
         }}
       >

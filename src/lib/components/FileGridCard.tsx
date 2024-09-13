@@ -11,7 +11,7 @@ import {
 } from "vue";
 import { resizeImage } from "../utils/resize";
 import { useContextMenu } from "../hooks/useContextMenu";
-import { useContext } from "../utils/context";
+import { useActionContext, useContext } from "../utils/context";
 import {
   FormOutlined,
   CopyOutlined,
@@ -38,6 +38,7 @@ import { eventBus } from "../utils/pub-sub";
 import { useFileRename } from "../hooks/useRename";
 import { commandDownload } from "../command/download";
 import { FileManagerSpirit } from "../types/namespace";
+import FIleIcon from '@/lib/assets/otherfile.png';
 
 const contextMenuOptions = [
   {
@@ -91,13 +92,10 @@ export const FileGridCard = defineComponent({
   name: "FileGridCard",
 
   setup() {
-    const {
-      fileList,
-      selectedFiles,
-      openFileChangeModal,
-      currentPath,
-      openImageEditor,
-    } = useContext();
+    const { currentPath, fileList } = useContext();
+
+    const { selectedFiles, openFileChangeModal, openImageEditor } =
+      useActionContext();
 
     const message = useMessage();
     const dialog = useDialog();
@@ -193,7 +191,7 @@ export const FileGridCard = defineComponent({
   },
 });
 
-const FileGridCardItem = defineComponent({
+export const FileGridCardItem = defineComponent({
   props: {
     currentFile: {
       type: Object as PropType<FileManagerSpirit.FileItem>,
@@ -205,6 +203,8 @@ const FileGridCardItem = defineComponent({
     const imageRef = ref<HTMLImageElement>();
 
     // 得到变量
+    const { fileList } = useContext();
+
     const {
       selectedFiles,
       addSelectFile,
@@ -212,8 +212,7 @@ const FileGridCardItem = defineComponent({
       copyMode,
       latestCopySelectedFiles,
       contextDraggingArgs,
-      fileList,
-    } = useContext();
+    } = useActionContext();
 
     const isSliceFile = computed(() => {
       return unref(selectedFiles).some(
@@ -245,7 +244,8 @@ const FileGridCardItem = defineComponent({
       if (isImage(unref(currentFile).type) && unref(currentFile).url) {
         return unref(currentFile).url as string;
       }
-      return new URL("@/lib/assets/otherfile.png", import.meta.url).href;
+
+      return FIleIcon;
     });
 
     const handleDragStart = (e: DragEvent) => {

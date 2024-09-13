@@ -18,12 +18,29 @@ export default defineConfig({
     host: true,
     proxy: {
       "/basic-api": {
-        target: "http://localhost:5715",
-
+        target: "http://192.168.188.111:8080",
         changeOrigin: true,
-
         rewrite: (path) => path.replace(/^\/basic-api/, ""),
       },
     },
+  },
+  build: {
+    lib: {
+      entry: "./src/lib/index.ts",
+      name: "FileManager",
+      fileName: (format) => `file-manager.${format}.js`,
+      formats: ["es", "cjs"],
+    },
+    rollupOptions: {
+      external: ["vue", "axios", "jszip"],
+      output: {
+        globals: {
+          vue: "Vue",
+          axios: "axios",
+          jszip: "jszip",
+        },
+      },
+    },
+    minify: 'esbuild',
   },
 });

@@ -171,12 +171,13 @@ export const useFileRename = ({
           eventStop(event);
           handleRename.call(null);
         }}
+        draggable="false"
       >
         {unref(editable) ? (
           <NInput
             size="tiny"
             type="textarea"
-            autosize={{ minRows: 1, maxRows: 5 }}
+            autosize={{ minRows: 1, maxRows: 2 }}
             placeholder=""
             value={unref(inputValue)}
             onUpdate:value={handleInput}
@@ -186,7 +187,7 @@ export const useFileRename = ({
             }}
           />
         ) : (
-          <NEllipsis line-clamp={3} tooltip={false}>
+          <NEllipsis line-clamp={2} tooltip={false}>
             {unref(currentFile).name}
           </NEllipsis>
         )}

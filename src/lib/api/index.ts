@@ -1,9 +1,19 @@
 import { AxiosProgressEvent } from "axios";
-import { $http } from "../utils/axios";
+import { createAxios } from "../utils/axios";
+
+export const getUrl = () => {
+  return import.meta.env.DEV ? `/basic-api` : `http://192.168.188.111:8080`;
+};
+
+export const createHttp = (baseUrl: string) => {
+  return createAxios(baseUrl);
+};
+
+const $http = createAxios(getUrl());
 
 export const getBuketList = () => {
   return $http.request({
-    url: "/bukets",
+    url: "/file-providers",
     method: "get",
   });
 };
@@ -15,13 +25,15 @@ export const getDirsList = () => {
   });
 };
 
-export const getDirContent = (dir: string) => {
+export const getDirContent = (params: {
+  path: string;
+  current: number;
+  size: number;
+}) => {
   return $http.request({
     method: "get",
-    params: {
-      dir,
-    },
-    url: "/dir-content",
+    params,
+    url: "/file-list",
   });
 };
 
@@ -36,12 +48,12 @@ export const renameDir = (dir: string, newdir: string) => {
   });
 };
 
-export const createDir = (dir: string) => {
+export const createDir = (path: string) => {
   return $http.request({
     method: "post",
-    url: `/dirs`,
+    url: `/create-folder`,
     data: {
-      dir,
+      path,
     },
   });
 };
@@ -65,6 +77,19 @@ export const deleteDir = (pts: { dir: string }[]) => {
   });
 };
 
+export const createFile = (file: File) => {
+  return $http.request({
+    method: "post",
+    url: `/create-file`,
+    data: {
+      file,
+    },
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
 export const uploadFile = (
   data: { file: File; dir: string },
   onUploadProgress: (progressEvent: AxiosProgressEvent) => void
@@ -80,13 +105,10 @@ export const uploadFile = (
   });
 };
 
-export const deleteFile = (dir: string) => {
+export const deleteFile = (path: string) => {
   return $http.request({
-    method: "delete",
-    url: `/dir-file`,
-    data: {
-      dir,
-    },
+    method: "post",
+    url: `/delete-file?path=${path}`,
   });
 };
 

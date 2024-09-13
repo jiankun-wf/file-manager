@@ -2,6 +2,7 @@ import { ComputedRef, Ref } from "vue";
 import { FileItemType } from ".";
 import { NK } from "../enum";
 import { FileAction } from "../enum/file-action";
+import { AxiosInstance, AxiosRequestConfig } from "axios";
 
 type WindowFileList = FileList;
 
@@ -23,7 +24,8 @@ export namespace FileManagerSpirit {
   }>;
   export type addSelectFile = (file: FileItem) => void;
   export type fileList = Ref<FileItem[]>;
-  export type dirList = Ref<FileDirItem[]>;
+  export type providerList = Ref<FileDirItem[]>;
+  export type getProviderList = () => Promise<void>;
   export type filePutIn = (
     files: WindowFileList | File[],
     path: string,
@@ -45,26 +47,46 @@ export namespace FileManagerSpirit {
   export type goPath = (path: string, replace?: boolean) => void;
   export type loadDirContent = (clear?: boolean) => Promise<void>;
 
+  export type AxiosRequest = AxiosInstance & {
+    $request: <T = any>(config: AxiosRequestConfig) => Promise<T>;
+  };
+
+  export type PaginationRef = {
+    current: number;
+    size: number;
+    total: number;
+    full: boolean;
+  };
+
+  export type $fsApi = AxiosInstance;
+
   export type Context = {
     isOnlyRead: ComputedRef<boolean>;
     currentPath: currentPath;
-    selectMode: selectMode;
     viewType: viewType;
-    selectedFiles: selectedFiles;
+    fileList: fileList;
+    providerList: providerList;
+    getProviderList: getProviderList;
+    $http: AxiosRequest;
+    goPath: goPath;
+    handleOpenFileInfoDrawer: (file: FileItem) => void;
+    paginationRef: FileManagerSpirit.PaginationRef;
+  };
+
+  export type ActionContext = {
+    loadDirContent: loadDirContent;
+    selectMode: selectMode;
     draggable: draggable;
+    copyMode: copyMode;
+    selectedFiles: selectedFiles;
     contextDraggingArgs: contextDraggingArgs;
     addSelectFile: addSelectFile;
-    fileList: fileList;
-    dirList: dirList;
     filePutIn: filePutIn;
     chooseFile: chooseFile;
     fileRename: fileRename;
-    copyMode: copyMode;
     latestCopySelectedFiles: latestCopySelectedFiles;
     openFileChangeModal: openFileChangeModal;
     openImageEditor: openImageEditor;
-    goPath: goPath;
-    loadDirContent: loadDirContent;
     handleMakeBuket: (update: boolean, item?: FileItem) => void;
     emit: Emit;
   };
@@ -84,10 +106,8 @@ export namespace FileManagerSpirit {
     type: T extends "file" ? string : undefined;
     id?: string;
     uploadTime?: number;
-    __FILE: File;
+    __FILE?: File | null;
     url?: string;
-    nameing?: boolean;
-    mockname?: string;
     __isnew?: boolean;
     status?: `${FileStatus}`;
     progress?: number;
@@ -128,5 +148,13 @@ export namespace FileManagerSpirit {
     configKey: { value: string; label: string; children: string };
     emit: Function;
     currentValue: Ref<string>;
+  };
+}
+
+export namespace AxiosResponse {
+  export type Pagination = {
+    total: number;
+    size: number;
+    current: number;
   };
 }

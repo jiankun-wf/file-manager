@@ -12,9 +12,11 @@ import { eventStopPropagation } from "../utils/event";
 export const useBreadcrumb = ({
   currentPath,
   loadDirContent,
+  paginationRef,
 }: {
   currentPath: FileManagerSpirit.currentPath;
   loadDirContent: FileManagerSpirit.loadDirContent;
+  paginationRef: FileManagerSpirit.PaginationRef;
 }) => {
   const pathBackHistory = ref<string[]>([]);
   const pathForwardHistory = ref<string[]>([]);
@@ -54,7 +56,7 @@ export const useBreadcrumb = ({
   const handleToPath = (pathSplitList: string[], startIndex: number) => {
     const resPathList = pathSplitList.slice(0, startIndex + 1);
 
-    const resPath = "/" + resPathList.join("/");
+    const resPath = resPathList.join("/");
 
     to(resPath);
   };
@@ -86,6 +88,13 @@ export const useBreadcrumb = ({
 
   const handleCancelInput = () => {
     showInputRef.value = false;
+  };
+
+  const handleReload = () => {
+    paginationRef.current = 1;
+    paginationRef.total = 0;
+    paginationRef.full = false;
+    loadDirContent(true);
   };
 
   const renderToolbar = () => {
@@ -121,7 +130,7 @@ export const useBreadcrumb = ({
         {/* 刷新当前 */}
         <div
           class="file-manager-breadcrumb__toolbar-item"
-          onClick={loadDirContent.bind(null, false)}
+          onClick={handleReload.bind(null)}
         >
           <NIcon size={16}>
             <ReloadOutlined />
@@ -132,7 +141,21 @@ export const useBreadcrumb = ({
   };
 
   const renderBreadcrumb = () => {
-    const pathList = unref(currentPath).split("/").slice(1);
+    const pathList: string[] = [];
+
+    if (unref(currentPath)) {
+      let positionIndex = 0;
+      const path = unref(currentPath);
+
+      for (let i = 0, l = path.length; i < l; i++) {
+        const curS = path[i];
+        if (curS === "/") {
+          if (path[i - 1] === "/" || path[i + 1] === "/") continue;
+          pathList.push(path.slice(positionIndex, i));
+          positionIndex = i + 1;
+        }
+      }
+    }
 
     return (
       <div

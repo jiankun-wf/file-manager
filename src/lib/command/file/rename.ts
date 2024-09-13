@@ -7,7 +7,6 @@ export const commandRename = async (file: FileManagerSpirit.FileItem, newname: s
   const { path, url, uploadTime } = (await renameFile(oldPath, newname)) as any;
 
   file.name = newname;
-  file.mockname = newname;
   file.path = path;
   file.url = url;
   file.uploadTime = uploadTime;

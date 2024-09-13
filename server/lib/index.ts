@@ -13,6 +13,7 @@ import {
   makeNewFile,
   doDirToZip,
 } from "./utils.ts";
+
 import {
   rmSync,
   renameSync,
@@ -190,10 +191,13 @@ app.delete("/dirs", (req, res) => {
 });
 
 app.get("/dir-content", (req, res) => {
-  const { dir } = req.query;
+  const { dir, current, size } = req.query;
   const fullDir = join(assetsBasePath, dir as string);
 
-  const files = getDirContenet(fullDir, assetsBasePath);
+  const files = getDirContenet(fullDir, assetsBasePath, {
+    current: Number(current),
+    size: Number(size),
+  });
   res.json(ReponseSuccess(files));
 });
 

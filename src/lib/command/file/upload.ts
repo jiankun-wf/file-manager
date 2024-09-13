@@ -12,7 +12,7 @@ export const commandUpload = async (
   // TODO: upload file to server
 
   const { url, path, uploadTime }: any = await uploadFile(
-    { file: file.__FILE, dir },
+    { file: file.__FILE!, dir },
     (progress) => {
       const total = progress.total || 0;
 

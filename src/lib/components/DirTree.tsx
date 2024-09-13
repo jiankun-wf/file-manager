@@ -18,7 +18,7 @@ import { eventStop, eventStopPropagation } from "../utils/event";
 import { useDirRename } from "../hooks/useRename";
 import { eventBus } from "../utils/pub-sub";
 import { NK } from "../enum";
-import { useContext } from "../utils/context";
+import { useActionContext, useContext } from "../utils/context";
 import { useDragInToggle } from "../hooks/useDragToggle";
 import { commandMove } from "../command/file/move";
 import { cloneDeep } from "lodash-es";
@@ -132,8 +132,9 @@ export const DirTreeItem = defineComponent({
     const elementRef = ref<HTMLDivElement>();
 
     // 文件管理器暴漏的变量
-    const { dirList, contextDraggingArgs, fileList, currentPath, goPath } =
-      useContext();
+    const { providerList, fileList, currentPath, goPath } = useContext();
+
+    const { contextDraggingArgs } = useActionContext();
 
     // 目录配置
     const { value, label, children } = configKey;
@@ -146,7 +147,7 @@ export const DirTreeItem = defineComponent({
     // 目录重命名
     const { renderDirRenameInput, handleRename, naming } = useDirRename(
       props.data as FileManagerSpirit.FileDirItem,
-      props.parentList ?? dirList,
+      props.parentList ?? providerList,
       props.parent
     );
 
@@ -186,7 +187,7 @@ export const DirTreeItem = defineComponent({
               targetDirPath: props.data[value],
               fromDirPath: path,
               currentPath,
-              dirList,
+              dirList: providerList,
             });
           }
         } finally {
@@ -231,7 +232,7 @@ export const DirTreeItem = defineComponent({
         "contextmenu",
         event,
         props.data,
-        props.parentList ?? dirList,
+        props.parentList ?? providerList,
         props.parent
       );
     };
@@ -302,7 +303,10 @@ export const DirTreeItem = defineComponent({
             ) : (
               <DirIcon class="file-manager-dir__tree-item-icon" />
             )}
-            <div class="file-manager-dir__tree-item-name">
+            <div
+              class="file-manager-dir__tree-item-name"
+              title={props.data[label]}
+            >
               {renderDirRenameInput(props.data[label])}
             </div>
             {props.data[children]?.length && (

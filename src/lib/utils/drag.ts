@@ -132,5 +132,5 @@ export const splitDragFiles = async (
       }
     })
   );
-  return files.filter((f) => !!f);
+  return files.filter((f) => !!f) as DragInFileItem[];
 };

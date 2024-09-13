@@ -101,11 +101,11 @@ export const useAreaSelect = ({
 
     width.value = Math.abs(clientX - ox);
     height.value = Math.abs(clientY - oy);
-    const selectFiles = getSelectFiles();
-    if (!selectFiles) {
-      return;
-    }
-    selectedFiles.value = selectFiles;
+    // const selectFiles = getSelectFiles();
+    // if (!selectFiles) {
+    //   return;
+    // }
+    // selectedFiles.value = selectFiles;
   };
 
   const handleMoseUp = (e: MouseEvent) => {
@@ -123,38 +123,43 @@ export const useAreaSelect = ({
     if (!unref(show)) return false;
     // 抛出选择区域的面积
     const el = unref(areaRef)!;
+    const elRect = el.getBoundingClientRect();
 
     const position: FileManagerSpirit.AreaRect = {
-      top: Math.max(el.offsetTop, 0),
-      left: Math.max(el.offsetLeft, 0),
-      right: el.clientWidth + Math.max(el.offsetLeft, 0),
-      bottom: el.clientHeight + Math.max(el.offsetTop, 0),
+      top: elRect.top,
+      left: elRect.left,
+      right: elRect.right,
+      bottom: elRect.bottom,
     };
-    const files = unref(fileList)
-      .filter((f) => !!f.path && f.status === FileStatus.Completed)
-      .map((file) => {
-        const el = document.querySelector<HTMLDivElement>(
-          `div[data-path-name="${file.path}"]`
-        )!;
-        return {
-          rect: {
-            top: el.offsetTop,
-            left: el.offsetLeft,
-            right: el.offsetLeft + el.clientWidth,
-            bottom: el.offsetTop + el.clientHeight,
-          },
-          file,
-        };
-      });
+    const files = unref(fileList).map((file) => {
+      const el = document.querySelector<HTMLDivElement>(
+        `div[data-path-name="${file.path}"]`
+      )!;
+      if (!el) {
+        return void 0;
+      }
+      if (!file.path || file.status !== FileStatus.Completed) return void 0;
+      const rect = el.getBoundingClientRect();
+      return {
+        rect: {
+          top: rect.top,
+          left: rect.left,
+          right: rect.left + rect.width,
+          bottom: rect.bottom,
+        },
+        file,
+      };
+    });
     const selectFiles = files.filter((file) => {
+      if (!file) return false;
       const { rect } = file;
       return isAreaIntersect(position, rect);
     });
-    return selectFiles.map((item) => item.file);
+    return selectFiles.map((item) => item!.file);
   };
 
   onMounted(() => {
-    const el = document.getElementById(scope);
+    const el = document.querySelector<HTMLElement>(scope);
     if (!el) return;
     scopeEl.value = el;
     addMouseLeftEventListener(el, "mousedown", handleMoseDown);

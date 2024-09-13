@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "node --loader ts-node/esm ./server/lib/index.ts",
-    "build": "vue-tsc && vite build",
+    "build": "vue-tsc && vite build && tsc -p ./tsconfig.declaration.json",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -41,6 +41,8 @@
     "typescript": "^5.2.2",
     "unocss": "^0.61.0",
     "vite": "^5.2.0",
-    "vue-tsc": "^2.0.6"
+    "vue-tsc": "^2.0.6",
+    "vue-virtual-scroll-grid": "^1.11.0",
+    "vue-virtual-scroller": "2.0.0-beta.8"
   }
 }

@@ -9,4 +9,5 @@ export enum FileAction {
   NEW_BUCKET = "new_bucket",
   NEW_FOLDER = "new_folder",
   IMAGE_EDIT = "image_edit",
+  INFO = "info",
 }

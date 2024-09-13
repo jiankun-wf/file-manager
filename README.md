@@ -1,3 +1,7 @@
+# 1.0.1
+
+1. 设置文件框的高度选项（content-height）
+
 # vue3 实现的类 Windows 交互逻辑的文件管理器 ui（a file manager ui with classical Windows interaction logic implemented in vue3）
 
 1. `npm install` 安装依赖（setup dependencies）

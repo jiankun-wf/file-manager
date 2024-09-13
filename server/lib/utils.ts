@@ -43,9 +43,13 @@ export const getFullDir = (path: string, root = true) => {
   return dirs;
 };
 
-export const getDirContenet = (path: string, root: string) => {
+export const getDirContenet = (
+  path: string,
+  root: string,
+  { current, size }: { current: number; size: number }
+) => {
   const output: Record<string, any>[] = [];
-  const files = readdirSync(path);
+  const files = readdirSync(path).slice(current - 1, current + size);
 
   files.forEach((file) => {
     const fp = join(path, file);

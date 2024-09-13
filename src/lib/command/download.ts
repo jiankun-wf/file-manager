@@ -12,6 +12,7 @@ export const commandDownload = async (filePath: string) => {
     a.download = name;
     a.click();
     URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   } finally {
   }
 };

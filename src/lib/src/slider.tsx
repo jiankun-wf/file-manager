@@ -1,6 +1,5 @@
 import { defineComponent, nextTick, onMounted, ref, unref } from "vue";
-import { useContext } from "../utils/context";
-import { getDirsList } from "../api";
+import { useActionContext, useContext } from "../utils/context";
 import { DirTree } from "../components/DirTree";
 import { useContextMenu } from "../hooks/useContextMenu";
 import { getDirContextMenus } from "../utils/contextmenuOption";
@@ -20,7 +19,8 @@ export const Slider = defineComponent({
   setup() {
     const dialog = useDialog();
 
-    const { currentPath, dirList, goPath, handleMakeBuket } = useContext();
+    const { currentPath, providerList, getProviderList, goPath } = useContext();
+    const { handleMakeBuket } = useActionContext();
 
     const contextMenu = ref(getDirContextMenus(false));
     const dirExpandKeys = ref<string[]>([]);
@@ -42,7 +42,7 @@ export const Slider = defineComponent({
             __new: true,
           };
           if (!dir) {
-            dirList.value.push(newDir);
+            providerList.value.push(newDir);
           } else {
             if (!dir.children) {
               dir.children = [];
@@ -89,12 +89,10 @@ export const Slider = defineComponent({
 
     const getDirs = async () => {
       try {
-        const res =
-          (await getDirsList()) as unknown as FileManagerSpirit.FileDirItem[];
-        if (res.length) {
-          goPath(res[0].path);
+        await getProviderList();
+        if (unref(providerList).length) {
+          goPath(unref(providerList)[0].path);
         }
-        dirList.value = res;
       } finally {
       }
     };
@@ -111,7 +109,7 @@ export const Slider = defineComponent({
         if (!isFromInner) return;
         if (type !== NK.INNER_DRAG_DIR) return;
         const node = findTreeNode(
-          unref(dirList),
+          unref(providerList),
           (node: Record<string, any>) => node.path === path
         );
         if (!node || node.root) return;
@@ -119,7 +117,7 @@ export const Slider = defineComponent({
           targetDirPath: "/",
           fromDirPath: path,
           currentPath,
-          dirList,
+          dirList: providerList,
         });
       } finally {
       }
@@ -138,7 +136,7 @@ export const Slider = defineComponent({
         onDrop={handleDrop}
       >
         <DirTree
-          data={unref(dirList)}
+          data={unref(providerList)}
           value={unref(currentPath)}
           onUpdate:value={handleSelectedKeysChange}
           onContextmenu={onContextMenu}

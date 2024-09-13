@@ -56,7 +56,7 @@ export const useImageEdit = () => {
   const handleEditImage = async (file: FileManagerSpirit.FileItem) => {
     currentFileRef.value = file;
     if (!file.url) {
-      const u = await fileToBase64(file.__FILE);
+      const u = await fileToBase64(file.__FILE!);
       originSrc.value = u;
       currentSrc.value = u;
     } else {

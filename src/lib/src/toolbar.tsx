@@ -2,13 +2,14 @@ import { defineComponent, renderSlot, unref } from "vue";
 import { CloudUploadOutlined } from "@vicons/antd";
 
 import { NButton, NIcon } from "naive-ui";
-import { useContext } from "../utils/context";
+import { useActionContext, useContext } from "../utils/context";
 import { NK } from "../enum";
 
 export const Toolbar = defineComponent({
   name: "Toolbar",
   setup(_, { slots }) {
-    const { chooseFile, currentPath, filePutIn, isOnlyRead } = useContext();
+    const { currentPath, isOnlyRead } = useContext();
+    const { chooseFile, filePutIn } = useActionContext();
 
     const handleUploadFiles = async () => {
       const files = await chooseFile();

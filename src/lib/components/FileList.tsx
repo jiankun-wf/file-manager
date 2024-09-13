@@ -1,5 +1,5 @@
 import { defineComponent, unref } from "vue";
-import { useContext } from "../utils/context";
+import { useActionContext, useContext } from "../utils/context";
 import { FileGridCard } from "./FileGridCard";
 import { FileGridList } from "./FileGridList";
 import { uid } from "../utils/uid";
@@ -7,7 +7,8 @@ import { useAreaSelect } from "../hooks/useFileSelectArea";
 
 export const FileList = defineComponent({
   setup(_) {
-    const { viewType, draggable, fileList, selectedFiles } = useContext();
+    const { viewType, fileList } = useContext();
+    const { draggable, selectedFiles } = useActionContext();
 
     const id = uid("list");
 

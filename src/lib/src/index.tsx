@@ -1,7 +1,8 @@
 // 其他 utils
-import { createContext } from "../utils/context";
+import { createActionContext, createContext } from "../utils/context";
 import { computed, defineComponent, PropType, reactive, toRefs } from "vue";
 import { uid } from "../utils/uid";
+import { createAxios } from "../utils/axios";
 // components
 import { Content } from "./content";
 import { Slider } from "./slider";
@@ -18,13 +19,16 @@ import { useChooseFile } from "../hooks/useChooseFile";
 import { useFileRename } from "../hooks/useFileRename";
 import { useFileChange } from "../hooks/useFileChange";
 import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
+import { useMakeBuket } from "../hooks/useMakeBuket";
+import { useFileInfoDrawer } from "../hooks/useFileInfoDrawer";
 // types
 import type { FileManagerOptions } from "../types";
 import type { FileManagerSpirit } from "../types/namespace";
 import { NK } from "../enum";
 
 import "../style/index.less";
-import { useMakeBuket } from "../hooks/useMakeBuket";
+import { getUrl } from "../api";
+import { useProviders } from "../hooks/useProviders";
 export const FileManager = defineComponent({
   name: "FileManager",
   props: {
@@ -40,10 +44,20 @@ export const FileManager = defineComponent({
       type: String as PropType<"read" | "write">,
       default: NK.MODE_WRITE,
     },
+    action: {
+      type: String as PropType<string>,
+      default: getUrl(),
+    },
+    contentHeight: {
+      type: Number as PropType<number>,
+      default: 800,
+    },
   },
   emits: ["file-move", "file-select", "path-change"],
   setup(props, { emit, expose }) {
     const id = uid("file-manager");
+
+    const $http = createAxios(props.action);
 
     const {
       currentPath,
@@ -51,7 +65,6 @@ export const FileManager = defineComponent({
       selectedFiles,
       viewType,
       draggable,
-      dirList,
       contextDraggingArgs,
     } = toRefs(
       reactive<FileManagerOptions>({
@@ -70,13 +83,19 @@ export const FileManager = defineComponent({
       return props.mode === NK.MODE_READ;
     });
 
-    const { fileList, loadDirContent } = useDirFiles({
+    const { providerList, getProviderList } = useProviders({
+      $http,
+    });
+
+    const { fileList, loadDirContent, paginationRef } = useDirFiles({
       currentPath,
+      $http,
     });
     // 面包屑
     const { render: renderBreadcrumb, to } = useBreadcrumb({
       currentPath,
       loadDirContent,
+      paginationRef,
     });
     // 文件选择 点击、按住ctrl多选
     const { addSelectFile } = useFileSelect({
@@ -102,6 +121,8 @@ export const FileManager = defineComponent({
       selectedFiles,
       fileList,
     });
+    const { render: renderFileInfoDrawer, handleOpenFileInfoDrawer } =
+      useFileInfoDrawer();
     // 图片编辑
     const { render: renderImageEditModal, open: handleEditImage } =
       useImageEdit();
@@ -112,13 +133,21 @@ export const FileManager = defineComponent({
     createContext({
       isOnlyRead, // 读写模式
       currentPath, // 当前目录路径
+      viewType, // 视图类型，列表/网格
+      fileList, // 当前目录下的所有文件列表
+      providerList, // 服务器目录树集合
+      getProviderList, // 获取服务器目录树集合
+      goPath: to, // 跳转
+      $http,
+      paginationRef, // 分页器
+      handleOpenFileInfoDrawer,
+    });
+
+    createActionContext({
       selectMode, // 选择模式，单选/多选
       selectedFiles, // 已选中的文件列表
-      viewType, // 视图类型，列表/网格
       draggable, // 文件卡片是否可以拖拽。场景，区域拖动选择时禁止可拖拽元素的文本选择与拖拽事件
       contextDraggingArgs, // 文件卡片是否在拖拽状态。场景：左侧目录监听拖入事件，需禁止目录的子元素的鼠标事件
-      fileList, // 当前目录下的所有文件列表
-      dirList, // 服务器目录树集合
       addSelectFile, // 根据选择模式进行选中目标文件
       filePutIn: handlePutIn, // 将外部文件加入到当前目录，并自动上传。
       chooseFile, // 公共的文件上传选择器
@@ -127,7 +156,6 @@ export const FileManager = defineComponent({
       copyMode, // 文件剪切、复制模式
       latestCopySelectedFiles, // 最近复制、剪切的文件列表
       openImageEditor: handleEditImage, // 打开图片编辑器
-      goPath: to, // 跳转
       handleMakeBuket,
       loadDirContent, // 加载目录内容
       emit, // 事件触发器
@@ -142,7 +170,11 @@ export const FileManager = defineComponent({
 
     return () => (
       <Provider mount-id={`#${id}`}>
-        <div class="file-manager" id={id}>
+        <div
+          class="file-manager"
+          id={id}
+          attr-content-height={`${props.contentHeight}px`}
+        >
           <Toolbar>
             {{
               prefix: () => renderBreadcrumb(),
@@ -171,6 +203,16 @@ export const FileManager = defineComponent({
           {renderImageEditModal()}
           {/* 新建Bucket */}
           {renderMakeBuketModal()}
+          {/* 文件详情 */}
+          {renderFileInfoDrawer(
+            {
+              to: `#${id}`,
+              showMask: false,
+            },
+            {
+              closable: true,
+            }
+          )}
         </div>
       </Provider>
     );

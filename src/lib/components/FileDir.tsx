@@ -10,7 +10,7 @@ import {
   watch,
 } from "vue";
 import { NK } from "../enum";
-import { useContext } from "../utils/context";
+import { useActionContext, useContext } from "../utils/context";
 import { eventStopPropagation, eventStop } from "../utils/event";
 import { resizeImage } from "../utils/resize";
 import { setDragStyle, setDragTransfer } from "../utils/drag";
@@ -23,7 +23,7 @@ import { FileStatus } from "../enum/file-status";
 import { useFileRename } from "../hooks/useRename";
 import { eventBus } from "../utils/pub-sub";
 import { FileManagerSpirit } from "../types/namespace";
-import { useParticulars } from "../hooks/useParticulars";
+import DirIcon from "@/lib/assets/folder.png";
 
 export const FileDir = defineComponent({
   name: "FileDir",
@@ -39,6 +39,8 @@ export const FileDir = defineComponent({
     const imageRef = ref<HTMLImageElement>();
 
     // 得到变量
+    const { currentPath, fileList, providerList, goPath } = useContext();
+
     const {
       selectedFiles,
       addSelectFile,
@@ -46,11 +48,7 @@ export const FileDir = defineComponent({
       copyMode,
       latestCopySelectedFiles,
       contextDraggingArgs,
-      currentPath,
-      fileList,
-      dirList,
-      goPath,
-    } = useContext();
+    } = useActionContext();
 
     const currentFile = toRef(() => props.currentFile);
 
@@ -89,7 +87,7 @@ export const FileDir = defineComponent({
     };
 
     const getCurrentFileThumbnail = computed(() => {
-      return new URL("@/lib/assets/folder.png", import.meta.url).href;
+      return DirIcon;
     });
 
     const handleDragStart = (e: DragEvent) => {
@@ -168,7 +166,7 @@ export const FileDir = defineComponent({
               targetDirPath: unref(dirPath),
               fromDirPath: path,
               currentPath,
-              dirList,
+              dirList: providerList,
             });
           }
         } finally {
@@ -179,10 +177,6 @@ export const FileDir = defineComponent({
     const { renderFileRenameContext, handleRename } = useFileRename({
       currentFile: currentFile,
       fileList,
-    });
-
-    const { render: renderFileInfoPopover } = useParticulars({
-      currentFileRef: currentFile,
     });
 
     onMounted(() => {
@@ -214,46 +208,43 @@ export const FileDir = defineComponent({
       }
     });
 
-    return () =>
-      renderFileInfoPopover(
-        <>
-          <div
-            ref={(_ref) => (elementRef.value = _ref as HTMLDivElement)}
-            class={[
-              "file-manager__file-item--grid file-manager__dir",
-              unref(isSliceFile) && "is-selected",
-              unref(isCuttingFile) && "is-cutting",
-              unref(hasDraggingFile) && "has-dragging",
-            ]}
-            onContextmenu={handleContextMenu}
-            onClick={handleSelectFile}
-            onDragstart={handleDragStart}
-            onDragend={handleDragEnd}
-            draggable={
-              unref(currentFile).status === FileStatus.Completed &&
-              unref(draggable) &&
-              !unref(currentFile).buket
-            }
-            onMousedown={eventStopPropagation}
-            onDblclick={handleOpenFolder}
-            data-path-name={unref(currentFile).path}
-          >
-            <div class="file-manager__file-item__thumb">
-              <img
-                src={unref(getCurrentFileThumbnail)}
-                alt={unref(currentFile).name}
-                onDragstart={eventStop}
-                ref={(ref) => {
-                  imageRef.value = ref as HTMLImageElement;
-                }}
-              />
-            </div>
-            <div class="file-manager__file-item__info">
-              {renderFileRenameContext()}
-            </div>
-            <div class="border-state"></div>
-          </div>
-        </>
-      );
+    return () => (
+      <div
+        ref={(_ref) => (elementRef.value = _ref as HTMLDivElement)}
+        class={[
+          "file-manager__file-item--grid file-manager__dir",
+          unref(isSliceFile) && "is-selected",
+          unref(isCuttingFile) && "is-cutting",
+          unref(hasDraggingFile) && "has-dragging",
+        ]}
+        onContextmenu={handleContextMenu}
+        onClick={handleSelectFile}
+        onDragstart={handleDragStart}
+        onDragend={handleDragEnd}
+        draggable={
+          unref(currentFile).status === FileStatus.Completed &&
+          unref(draggable) &&
+          !unref(currentFile).buket
+        }
+        onMousedown={eventStopPropagation}
+        onDblclick={handleOpenFolder}
+        data-path-name={unref(currentFile).path}
+      >
+        <div class="file-manager__file-item__thumb">
+          <img
+            src={unref(getCurrentFileThumbnail)}
+            alt={unref(currentFile).name}
+            onDragstart={eventStop}
+            ref={(ref) => {
+              imageRef.value = ref as HTMLImageElement;
+            }}
+          />
+        </div>
+        <div class="file-manager__file-item__info">
+          {renderFileRenameContext()}
+        </div>
+        <div class="border-state"></div>
+      </div>
+    );
   },
 });
