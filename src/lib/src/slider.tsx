@@ -19,7 +19,8 @@ export const Slider = defineComponent({
   setup() {
     const dialog = useDialog();
 
-    const { currentPath, providerList, getProviderList, goPath } = useContext();
+    const { currentPath, providerList, getProviderList, goPath, isOnlyRead } =
+      useContext();
     const { handleMakeBuket } = useActionContext();
 
     const contextMenu = ref(getDirContextMenus(false));
@@ -72,6 +73,7 @@ export const Slider = defineComponent({
     const { renderContextMenu, handleContextMenu } = useContextMenu({
       onSelect: contextMenuOnSelect,
       options: contextMenu,
+      isOnlyRead,
     });
 
     const onContextMenu = (

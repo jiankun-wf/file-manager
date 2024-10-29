@@ -10,188 +10,25 @@ import {
   watch,
 } from "vue";
 import { resizeImage } from "../utils/resize";
-import { useContextMenu } from "../hooks/useContextMenu";
 import { useActionContext, useContext } from "../utils/context";
+
 import {
-  FormOutlined,
-  CopyOutlined,
-  DragOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  UploadOutlined,
-  DownloadOutlined,
-} from "@vicons/antd";
-import { renderIcon } from "../utils/icon";
-import { eventStop, eventStopPropagation } from "../utils/event";
+  eventPreventDefault,
+  eventStop,
+  eventStopPropagation,
+} from "../utils/event";
 import { isImage } from "../utils/minetype";
 import { useUploadProgress } from "../hooks/useUploadProgress";
-import { FileAction } from "../enum/file-action";
-import { commandDelete } from "../command/file/delete";
-import { useDialog, useMessage } from "naive-ui";
 import { NK } from "../enum";
 import { setDragStyle, setDragTransfer } from "../utils/drag";
-import { FileDir } from "./FileDir";
 import { FileStatus } from "../enum/file-status";
-import { commandUpload } from "../command/file/upload";
 import { getShouldStartDragPaths } from "../utils/from-darg";
 import { eventBus } from "../utils/pub-sub";
 import { useFileRename } from "../hooks/useRename";
-import { commandDownload } from "../command/download";
 import { FileManagerSpirit } from "../types/namespace";
-import FIleIcon from '@/lib/assets/otherfile.png';
+import FIleIcon from "@/lib/assets/otherfile.png";
 
-const contextMenuOptions = [
-  {
-    label: "复制",
-    key: FileAction.COPY,
-    icon: renderIcon(CopyOutlined),
-  },
-  {
-    label: "移动",
-    key: FileAction.MOVE,
-    icon: renderIcon(DragOutlined),
-  },
-  {
-    label: "重命名",
-    key: FileAction.RENAME,
-    icon: renderIcon(EditOutlined),
-  },
-  {
-    type: "divider",
-    key: "d1",
-  },
-  {
-    label: "下载",
-    key: FileAction.DOWNLOAD,
-    icon: renderIcon(DownloadOutlined),
-  },
-  {
-    label: "编辑图像",
-    key: FileAction.IMAGE_EDIT,
-    icon: renderIcon(FormOutlined),
-  },
-  {
-    label: "上传",
-    key: FileAction.UPLOAD,
-    props: {
-      style: { color: "#0025ff" },
-    },
-    icon: renderIcon(UploadOutlined, { color: "#0025ff" }),
-  },
-  {
-    label: "删除",
-    key: FileAction.DELETE,
-    props: {
-      style: { color: "#d03050" },
-    },
-    icon: renderIcon(DeleteOutlined, { color: "#d03050" }),
-  },
-];
-
-export const FileGridCard = defineComponent({
-  name: "FileGridCard",
-
-  setup() {
-    const { currentPath, fileList } = useContext();
-
-    const { selectedFiles, openFileChangeModal, openImageEditor } =
-      useActionContext();
-
-    const message = useMessage();
-    const dialog = useDialog();
-
-    const contextMenuOnSelect = async (...args: any[]) => {
-      const [action, _, file, argsFileList] = args;
-
-      switch (action) {
-        case FileAction.COPY:
-          openFileChangeModal({
-            file: argsFileList,
-            action: FileAction.COPY,
-            currentDirPath: unref(currentPath),
-          });
-          return;
-        case FileAction.IMAGE_EDIT:
-          openImageEditor(file);
-          return;
-        case FileAction.UPLOAD:
-          commandUpload(file, unref(currentPath));
-          return;
-        case FileAction.MOVE:
-          openFileChangeModal({
-            file: argsFileList,
-            action: FileAction.MOVE,
-            currentDirPath: unref(currentPath),
-          });
-          return;
-        case FileAction.RENAME:
-          eventBus.$scope(NK.FILE_RENAME_EVENT, `file_path_${file.path}`);
-          return;
-        case FileAction.DELETE:
-          const flag = await commandDelete({
-            files: argsFileList,
-            fileList,
-            selectedFiles,
-            dialog,
-          });
-          flag && message.success("删除成功");
-          return;
-        case FileAction.DOWNLOAD:
-          commandDownload(file.path);
-          return;
-      }
-    };
-
-    const contextMenu = ref(contextMenuOptions);
-    const { renderContextMenu, handleContextMenu } = useContextMenu({
-      options: contextMenu,
-      onSelect: contextMenuOnSelect,
-    });
-
-    const onContextMenu = (
-      event: MouseEvent,
-      file: FileManagerSpirit.FileItem
-    ) => {
-      const { type } = file;
-      if (file.status !== FileStatus.Completed) {
-        if (isImage(type)) {
-          contextMenu.value = contextMenuOptions.slice(5);
-        } else {
-          contextMenu.value = contextMenuOptions.slice(6);
-        }
-      } else {
-        contextMenu.value = [
-          ...contextMenuOptions.slice(0, 5),
-          ...contextMenuOptions.slice(-1),
-        ];
-      }
-      handleContextMenu(event, file, unref(selectedFiles));
-    };
-
-    return () => (
-      <div class="file-manager__file-list--grid" draggable="false">
-        {unref(fileList).map((f) =>
-          f.dir ? (
-            <FileDir
-              key={f.path}
-              currentFile={f}
-              onMouseContextMenu={onContextMenu}
-            />
-          ) : (
-            <FileGridCardItem
-              key={f.path}
-              currentFile={f}
-              onMouseContextMenu={onContextMenu}
-            />
-          )
-        )}
-        {renderContextMenu()}
-      </div>
-    );
-  },
-});
-
-export const FileGridCardItem = defineComponent({
+export const FileItem = defineComponent({
   props: {
     currentFile: {
       type: Object as PropType<FileManagerSpirit.FileItem>,
@@ -203,7 +40,7 @@ export const FileGridCardItem = defineComponent({
     const imageRef = ref<HTMLImageElement>();
 
     // 得到变量
-    const { fileList } = useContext();
+    const { fileList, isOnlyRead } = useContext();
 
     const {
       selectedFiles,
@@ -250,9 +87,17 @@ export const FileGridCardItem = defineComponent({
 
     const handleDragStart = (e: DragEvent) => {
       eventStopPropagation(e);
-      if (unref(currentFile).status !== FileStatus.Completed) {
+
+      if (unref(isOnlyRead)) {
+        eventPreventDefault(e);
         return;
       }
+
+      if (unref(currentFile).status !== FileStatus.Completed) {
+        eventPreventDefault(e);
+        return;
+      }
+
       const paths = getShouldStartDragPaths(
         unref(currentFile).path,
         unref(selectedFiles)

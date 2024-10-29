@@ -96,11 +96,11 @@ export const uploadFile = (
 ) => {
   return $http.request({
     method: "post",
-    url: `/dir-file?dir=${data.dir}`,
+    url: `/upload`,
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    data: { file: data.file },
+    data: { file: data.file, path: data.dir },
     onUploadProgress,
   });
 };

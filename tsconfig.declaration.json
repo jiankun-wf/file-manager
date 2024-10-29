@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
       "baseUrl": "./",
-      "target": "ES2020",
+      "target": "ESNext",
       "useDefineForClassFields": true,
-      "module": "ES2020",
-      "lib": ["ES2020", "DOM", "DOM.Iterable"],
+      "module": "ESNext",
+      "lib": ["ESNext", "DOM", "DOM.Iterable"],
       "skipLibCheck": true,
   
       /* Bundler mode */
@@ -26,12 +26,13 @@
       "noImplicitReturns": false,
       "allowUnusedLabels": true,
       "allowUnreachableCode": true,
-      "outDir": "dist/types",
+      "allowSyntheticDefaultImports": true,
+      "outDir": "RELEASE/dist/types",
+      "types": ["vite/client"],
       "paths": {
         "@/*": ["src/*"]
       }
     },
-    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx"],
-    "references": [{ "path": "./tsconfig.node.json" }]
+    "include": ["src/lib/**/*.ts", "src/lib/**/*.d.ts", "src/lib/**/*.tsx"],
   }
   

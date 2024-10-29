@@ -1,8 +1,9 @@
 {
   "name": "file-manager",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.1",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "dev": "vite",
     "server": "node --loader ts-node/esm ./server/lib/index.ts",
@@ -44,6 +45,5 @@
     "vue-tsc": "^2.0.6",
     "vue-virtual-scroll-grid": "^1.11.0",
     "vue-virtual-scroller": "2.0.0-beta.8"
-  },
-  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
+  }
 }

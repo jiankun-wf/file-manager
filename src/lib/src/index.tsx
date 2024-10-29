@@ -173,7 +173,7 @@ export const FileManager = defineComponent({
         <div
           class="file-manager"
           id={id}
-          attr-content-height={`${props.contentHeight}px`}
+          style={{ "--height": `${props.contentHeight}px` }}
         >
           <Toolbar>
             {{

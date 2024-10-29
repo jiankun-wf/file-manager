@@ -1,9 +1,11 @@
 import { NDropdown, type DropdownOption } from "naive-ui";
 import { nextTick, Ref, ref, unref } from "vue";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useContextMenu = ({
   options,
   onSelect,
+  isOnlyRead,
 }: {
   options: Ref<DropdownOption[]>;
   onSelect: (
@@ -11,6 +13,7 @@ export const useContextMenu = ({
     option: DropdownOption,
     ...args: any[]
   ) => void;
+  isOnlyRead: FileManagerSpirit.Context["isOnlyRead"];
 }) => {
   const x = ref(0);
   const y = ref(0);
@@ -23,6 +26,9 @@ export const useContextMenu = ({
     event.stopPropagation();
     event.preventDefault();
     showRef.value = false;
+
+    if (unref(isOnlyRead)) return;
+
     argsList.value = args;
     nextTick(() => {
       x.value = event.clientX;

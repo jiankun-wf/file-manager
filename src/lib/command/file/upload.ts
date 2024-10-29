@@ -11,9 +11,8 @@ export const commandUpload = async (
 
   // TODO: upload file to server
 
-  const { url, path, uploadTime }: any = await uploadFile(
-    { file: file.__FILE!, dir },
-    (progress) => {
+  const { fileType, md5, name, uri, size, mineType, path }: any =
+    await uploadFile({ file: file.__FILE!, dir }, (progress) => {
       const total = progress.total || 0;
 
       const loaded = progress.loaded;
@@ -21,18 +20,18 @@ export const commandUpload = async (
       const p = (loaded / total) * 100;
 
       file.progress = Number(p.toFixed(2));
-    }
-  );
+    });
 
+  file.dir = fileType === "FOLDER";
   file.status = "completed";
-  file.url = url;
-  file.path = path;
+  file.path = uri;
   file.__isnew = false;
-  file.uploadTime = uploadTime;
+  file.size = size;
+  file.md5 = md5;
+  file.type = mineType;
+  file.relativePath = path;
 
   return {
-    url,
-    path,
-    uploadTime,
+    path: uri,
   };
 };

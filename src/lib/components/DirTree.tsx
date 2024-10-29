@@ -105,7 +105,7 @@ export const DirTreeItem = defineComponent({
   name: "DirTreeItem",
   props: {
     data: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as PropType<any>,
       required: true,
     },
     parent: {

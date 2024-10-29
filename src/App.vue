@@ -1,7 +1,6 @@
 <script setup lang="ts">
 // import { FileManager } from "../dist/file-manager.es.js";
 import { FileManager } from "./lib";
-import "../dist/style.css";
 
 const handleFileSelect = (fileList: any) => {
   console.log(fileList);
@@ -14,7 +13,8 @@ const handleFileSelect = (fileList: any) => {
       <FileManager
         mode="read"
         @file-select="handleFileSelect"
-        action="http://192.168.188.111:8080"
+        action="/basic-api"
+        :content-height="600"
       />
     </div>
   </div>

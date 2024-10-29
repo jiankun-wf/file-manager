@@ -17,7 +17,7 @@ import { fileTreeUpload } from "../command/tree-create";
 import { RecycleScroller } from "vue-virtual-scroller";
 import { FileManagerSpirit } from "../types/namespace";
 import { FileDir } from "../components/FileDir";
-import { FileGridCardItem } from "../components/FileGridCard";
+import { FileItem } from "../components/FileItem";
 import { FileStatus } from "../enum/file-status";
 import { isImage } from "../utils/minetype";
 import { getFileContextMenus } from "../utils/contextmenuOption";
@@ -162,6 +162,7 @@ export const Content = defineComponent({
     const { renderContextMenu, handleContextMenu } = useContextMenu({
       options: optionsRef as unknown as Ref<any[]>,
       onSelect: handleContextMenuSelect,
+      isOnlyRead,
     });
 
     const onContextmenu = (event: MouseEvent) => {
@@ -277,7 +278,7 @@ export const Content = defineComponent({
                     onMouseContextMenu={handleFileContextMenu}
                   />
                 ) : (
-                  <FileGridCardItem
+                  <FileItem
                     currentFile={item}
                     onMouseContextMenu={handleFileContextMenu}
                   />

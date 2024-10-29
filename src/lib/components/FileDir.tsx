@@ -11,7 +11,11 @@ import {
 } from "vue";
 import { NK } from "../enum";
 import { useActionContext, useContext } from "../utils/context";
-import { eventStopPropagation, eventStop } from "../utils/event";
+import {
+  eventStopPropagation,
+  eventStop,
+  eventPreventDefault,
+} from "../utils/event";
 import { resizeImage } from "../utils/resize";
 import { setDragStyle, setDragTransfer } from "../utils/drag";
 import { useDragInToggle } from "../hooks/useDragToggle";
@@ -39,7 +43,9 @@ export const FileDir = defineComponent({
     const imageRef = ref<HTMLImageElement>();
 
     // 得到变量
-    const { currentPath, fileList, providerList, goPath } = useContext();
+    const { currentPath, fileList, providerList, goPath, isOnlyRead } =
+      useContext();
+    debugger;
 
     const {
       selectedFiles,
@@ -91,6 +97,11 @@ export const FileDir = defineComponent({
     });
 
     const handleDragStart = (e: DragEvent) => {
+      if (unref(isOnlyRead)) {
+        eventPreventDefault(e);
+        return;
+      }
+
       eventStopPropagation(e);
 
       const paths = getShouldStartDragPaths(
@@ -224,7 +235,8 @@ export const FileDir = defineComponent({
         draggable={
           unref(currentFile).status === FileStatus.Completed &&
           unref(draggable) &&
-          !unref(currentFile).buket
+          !unref(currentFile).buket &&
+          !unref(isOnlyRead)
         }
         onMousedown={eventStopPropagation}
         onDblclick={handleOpenFolder}

@@ -44,9 +44,10 @@ export const useFilePutIn = ({
       )!;
       if (!currentFile) return;
       // 如果为图片文件，则需要先编辑
-      if (!currentFile.dir && !/image/.test(currentFile.type)) {
-        commandUpload(currentFile, currentPath);
-      } else if (currentFile.dir) {
+      // if (!currentFile.dir && !/image/.test(currentFile.type)) {
+      //   commandUpload(currentFile, currentPath);
+      // } else
+      if (currentFile.dir) {
         if (naming) {
           await nextTick();
           eventBus.$scope(
@@ -56,6 +57,8 @@ export const useFilePutIn = ({
         } else {
           commandDirMkdir(currentFile, currentFile.path);
         }
+      } else {
+        commandUpload(currentFile, currentPath);
       }
     }
   };

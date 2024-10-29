@@ -18,17 +18,18 @@ export default defineConfig({
     host: true,
     proxy: {
       "/basic-api": {
-        target: "http://192.168.188.111:8080",
+        target: "http://192.168.188.119:8080",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/basic-api/, ""),
       },
     },
   },
   build: {
+    outDir: "RELEASE/dist",
     lib: {
       entry: "./src/lib/index.ts",
       name: "FileManager",
-      fileName: (format) => `file-manager.${format}.js`,
+      fileName: (format) => `index.${format}.js`,
       formats: ["es", "cjs"],
     },
     rollupOptions: {
@@ -41,6 +42,6 @@ export default defineConfig({
         },
       },
     },
-    minify: 'esbuild',
+    minify: "esbuild",
   },
 });
