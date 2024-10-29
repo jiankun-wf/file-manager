@@ -11,7 +11,7 @@ export const commandUpload = async (
 
   // TODO: upload file to server
 
-  const { fileType, md5, name, uri, size, mineType, path }: any =
+  const { fileType, md5, uri, size, mineType, path }: any =
     await uploadFile({ file: file.__FILE!, dir }, (progress) => {
       const total = progress.total || 0;
 
