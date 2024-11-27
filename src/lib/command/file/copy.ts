@@ -1,15 +1,16 @@
-import { copyFile } from "@/lib/api";
 import { FileManagerSpirit } from "@/lib/types/namespace";
-import { Ref } from "vue";
+import { Ref, unref } from "vue";
 
 export const commandCopy = async ({
   file,
   path,
   currentPath,
+  $fapi,
 }: {
   file: FileManagerSpirit.FileItem[];
   path: string;
   currentPath?: Ref<string>;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   const pts = file.map((f) => {
     return {
@@ -18,7 +19,7 @@ export const commandCopy = async ({
     };
   });
 
-  const res = (await copyFile(pts)) as any;
+  const res = await unref($fapi).FILE.copy(pts);
 
   for (const r of res) {
     const cfile = file.find((f) => f.path === r.oldpath);

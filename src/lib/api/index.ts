@@ -1,153 +1,134 @@
 import { AxiosProgressEvent } from "axios";
-import { createAxios } from "../utils/axios";
-
-export const getUrl = () => {
-  return import.meta.env.DEV ? `/basic-api` : `http://192.168.188.111:8080`;
-};
+import { AxiosRequest, createAxios } from "../utils/axios";
+import { ApiInterface } from "../enum/interface";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const createHttp = (baseUrl: string) => {
   return createAxios(baseUrl);
 };
 
-const $http = createAxios(getUrl());
+export class FileManagerApi {
+  public $http: AxiosRequest;
+  constructor(baseUrl: string) {
+    this.$http = createAxios(baseUrl);
+  }
 
-export const getBuketList = () => {
-  return $http.request({
-    url: "/file-providers",
-    method: "get",
-  });
-};
-
-export const getDirsList = () => {
-  return $http.request({
-    url: "/dirs",
-    method: "get",
-  });
-};
-
-export const getDirContent = (params: {
-  path: string;
-  current: number;
-  size: number;
-}) => {
-  return $http.request({
-    method: "get",
-    params,
-    url: "/file-list",
-  });
-};
-
-export const renameDir = (dir: string, newdir: string) => {
-  return $http.request({
-    method: "put",
-    url: `/dirs`,
-    data: {
-      dir,
-      newdir,
+  PROVIDER = {
+    list: () => {
+      return this.$http.$request<FileManagerSpirit.FileItem[]>({
+        url: ApiInterface.PROVIDER_LIST,
+        method: "get",
+      });
     },
-  });
-};
+  };
 
-export const createDir = (path: string) => {
-  return $http.request({
-    method: "post",
-    url: `/create-folder`,
-    data: {
-      path,
+  FILE = {
+    list: (params: { path: string; current: number; size: number }) => {
+      return this.$http.$request<{ content: FileManagerSpirit.FileList }>({
+        method: "get",
+        params,
+        url: ApiInterface.FOLDER_CONTENT,
+      });
     },
-  });
-};
-
-export const moveDir = ({ dir, newdir }: { dir: string; newdir: string }) => {
-  return $http.request({
-    method: "put",
-    url: `/dir/move`,
-    data: {
-      dir,
-      newdir,
+    upload: (
+      data: { file: File; dir: string },
+      onUploadProgress: (progressEvent: AxiosProgressEvent) => void
+    ) => {
+      return this.$http.$request({
+        method: "post",
+        url: ApiInterface.FILE_UPLOAD,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        data: { file: data.file, path: data.dir },
+        onUploadProgress,
+      });
     },
-  });
-};
-
-export const deleteDir = (pts: { dir: string }[]) => {
-  return $http.request({
-    method: "delete",
-    url: `/dirs`,
-    data: pts,
-  });
-};
-
-export const createFile = (file: File) => {
-  return $http.request({
-    method: "post",
-    url: `/create-file`,
-    data: {
-      file,
+    getUrl: (paths: string[]) => {
+      return this.$http.$request<string[]>({
+        method: "get",
+        url: ApiInterface.FILE_URL,
+        params: { path: paths.join(",") },
+      });
     },
-    headers: {
-      "Content-Type": "multipart/form-data",
+    delete: (path: string) => {
+      return this.$http.$request({
+        method: "delete",
+        url: ApiInterface.FILE_DEL,
+        params: { path },
+      });
     },
-  });
-};
-
-export const uploadFile = (
-  data: { file: File; dir: string },
-  onUploadProgress: (progressEvent: AxiosProgressEvent) => void
-) => {
-  return $http.request({
-    method: "post",
-    url: `/upload`,
-    headers: {
-      "Content-Type": "multipart/form-data",
+    move: (dirs: { dir: string; newdir: string }[]) => {
+      return this.$http.$request({
+        method: "put",
+        url: ApiInterface.FILE_MOVE,
+        data: dirs,
+      });
     },
-    data: { file: data.file, path: data.dir },
-    onUploadProgress,
-  });
-};
-
-export const deleteFile = (path: string) => {
-  return $http.request({
-    method: "post",
-    url: `/delete-file?path=${path}`,
-  });
-};
-
-export const renameFile = (filePath: string, newname: string) => {
-  return $http.request({
-    method: "put",
-    url: `/dir-file`,
-    data: {
-      dir: filePath,
-      newname: newname,
+    copy: (dirs: { dir: string; newdir: string }[]) => {
+      return this.$http.$request({
+        method: "put",
+        url: ApiInterface.FILE_COPY,
+        data: dirs,
+      });
     },
-  });
-};
+    rename: (dir: string, newname: string) => {
+      return this.$http.$request({
+        method: "put",
+        url: ApiInterface.FILE_RENAME,
+        data: {
+          dir,
+          newname,
+        },
+      });
+    },
+  };
 
-export const copyFile = (pts: { dir: string; newdir: string }[]) => {
-  return $http.request({
-    method: "post",
-    url: `/dir-file/copy`,
-    data: pts,
-  });
-};
+  DIR = {
+    create: (path: string) => {
+      return this.$http.$request({
+        method: "post",
+        url: `/create-folder`,
+        data: {
+          path,
+        },
+      });
+    },
+    delete: (pts: string[]) => {
+      return this.$http.$request({
+        method: "delete",
+        url: ApiInterface.FOLDER_DEL,
+        data: pts,
+      });
+    },
 
-export const moveFile = (pts: { dir: string; newdir: string }[]) => {
-  return $http.request({
-    method: "put",
-    url: `/dir-file/move`,
-    data: pts,
-  });
-};
+    rename: (dir: string, newname: string) => {
+      return this.$http.$request({
+        method: "put",
+        url: `/dirs`,
+        data: {
+          dir,
+          newdir: newname,
+        },
+      });
+    },
+    move: (dirs: { dir: string; newdir: string }[]) => {
+      return this.$http.$request({
+        method: "put",
+        url: `/move-dirs`,
+        data: dirs,
+      });
+    },
+    copy: (dirs: { dir: string; newdir: string }[]) => {
+      return this.$http.$request({
+        method: "put",
+        url: `/copy-dirs`,
+        data: dirs,
+      });
+    },
+  };
+}
 
-export const downloadFile = (
-  dir: string,
-  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void
-) => {
-  return $http.request({
-    responseType: "blob",
-    method: "get",
-    url: `/download`,
-    params: { dir },
-    onDownloadProgress,
-  });
+export const createFileManagerApi = (baseUrl: string) => {
+  return new FileManagerApi(baseUrl);
 };

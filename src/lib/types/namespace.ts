@@ -3,6 +3,7 @@ import { FileItemType } from ".";
 import { NK } from "../enum";
 import { FileAction } from "../enum/file-action";
 import { AxiosInstance, AxiosRequestConfig } from "axios";
+import { FileManagerApi } from "../api";
 
 type WindowFileList = FileList;
 
@@ -45,7 +46,9 @@ export namespace FileManagerSpirit {
   }) => void;
   export type openImageEditor = (file: FileItem) => void;
   export type goPath = (path: string, replace?: boolean) => void;
-  export type loadDirContent = (clear?: boolean) => Promise<void>;
+  export type loadDirContent = (clear?: boolean) => Promise<FileItem[]>;
+
+  export type $fapi = Ref<FileManagerApi>;
 
   export type AxiosRequest = AxiosInstance & {
     $request: <T = any>(config: AxiosRequestConfig) => Promise<T>;
@@ -67,7 +70,6 @@ export namespace FileManagerSpirit {
     fileList: fileList;
     providerList: providerList;
     getProviderList: getProviderList;
-    $http: AxiosRequest;
     goPath: goPath;
     handleOpenFileInfoDrawer: (file: FileItem) => void;
     paginationRef: FileManagerSpirit.PaginationRef;
@@ -85,10 +87,10 @@ export namespace FileManagerSpirit {
     chooseFile: chooseFile;
     fileRename: fileRename;
     latestCopySelectedFiles: latestCopySelectedFiles;
-    openFileChangeModal: openFileChangeModal;
     openImageEditor: openImageEditor;
     handleMakeBuket: (update: boolean, item?: FileItem) => void;
     emit: Emit;
+    $fapi: FileManagerSpirit.$fapi;
   };
 
   enum FileStatus {

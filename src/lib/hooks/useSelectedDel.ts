@@ -9,10 +9,12 @@ export const useSelectedFileDelete = ({
   selectedFiles,
   fileList,
   dialog,
+  $fapi,
 }: {
   selectedFiles: FileManagerSpirit.selectedFiles;
   fileList: FileManagerSpirit.fileList;
   dialog: DialogApiInjection;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   onMounted(() => {
     hotkeys("ctrl+d", (e: KeyboardEvent) => {
@@ -25,6 +27,7 @@ export const useSelectedFileDelete = ({
         fileList,
         selectedFiles,
         dialog,
+        $fapi,
       });
     });
   });

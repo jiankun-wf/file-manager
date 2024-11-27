@@ -11,7 +11,6 @@ const handleFileSelect = (fileList: any) => {
   <div class="wrapper">
     <div class="inner">
       <FileManager
-        mode="read"
         @file-select="handleFileSelect"
         action="/basic-api"
         :content-height="600"

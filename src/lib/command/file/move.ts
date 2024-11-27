@@ -1,15 +1,16 @@
-import { moveFile } from "@/lib/api";
 import { FileManagerSpirit } from "@/lib/types/namespace";
-import { Ref } from "vue";
+import { Ref, unref } from "vue";
 
 export const commandMove = async ({
   file,
   path,
   currentPath,
+  $fapi,
 }: {
   file: FileManagerSpirit.FileItem[];
   path: string;
   currentPath?: Ref<string>;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   const pts = file.map((f) => {
     return {
@@ -18,7 +19,7 @@ export const commandMove = async ({
     };
   });
 
-  const res = (await moveFile(pts)) as any;
+  const res = await unref($fapi).FILE.move(pts);
 
   for (const r of res) {
     const cfile = file.find((f) => f.path === r.oldpath);

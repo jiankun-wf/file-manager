@@ -11,9 +11,11 @@ import { eventBus } from "../utils/pub-sub";
 
 export const useFilePutIn = ({
   fileList,
+  $fapi,
 }: {
   fileList: Ref<FileManagerSpirit.FileItem[]>;
   currentPath: Ref<string>;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   const handlePutIn: FileManagerSpirit.filePutIn = async (
     files: FileList | File[],
@@ -55,10 +57,18 @@ export const useFilePutIn = ({
             `file_path_${currentFile.path}`
           );
         } else {
-          commandDirMkdir(currentFile, currentFile.path);
+          commandDirMkdir({
+            dir: currentFile,
+            path: currentPath,
+            $fapi,
+          });
         }
       } else {
-        commandUpload(currentFile, currentPath);
+        commandUpload({
+          file: currentFile,
+          dir: unref(currentPath),
+          $fapi,
+        });
       }
     }
   };

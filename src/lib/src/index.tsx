@@ -1,8 +1,16 @@
 // 其他 utils
 import { createActionContext, createContext } from "../utils/context";
-import { computed, defineComponent, PropType, reactive, toRefs } from "vue";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  reactive,
+  ref,
+  toRefs,
+} from "vue";
 import { uid } from "../utils/uid";
-import { createAxios } from "../utils/axios";
+// api
+import { createFileManagerApi } from "../api";
 // components
 import { Content } from "./content";
 import { Slider } from "./slider";
@@ -17,7 +25,6 @@ import { useDirFiles } from "../hooks/useDirFiles";
 import { useFilePutIn } from "../hooks/useFilePuIn";
 import { useChooseFile } from "../hooks/useChooseFile";
 import { useFileRename } from "../hooks/useFileRename";
-import { useFileChange } from "../hooks/useFileChange";
 import { useFileCutAndCopy } from "../hooks/useFileCutAndCopy";
 import { useMakeBuket } from "../hooks/useMakeBuket";
 import { useFileInfoDrawer } from "../hooks/useFileInfoDrawer";
@@ -27,7 +34,6 @@ import type { FileManagerSpirit } from "../types/namespace";
 import { NK } from "../enum";
 
 import "../style/index.less";
-import { getUrl } from "../api";
 import { useProviders } from "../hooks/useProviders";
 export const FileManager = defineComponent({
   name: "FileManager",
@@ -46,7 +52,7 @@ export const FileManager = defineComponent({
     },
     action: {
       type: String as PropType<string>,
-      default: getUrl(),
+      required: true,
     },
     contentHeight: {
       type: Number as PropType<number>,
@@ -57,7 +63,8 @@ export const FileManager = defineComponent({
   setup(props, { emit, expose }) {
     const id = uid("file-manager");
 
-    const $http = createAxios(props.action);
+    // const $http = createAxios(props.action);
+    const $fapi = ref(createFileManagerApi(props.action));
 
     const {
       currentPath,
@@ -84,12 +91,12 @@ export const FileManager = defineComponent({
     });
 
     const { providerList, getProviderList } = useProviders({
-      $http,
+      $http: $fapi,
     });
 
     const { fileList, loadDirContent, paginationRef } = useDirFiles({
       currentPath,
-      $http,
+      $http: $fapi,
     });
     // 面包屑
     const { render: renderBreadcrumb, to } = useBreadcrumb({
@@ -106,20 +113,21 @@ export const FileManager = defineComponent({
     const { handlePutIn } = useFilePutIn({
       fileList,
       currentPath,
+      $fapi,
     });
     // 公共的文件上传选择器
     const { chooseFile, renderInputUpload } = useChooseFile();
     // 文件重命名插件
-    const { renderRenameContext, fileRename } = useFileRename();
-    // 文件移动、复制插件
-    const { fileChange, renderChangeContext } = useFileChange({
-      currentPath,
+    const { renderRenameContext, fileRename } = useFileRename({
+      $fapi,
     });
+
     // 文件剪切、复制插件
     const { copyMode, latestCopySelectedFiles } = useFileCutAndCopy({
       currentPath,
       selectedFiles,
       fileList,
+      $fapi,
     });
     const { render: renderFileInfoDrawer, handleOpenFileInfoDrawer } =
       useFileInfoDrawer();
@@ -138,7 +146,6 @@ export const FileManager = defineComponent({
       providerList, // 服务器目录树集合
       getProviderList, // 获取服务器目录树集合
       goPath: to, // 跳转
-      $http,
       paginationRef, // 分页器
       handleOpenFileInfoDrawer,
     });
@@ -151,7 +158,6 @@ export const FileManager = defineComponent({
       addSelectFile, // 根据选择模式进行选中目标文件
       filePutIn: handlePutIn, // 将外部文件加入到当前目录，并自动上传。
       chooseFile, // 公共的文件上传选择器
-      openFileChangeModal: fileChange, // 文件移动、复制，打开弹窗
       fileRename, // 文件重命名
       copyMode, // 文件剪切、复制模式
       latestCopySelectedFiles, // 最近复制、剪切的文件列表
@@ -159,6 +165,7 @@ export const FileManager = defineComponent({
       handleMakeBuket,
       loadDirContent, // 加载目录内容
       emit, // 事件触发器
+      $fapi,
     });
 
     expose<FileManagerSpirit.Dispose>({
@@ -197,8 +204,6 @@ export const FileManager = defineComponent({
           {renderInputUpload()}
           {/* 重命名弹窗 */}
           {renderRenameContext(id)}
-          {/* 移动 || 复制 */}
-          {renderChangeContext(id)}
           {/* 图像编辑 */}
           {renderImageEditModal()}
           {/* 新建Bucket */}

@@ -1,20 +1,12 @@
-import { ref } from "vue";
+import { ref, unref } from "vue";
 import { FileManagerSpirit } from "../types/namespace";
-import { ApiInterface } from "../enum/interface";
 
-export const useProviders = ({
-  $http,
-}: {
-  $http: FileManagerSpirit.AxiosRequest;
-}) => {
+export const useProviders = ({ $http }: { $http: FileManagerSpirit.$fapi }) => {
   const providerList = ref<FileManagerSpirit.FileDirItem[]>([]);
 
   const getProviderList = async () => {
     try {
-      const res = await $http.$request<FileManagerSpirit.FileDirItem[]>({
-        url: ApiInterface.PROVIDER_LIST,
-        method: "get",
-      });
+      const res = await unref($http).PROVIDER.list();
 
       const list = res.map<FileManagerSpirit.FileItem>((item: any) => ({
         name: item.rootUri,

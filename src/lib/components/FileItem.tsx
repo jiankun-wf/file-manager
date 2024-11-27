@@ -40,7 +40,7 @@ export const FileItem = defineComponent({
     const imageRef = ref<HTMLImageElement>();
 
     // 得到变量
-    const { fileList, isOnlyRead } = useContext();
+    const { fileList, isOnlyRead, currentPath } = useContext();
 
     const {
       selectedFiles,
@@ -49,6 +49,7 @@ export const FileItem = defineComponent({
       copyMode,
       latestCopySelectedFiles,
       contextDraggingArgs,
+      $fapi,
     } = useActionContext();
 
     const isSliceFile = computed(() => {
@@ -132,6 +133,8 @@ export const FileItem = defineComponent({
     const { renderFileRenameContext, handleRename } = useFileRename({
       currentFile: currentFile,
       fileList,
+      currentPath,
+      $fapi,
     });
 
     onMounted(() => {

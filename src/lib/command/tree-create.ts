@@ -10,11 +10,13 @@ export const fileTreeUpload = async ({
   currentPath,
   filePutIn,
   uploadPath,
+  $fapi,
 }: {
   data: DragInFileItem[];
   currentPath: FileManagerSpirit.currentPath;
   filePutIn: FileManagerSpirit.filePutIn;
   uploadPath?: string;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   const l = data.length;
 
@@ -45,6 +47,7 @@ export const fileTreeUpload = async ({
             currentPath: currentPath,
             filePutIn,
             uploadPath: `${unref(currentPath)}/${file as string}`,
+            $fapi,
           });
         }
       }
@@ -54,14 +57,17 @@ export const fileTreeUpload = async ({
       const { type, file, children } = data[i];
       // 内层的，只进行upload操作
       if (type === NK.FILE_FLAG_TYPE) {
-        await commandUpload(
-          {
-            __FILE: file,
-          } as any,
-          uploadPath
-        );
+        await commandUpload({
+          file: { __FILE: file } as any,
+          dir: uploadPath,
+          $fapi,
+        });
       } else if (type === NK.FILE_DIR_FLAG_TYPE) {
-        const { npath } = await commandDirMkdir({} as any, uploadPath);
+        const { npath } = await commandDirMkdir({
+          dir: {} as any,
+          path: uploadPath,
+          $fapi,
+        });
 
         if (children?.length) {
           fileTreeUpload({
@@ -69,6 +75,7 @@ export const fileTreeUpload = async ({
             currentPath: currentPath,
             filePutIn,
             uploadPath: npath,
+            $fapi,
           });
         }
       }

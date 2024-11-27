@@ -21,7 +21,7 @@ export const Slider = defineComponent({
 
     const { currentPath, providerList, getProviderList, goPath, isOnlyRead } =
       useContext();
-    const { handleMakeBuket } = useActionContext();
+    const { handleMakeBuket, $fapi } = useActionContext();
 
     const contextMenu = ref(getDirContextMenus(false));
     const dirExpandKeys = ref<string[]>([]);
@@ -62,10 +62,15 @@ export const Slider = defineComponent({
             dirs: [dir],
             parentDirList: parentDirList,
             dialog,
+            $fapi,
           });
           return;
         case FileAction.DOWNLOAD:
-          commandDownload(dir.path);
+          commandDownload({
+            filePath: dir.path,
+            fileName: dir.name,
+            $fapi,
+          });
           return;
       }
     };
@@ -120,6 +125,7 @@ export const Slider = defineComponent({
           fromDirPath: path,
           currentPath,
           dirList: providerList,
+          $fapi,
         });
       } finally {
       }

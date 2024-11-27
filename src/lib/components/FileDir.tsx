@@ -45,7 +45,6 @@ export const FileDir = defineComponent({
     // 得到变量
     const { currentPath, fileList, providerList, goPath, isOnlyRead } =
       useContext();
-    debugger;
 
     const {
       selectedFiles,
@@ -54,6 +53,7 @@ export const FileDir = defineComponent({
       copyMode,
       latestCopySelectedFiles,
       contextDraggingArgs,
+      $fapi,
     } = useActionContext();
 
     const currentFile = toRef(() => props.currentFile);
@@ -166,6 +166,7 @@ export const FileDir = defineComponent({
               await commandMove({
                 file: cloneDeep(dragFileList),
                 path: unref(dirPath),
+                $fapi,
               });
               fileList.value = unref(fileList).filter(
                 (f) => !paths.includes(f.path)
@@ -178,6 +179,7 @@ export const FileDir = defineComponent({
               fromDirPath: path,
               currentPath,
               dirList: providerList,
+              $fapi,
             });
           }
         } finally {
@@ -188,6 +190,8 @@ export const FileDir = defineComponent({
     const { renderFileRenameContext, handleRename } = useFileRename({
       currentFile: currentFile,
       fileList,
+      currentPath,
+      $fapi,
     });
 
     onMounted(() => {

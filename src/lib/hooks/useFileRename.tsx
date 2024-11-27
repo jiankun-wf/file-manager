@@ -3,7 +3,11 @@ import { nextTick, ref, unref } from "vue";
 import { commandRename } from "../command/file/rename";
 import { FileManagerSpirit } from "../types/namespace";
 
-export const useFileRename = () => {
+export const useFileRename = ({
+  $fapi,
+}: {
+  $fapi: FileManagerSpirit.$fapi;
+}) => {
   const show = ref(false);
   const name = ref<string | undefined>(void 0);
   const currentFile = ref<FileManagerSpirit.FileItem | undefined>(void 0);
@@ -24,7 +28,11 @@ export const useFileRename = () => {
   const handleRename = async () => {
     try {
       submitLoading.value = true;
-      await commandRename(unref(currentFile)!, unref(name)!);
+      await commandRename({
+        file: unref(currentFile)!,
+        newname: unref(name)!,
+        $fapi,
+      });
       show.value = false;
     } finally {
       submitLoading.value = false;

@@ -46,7 +46,7 @@ export function createAxios(baseUrl: string): AxiosRequest {
       const { config, response, code, message } = err;
 
       Message.error(
-        `${config.url} Error：${response.status}（${code}）：${message}`
+        `${config.url} Error：${response?.status || ""}（${code}）：${message}`
       );
       throw new Error(err);
     }

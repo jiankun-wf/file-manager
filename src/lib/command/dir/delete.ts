@@ -1,5 +1,3 @@
-import { deleteFile } from "@/lib/api";
-import { NK } from "@/lib/enum";
 import { FileManagerSpirit } from "@/lib/types/namespace";
 
 import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
@@ -9,12 +7,14 @@ export const commandDirDelete = ({
   dirs,
   parentDirList,
   dialog,
+  $fapi,
 }: {
   dirs: FileManagerSpirit.FileDirItem[];
   parentDirList:
     | FileManagerSpirit.FileDirItem[]
     | Ref<FileManagerSpirit.FileDirItem[]>;
   dialog: DialogApiInjection;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   return new Promise((resolve) => {
     const d = dialog.warning({
@@ -44,9 +44,7 @@ export const commandDirDelete = ({
 
           const shold_del_dir = dirs.filter((d) => !d.__new);
 
-          await deleteFile(
-            shold_del_dir.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR)
-          );
+          await unref($fapi).DIR.delete(shold_del_dir.map((file) => file.path));
 
           dirs.forEach((dir) => {
             const index = unref(parentDirList).findIndex(

@@ -134,7 +134,7 @@ export const DirTreeItem = defineComponent({
     // 文件管理器暴漏的变量
     const { providerList, fileList, currentPath, goPath } = useContext();
 
-    const { contextDraggingArgs } = useActionContext();
+    const { contextDraggingArgs, $fapi } = useActionContext();
 
     // 目录配置
     const { value, label, children } = configKey;
@@ -145,11 +145,12 @@ export const DirTreeItem = defineComponent({
     });
 
     // 目录重命名
-    const { renderDirRenameInput, handleRename, naming } = useDirRename(
-      props.data as FileManagerSpirit.FileDirItem,
-      props.parentList ?? providerList,
-      props.parent
-    );
+    const { renderDirRenameInput, handleRename, naming } = useDirRename({
+      dir: props.data as FileManagerSpirit.FileDirItem,
+      dirParentList: props.parentList ?? providerList,
+      parent: props.parent,
+      $fapi,
+    });
 
     useDragInToggle({
       elementRef,
@@ -176,6 +177,7 @@ export const DirTreeItem = defineComponent({
               await commandMove({
                 file: cloneDeep(dragFileList),
                 path: unref(dirPath),
+                $fapi,
               });
               fileList.value = unref(fileList).filter(
                 (f) => !paths.includes(f.path)
@@ -188,6 +190,7 @@ export const DirTreeItem = defineComponent({
               fromDirPath: path,
               currentPath,
               dirList: providerList,
+              $fapi,
             });
           }
         } finally {

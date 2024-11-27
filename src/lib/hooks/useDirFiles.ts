@@ -1,14 +1,13 @@
 import { reactive, ref, unref } from "vue";
 import { FileStatus } from "../enum/file-status";
-import { AxiosResponse, FileManagerSpirit } from "../types/namespace";
-import { ApiInterface } from "../enum/interface";
+import { FileManagerSpirit } from "../types/namespace";
 
 export const useDirFiles = ({
   currentPath,
   $http,
 }: {
   currentPath: FileManagerSpirit.currentPath;
-  $http: FileManagerSpirit.AxiosRequest;
+  $http: FileManagerSpirit.$fapi;
 }) => {
   const fileList = ref<FileManagerSpirit.FileItem[]>([]);
 
@@ -19,7 +18,9 @@ export const useDirFiles = ({
     full: false,
   });
 
-  const getDirContent = async (clear: boolean = false) => {
+  const getDirContent = async (
+    clear: boolean = false
+  ): Promise<FileManagerSpirit.FileItem[]> => {
     try {
       if (clear) {
         paginationRef.current = 1;
@@ -27,18 +28,13 @@ export const useDirFiles = ({
         paginationRef.total = 0;
         paginationRef.full = false;
       }
-      if (!unref(currentPath)) return;
-      if (paginationRef.full) return;
-      const res = await $http.$request<
-        AxiosResponse.Pagination & { content: FileManagerSpirit.FileItem[] }
-      >({
-        url: ApiInterface.DIR_CONTENT,
-        method: "get",
-        params: {
-          path: unref(currentPath),
-          size: paginationRef.size,
-          current: paginationRef.current,
-        },
+      if (!unref(currentPath)) return [];
+      if (paginationRef.full) return [];
+
+      const res = await unref($http).FILE.list({
+        path: unref(currentPath),
+        size: paginationRef.size,
+        current: paginationRef.current,
       });
 
       const { content: files } = res;
@@ -72,6 +68,7 @@ export const useDirFiles = ({
           fileList.value = unref(fileList).concat(fs);
         }
       }
+      return unref(fileList);
     } catch (error) {
       return Promise.reject(error);
     }

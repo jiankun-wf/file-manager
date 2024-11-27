@@ -11,10 +11,12 @@ export const useFileCutAndCopy = ({
   currentPath,
   selectedFiles,
   fileList,
+  $fapi,
 }: {
   currentPath: FileManagerSpirit.currentPath;
   selectedFiles: FileManagerSpirit.selectedFiles;
   fileList: FileManagerSpirit.fileList;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   const lastDirPath = ref("");
   const latestCopySelectedFiles = ref<FileManagerSpirit.FileItem[]>([]);
@@ -56,6 +58,7 @@ export const useFileCutAndCopy = ({
         commandMove({
           file: targetFiles,
           path: unref(currentPath),
+          $fapi,
         });
 
         return;
@@ -73,6 +76,7 @@ export const useFileCutAndCopy = ({
         commandCopy({
           file: targetCopyFiles,
           path: unref(currentPath),
+          $fapi,
         });
         return;
     }

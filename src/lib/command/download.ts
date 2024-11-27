@@ -1,17 +1,24 @@
-import { downloadFile } from "../api";
+import { unref } from "vue";
+import { FileManagerSpirit } from "../types/namespace";
 
-export const commandDownload = async (filePath: string) => {
+export const commandDownload = async ({
+  filePath,
+  $fapi,
+  fileName,
+}: {
+  filePath: string;
+  $fapi: FileManagerSpirit.$fapi;
+  fileName: string;
+}) => {
   try {
-    const { blob, name }: { blob: Blob; name: string } = (await downloadFile(
-      filePath
-    )) as any;
+    const urls = await unref($fapi).FILE.getUrl([filePath]);
 
-    const url = URL.createObjectURL(blob);
+    // const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = name;
+    a.href = urls[0];
+    a.download = fileName;
     a.click();
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(urls[0]);
     document.body.removeChild(a);
   } finally {
   }

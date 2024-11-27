@@ -1,19 +1,20 @@
-import { deleteFile } from "@/lib/api";
 import { NK } from "@/lib/enum";
 import { FileManagerSpirit } from "@/lib/types/namespace";
 import { DialogApiInjection } from "naive-ui/es/dialog/src/DialogProvider";
-import { h } from "vue";
+import { h, unref } from "vue";
 
 export const commandDelete = ({
   files,
   fileList,
   selectedFiles,
   dialog,
+  $fapi,
 }: {
   files: FileManagerSpirit.FileItem[];
   fileList: FileManagerSpirit.fileList;
   selectedFiles: FileManagerSpirit.selectedFiles;
   dialog: DialogApiInjection;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   return new Promise((resolve) => {
     const d = dialog.warning({
@@ -44,7 +45,7 @@ export const commandDelete = ({
           // 为 __new的文件直接删除，不走接口
           const delOriFiles = files.filter((file) => !file.__isnew);
 
-          await deleteFile(
+          await unref($fapi).FILE.delete(
             delOriFiles.map((file) => file.path).join(NK.ARRAY_JOIN_SEPARATOR)
           );
 

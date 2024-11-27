@@ -8,11 +8,17 @@ import { commandRename } from "../command/file/rename";
 import { eventStop } from "../utils/event";
 import { FileManagerSpirit } from "../types/namespace";
 
-export const useDirRename = (
-  dir: FileManagerSpirit.FileDirItem,
-  dirParentList: Record<string, any>[] | Ref<FileManagerSpirit.FileDirItem[]>,
-  parent?: FileManagerSpirit.FileDirItem | Record<string, any>
-) => {
+export const useDirRename = ({
+  dir,
+  dirParentList,
+  parent,
+  $fapi,
+}: {
+  dir: FileManagerSpirit.FileDirItem;
+  dirParentList: Record<string, any>[] | Ref<FileManagerSpirit.FileDirItem[]>;
+  parent?: FileManagerSpirit.FileDirItem | Record<string, any>;
+  $fapi: FileManagerSpirit.$fapi;
+}) => {
   const editable = ref(false);
   const inputValue = ref("");
 
@@ -47,7 +53,11 @@ export const useDirRename = (
     // 如果为新建文件夹，则直接移除
     if (dir.__new) {
       const parentPath = parent ? `${parent.path}/` : "";
-      await commandDirMkdir(dir, `${parentPath}${ndir}`);
+      await commandDirMkdir({
+        dir: dir,
+        path: `${parentPath}${ndir}`,
+        $fapi,
+      });
       editable.value = false;
       return;
     }
@@ -57,7 +67,11 @@ export const useDirRename = (
       return;
     }
 
-    await commandDirRename(dir, ndir);
+    await commandDirRename({
+      dir,
+      newname: ndir,
+      $fapi,
+    });
 
     editable.value = false;
   };
@@ -86,9 +100,13 @@ export const useDirRename = (
 export const useFileRename = ({
   currentFile,
   fileList,
+  currentPath,
+  $fapi,
 }: {
   currentFile: Readonly<Ref<FileManagerSpirit.FileItem>>;
   fileList: FileManagerSpirit.fileList;
+  currentPath: FileManagerSpirit.currentPath;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
   const editable = ref(false);
   const inputValue = ref("");
@@ -140,9 +158,19 @@ export const useFileRename = ({
         NK.FILE_DIR_FLAG_TYPE
       );
       if (__isnew) {
-        await commandDirMkdir(unref(currentFile), unref(currentFile).path);
+        await commandDirMkdir({
+          dir: unref(currentFile),
+          path: `${
+            unref(currentPath) ? `${unref(currentPath)}` : ""
+          }${newFileName}/`,
+          $fapi,
+        });
       } else {
-        await commandDirRename(unref(currentFile), newFileName);
+        await commandDirRename({
+          dir: unref(currentFile),
+          newname: newFileName,
+          $fapi,
+        });
       }
       editable.value = false;
     } else {
@@ -157,7 +185,11 @@ export const useFileRename = ({
         unref(fileList),
         NK.FILE_FLAG_TYPE
       );
-      await commandRename(unref(currentFile), newFileName);
+      await commandRename({
+        file: unref(currentFile),
+        newname: newFileName,
+        $fapi,
+      });
       editable.value = false;
     }
   };

@@ -1,31 +1,25 @@
-import { getDirsList, moveDir } from "@/lib/api";
 import { FileManagerSpirit } from "@/lib/types/namespace";
-import { Ref } from "vue";
+import { Ref, unref } from "vue";
 
 export const commandDirMove = async ({
   targetDirPath,
   fromDirPath,
   currentPath,
   dirList,
+  $fapi,
 }: {
   targetDirPath: string;
   fromDirPath: string;
   currentPath: Ref<string>;
   dirList: Ref<FileManagerSpirit.FileDirItem[]>;
+  $fapi: FileManagerSpirit.$fapi;
 }) => {
-  const { path } = (await moveDir({
-    dir: fromDirPath,
-    newdir: targetDirPath,
-  })) as any;
+  const { path } = await unref($fapi).DIR.move([
+    { dir: fromDirPath, newdir: targetDirPath },
+  ]);
 
-  const ds = (await getDirsList()) as any;
+  const ds = await unref($fapi).PROVIDER.list();
   dirList.value = ds;
 
   currentPath.value = path;
-
-  //   moveTreeNode(unref(dirList), fromDirPath, targetDirPath, path);
-
-  //   removeTreeNode(unref(dirList), (node: FileDirItem) => {
-  //     return node.path === fromDirPath;
-  //   });
 };

@@ -2,7 +2,6 @@ import { ComputedRef, ref, unref } from "vue";
 import { FileManagerSpirit } from "../types/namespace";
 import { NButton } from "naive-ui";
 import { eventStop } from "../utils/event";
-import { ApiInterface } from "../enum/interface";
 
 export const useFileSelectMask = ({
   selectedFiles,
@@ -12,7 +11,7 @@ export const useFileSelectMask = ({
 }: {
   selectedFiles: FileManagerSpirit.selectedFiles;
   isOnlyRead: ComputedRef<boolean>;
-  $http: FileManagerSpirit.AxiosRequest;
+  $http: FileManagerSpirit.$fapi;
   emit: FileManagerSpirit.Emit;
 }) => {
   const selectLoading = ref(false);
@@ -22,14 +21,9 @@ export const useFileSelectMask = ({
     try {
       selectLoading.value = true;
 
-      const urls: string[] = await $http.$request({
-        url: ApiInterface.FILE_URL,
-        params: {
-          path: unref(selectedFiles)
-            .map((f) => f.path)
-            .join(","),
-        },
-      });
+      const urls: string[] = await unref($http).FILE.getUrl(
+        unref(selectedFiles).map((f) => f.path)
+      );
       emit(
         "file-select",
         unref(selectedFiles).map((f) => ({

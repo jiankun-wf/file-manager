@@ -47,7 +47,6 @@ export const Content = defineComponent({
       fileList,
       paginationRef,
       handleOpenFileInfoDrawer,
-      $http,
     } = useContext();
 
     const {
@@ -55,16 +54,16 @@ export const Content = defineComponent({
       filePutIn,
       loadDirContent,
       openImageEditor,
-      openFileChangeModal,
       draggable,
       emit,
+      $fapi,
     } = useActionContext();
     // 选择文件
 
     const { render: renderSelectConfirmMask } = useFileSelectMask({
       selectedFiles,
       isOnlyRead,
-      $http,
+      $http: $fapi,
       emit,
     });
 
@@ -84,6 +83,7 @@ export const Content = defineComponent({
           data: files,
           currentPath,
           filePutIn,
+          $fapi,
         });
       },
     });
@@ -96,6 +96,7 @@ export const Content = defineComponent({
       selectedFiles,
       fileList,
       dialog,
+      $fapi,
     });
 
     const handleContextMenuSelect = async (...args: any[]) => {
@@ -116,25 +117,14 @@ export const Content = defineComponent({
             NK.FILE_DIR_FLAG_TYPE
           );
           return;
-
-        case FileAction.COPY:
-          openFileChangeModal({
-            file: argsFileList,
-            action: FileAction.COPY,
-            currentDirPath: unref(currentPath),
-          });
-          return;
         case FileAction.IMAGE_EDIT:
           openImageEditor(file);
           return;
         case FileAction.UPLOAD:
-          commandUpload(file, unref(currentPath));
-          return;
-        case FileAction.MOVE:
-          openFileChangeModal({
-            file: argsFileList,
-            action: FileAction.MOVE,
-            currentDirPath: unref(currentPath),
+          commandUpload({
+            file: file,
+            dir: unref(currentPath),
+            $fapi,
           });
           return;
         case FileAction.RENAME:
@@ -146,11 +136,16 @@ export const Content = defineComponent({
             fileList,
             selectedFiles,
             dialog,
+            $fapi,
           });
           flag && message.success("删除成功");
           return;
         case FileAction.DOWNLOAD:
-          commandDownload(file.path);
+          commandDownload({
+            filePath: file.path,
+            $fapi,
+            fileName: file.name,
+          });
           return;
         case FileAction.INFO:
           handleOpenFileInfoDrawer(file);
@@ -191,7 +186,7 @@ export const Content = defineComponent({
         }
       } else {
         optionsRef.value = [
-          ...getFileContextMenus(0, 6),
+          ...getFileContextMenus(2, 6),
           ...getFileContextMenus(-1),
         ];
       }
